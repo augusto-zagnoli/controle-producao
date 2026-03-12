@@ -1,24 +1,52 @@
 <section class="page tablet">
-  <header class="header">
-    <h1>Painel de Produção</h1>
+  <header class="tab-header">
+    <div class="logo-area">
+      <span class="logo-text">VEMEX</span>
+      <span class="logo-sub">Controle de Produção</span>
+    </div>
   </header>
-  <input
-    class="search"
-    [(ngModel)]="filtro"
-    (input)="aplicarFiltro()"
-    placeholder="Pesquisar OS por número, cliente ou descrição"
-  />
+
+  <div class="search-area">
+    <input
+      class="search-input"
+      [(ngModel)]="busca"
+      (input)="filtrar()"
+      placeholder="🔍  Buscar por Nº OP, peça ou cliente…"
+      autocomplete="off"
+    />
+  </div>
 
   <div class="cards">
-    @for (ordem of ordensFiltradas; track ordem.id) {
-      <a [routerLink]="['/producao/ordem', ordem.id]" class="card">
-        <strong>{{ ordem.numero }}</strong>
-        <span>{{ ordem.descricao }}</span>
-        <small>{{ ordem.cliente }}</small>
-        <span class="chip">{{ statusLabel(ordem.status) }}</span>
+    @for (o of ordensFiltradas; track o.id) {
+      <a [routerLink]="['/producao/ordem', o.id]" class="card">
+        <div class="card-top">
+          <span class="op-num">OP {{ o.numeroOP }}</span>
+          <span class="chip" [class]="o.status">{{ statusLabel(o.status) }}</span>
+        </div>
+        <div class="peca-nome">{{ o.nomePeca }}</div>
+        <div class="card-info">
+          <span>{{ o.material }}</span>
+          <span>{{ o.quantidade }} pçs</span>
+          @if (o.cliente) { <span>{{ o.cliente }}</span> }
+          <span>Prazo: {{ formatarData(o.prazoEntrega) }}</span>
+        </div>
+        <div class="ops-status">
+          @for (op of o.operacoes; track op.id) {
+            <span class="op-badge" [class]="op.status">
+              {{ op.numero }}ª {{ op.tipoOperacao === 'COMPLETO' ? '(COMPLETO)' : '' }}
+            </span>
+          }
+        </div>
+        @if (operacoesPendentes(o) > 0) {
+          <div class="pendente-tag">{{ operacoesPendentes(o) }} operação(ões) pendente(s)</div>
+        }
       </a>
     } @empty {
-      <p>Nenhuma ordem encontrada.</p>
+      <div class="empty">
+        <p>Nenhuma ordem encontrada.</p>
+        <small>Digite o número da OP ou nome da peça para buscar.</small>
+      </div>
     }
   </div>
 </section>
+

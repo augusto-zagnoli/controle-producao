@@ -1,24 +1,139 @@
 <section class="page">
-  <h1>{{ edicao ? 'Editar ordem' : 'Nova ordem' }}</h1>
+  <header class="page-header">
+    <h1>{{ edicao ? 'Editar OP' : 'Nova Ordem de Produção' }}</h1>
+    <a routerLink="/admin" class="btn">← Voltar</a>
+  </header>
+
   <form [formGroup]="form" (ngSubmit)="salvar()" class="form">
-    <label>Descrição <input formControlName="descricao" /></label>
-    <label>Cliente <input formControlName="cliente" /></label>
-    <label>Prioridade
-      <select formControlName="prioridade">
-        <option value="baixa">Baixa</option>
-        <option value="media">Média</option>
-        <option value="alta">Alta</option>
-        <option value="urgente">Urgente</option>
-      </select>
-    </label>
-    <label>Material <input formControlName="material" /></label>
-    <label>Medidas <input formControlName="medidas" /></label>
-    <label>Observações <textarea formControlName="observacoes"></textarea></label>
-    <label>Imagens da peça <input type="file" accept="image/*" multiple (change)="onImagens($event)" /></label>
-    <label>PDF AutoCAD <input type="file" accept="application/pdf" (change)="onPdf($event)" /></label>
-    <div class="actions">
+
+    <!-- Dados da OP -->
+    <div class="section-card">
+      <h2>Dados Gerais</h2>
+      <div class="grid-2">
+        <label class="field">
+          Nome da Peça <span class="req">*</span>
+          <input formControlName="nomePeca" placeholder="Ex: Terminal 1W32FH32" />
+          @if (form.get('nomePeca')?.invalid && form.get('nomePeca')?.touched) {
+            <span class="err">Obrigatório</span>
+          }
+        </label>
+        <label class="field">
+          Material <span class="req">*</span>
+          <input formControlName="material" placeholder="Ex: SAE 1020" />
+          @if (form.get('material')?.invalid && form.get('material')?.touched) {
+            <span class="err">Obrigatório</span>
+          }
+        </label>
+        <label class="field">
+          Quantidade <span class="req">*</span>
+          <input type="number" formControlName="quantidade" min="1" />
+        </label>
+        <label class="field">
+          Prazo de Entrega <span class="req">*</span>
+          <input type="date" formControlName="prazoEntrega" />
+          @if (form.get('prazoEntrega')?.invalid && form.get('prazoEntrega')?.touched) {
+            <span class="err">Obrigatório</span>
+          }
+        </label>
+        <label class="field">
+          Cliente
+          <input formControlName="cliente" placeholder="Ex: VEMEX" />
+        </label>
+        <label class="field full">
+          Observações
+          <textarea formControlName="observacoes" rows="3"></textarea>
+        </label>
+      </div>
+    </div>
+
+    <!-- Operações -->
+    <div class="section-card">
+      <div class="section-header">
+        <h2>Operações (até 5)</h2>
+        @if (operacoesArray.length < 5) {
+          <button type="button" class="btn sm primary" (click)="adicionarOperacao()">+ Adicionar</button>
+        }
+      </div>
+
+      @if (operacoesControls.length === 0) {
+        <p class="hint">Nenhuma operação adicionada. Clique em "+ Adicionar".</p>
+      }
+
+      <div formArrayName="operacoes">
+        @for (opGroup of operacoesControls; track $index; let i = $index) {
+          <div class="op-card" [formGroupName]="i">
+            <div class="op-header">
+              <span class="op-num">{{ i + 1 }}ª Operação</span>
+              <button type="button" class="btn sm danger" (click)="removerOperacao(i)">Remover</button>
+            </div>
+            <label class="field">
+              Tipo de Operação
+              <select formControlName="tipoOperacao">
+                @for (t of tiposOperacao; track t) {
+                  <option [value]="t">{{ t }}</option>
+                }
+              </select>
+            </label>
+
+            <!-- Medições Pré-definidas -->
+            <div class="medicoes-grid">
+              <p class="medicoes-title">Medidas Pré-definidas (4 pontos)</p>
+              <div formArrayName="medicoes">
+                @for (medGroup of getMedicoesArray(opGroup); track $index; let mi = $index) {
+                  <div class="medicao-row" [formGroupName]="mi">
+                    <label class="field sm">
+                      Ponto {{ mi + 1 }}
+                      <input formControlName="label" placeholder="Ex: Ø externo" />
+                    </label>
+                    <label class="field sm">
+                      Valor Pré-definido
+                      <input formControlName="predefinido" placeholder="Ex: 32,00mm" />
+                    </label>
+                    <label class="field sm disabled">
+                      Valor Encontrado
+                      <input formControlName="encontrado" placeholder="—" readonly />
+                    </label>
+                  </div>
+                }
+              </div>
+            </div>
+          </div>
+        }
+      </div>
+    </div>
+
+    <!-- Arquivos -->
+    <div class="section-card">
+      <h2>Arquivos</h2>
+      <div class="grid-2">
+        <label class="field">
+          Imagens da Peça
+          <input type="file" accept="image/*" multiple (change)="onImagens($event)" />
+          @if (imagens.length > 0) {
+            <div class="image-preview">
+              @for (img of imagens; track $index; let ii = $index) {
+                <div class="thumb">
+                  <img [src]="img" alt="imagem {{ ii + 1 }}" />
+                  <button type="button" class="rm-img" (click)="removerImagem(ii)">✕</button>
+                </div>
+              }
+            </div>
+          }
+        </label>
+        <label class="field">
+          PDF AutoCAD
+          <input type="file" accept="application/pdf" (change)="onPdf($event)" />
+          @if (pdfNome) {
+            <small class="pdf-name">📄 {{ pdfNome }}</small>
+          }
+        </label>
+      </div>
+    </div>
+
+    <div class="form-actions">
       <a routerLink="/admin" class="btn">Cancelar</a>
-      <button type="submit" class="btn primary">Salvar</button>
+      <button type="submit" class="btn primary">{{ edicao ? 'Salvar Alterações' : 'Criar OP' }}</button>
     </div>
   </form>
 </section>
+

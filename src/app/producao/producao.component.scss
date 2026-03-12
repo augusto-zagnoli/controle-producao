@@ -1,9 +1,119 @@
 .page {
-  padding: 16px;
+  min-height: 100vh;
+  background: #f1f5f9;
+  padding-bottom: 32px;
 }
-.tablet {
+
+.tab-header {
+  background: #1e3a5f;
+  color: #fff;
+  padding: 16px 20px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.logo-text { font-size: 22px; font-weight: 800; letter-spacing: 1px; }
+.logo-sub { font-size: 12px; opacity: .7; display: block; }
+
+.search-area {
+  padding: 16px 20px;
+  background: #1e3a5f;
+}
+.search-input {
+  width: 100%;
+  padding: 14px 18px;
   font-size: 18px;
+  border: none;
+  border-radius: 10px;
+  background: rgba(255,255,255,.15);
+  color: #fff;
+  outline: none;
+  box-sizing: border-box;
+  &::placeholder { color: rgba(255,255,255,.6); }
+  &:focus { background: rgba(255,255,255,.25); }
 }
+
+.cards {
+  display: grid;
+  gap: 12px;
+  padding: 16px 20px;
+}
+
+.card {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  text-decoration: none;
+  color: inherit;
+  padding: 16px;
+  border-radius: 12px;
+  border: 1px solid #e5e7eb;
+  background: #fff;
+  box-shadow: 0 1px 3px rgba(0,0,0,.06);
+  transition: box-shadow .15s;
+  &:active { box-shadow: 0 4px 12px rgba(0,0,0,.1); }
+}
+
+.card-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.op-num { font-size: 13px; font-weight: 700; color: #6b7280; }
+.peca-nome { font-size: 20px; font-weight: 700; color: #111827; }
+.card-info {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  font-size: 14px;
+  color: #6b7280;
+}
+
+.chip {
+  display: inline-block;
+  border-radius: 999px;
+  padding: 3px 10px;
+  font-size: 12px;
+  font-weight: 600;
+  &.pendente { background: #fef3c7; color: #92400e; }
+  &.em_producao { background: #dbeafe; color: #1e40af; }
+  &.concluida { background: #d1fae5; color: #065f46; }
+}
+
+.ops-status {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 4px;
+}
+.op-badge {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  &.pendente { background: #fef3c7; color: #92400e; }
+  &.em_andamento { background: #dbeafe; color: #1e40af; }
+  &.concluida { background: #d1fae5; color: #065f46; }
+}
+
+.pendente-tag {
+  font-size: 12px;
+  color: #92400e;
+  background: #fef9c3;
+  padding: 4px 10px;
+  border-radius: 6px;
+  width: fit-content;
+}
+
+.empty {
+  text-align: center;
+  padding: 48px 16px;
+  color: #9ca3af;
+  p { font-size: 18px; margin: 0 0 8px; }
+  small { font-size: 14px; }
+}
+
 .search {
   width: 100%;
   padding: 14px;

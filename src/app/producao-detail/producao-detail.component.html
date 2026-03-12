@@ -1,43 +1,181 @@
 <section class="page tablet">
+
+  <!-- Header -->
+  <div class="tab-header">
+    <a routerLink="/producao" class="btn-back">← Voltar</a>
+    <div class="header-info">
+      <span class="op-num">OP {{ ordem?.numeroOP }}</span>
+      @if (ordem) {
+        <span class="chip" [class]="ordem.status">{{ statusOPLabel(ordem.status) }}</span>
+      }
+    </div>
+  </div>
+
   @if (ordem; as item) {
-    <a routerLink="/producao" class="btn">Voltar</a>
-    <h1>{{ item.numero }}</h1>
-    <p><strong>Status:</strong> {{ statusLabel(item.status) }}</p>
-    <p><strong>Descrição:</strong> {{ item.descricao }}</p>
-    <p><strong>Material:</strong> {{ item.material }}</p>
-    <p><strong>Medidas:</strong> {{ item.medidas }}</p>
-    <p><strong>Obs:</strong> {{ item.observacoes || '-' }}</p>
 
-    <h3>Mudar status</h3>
-    <select [(ngModel)]="statusNovo">
-      <option value="pendente">Pendente</option>
-      <option value="em_producao">Em produção</option>
-      <option value="concluida">Concluída</option>
-      <option value="cancelada">Cancelada</option>
-    </select>
-    <textarea [(ngModel)]="observacao" placeholder="Observação da alteração"></textarea>
-    <label class="photo-label">
-      Foto de quem alterou (obrigatória)
-      <input type="file" accept="image/*" capture="user" (change)="onFoto($event)" />
-    </label>
-    @if (fotoBase64) {
-      <img [src]="fotoBase64" alt="Foto do responsável" class="preview" />
-    }
-    <button class="btn primary" (click)="alterarStatus()">Salvar alteração</button>
+    <!-- OP Info -->
+    <div class="info-card">
+      <div class="peca-nome">{{ item.nomePeca }}</div>
+      <div class="info-row">
+        <span><strong>Material:</strong> {{ item.material }}</span>
+        <span><strong>Qtd:</strong> {{ item.quantidade }} pçs</span>
+        <span><strong>Prazo:</strong> {{ formatarData(item.prazoEntrega) }}</span>
+        @if (item.cliente) { <span><strong>Cliente:</strong> {{ item.cliente }}</span> }
+      </div>
+      @if (item.observacoes) {
+        <div class="obs">{{ item.observacoes }}</div>
+      }
+    </div>
 
-    @if (item.historico.length > 0) {
-      <h3>Histórico</h3>
-      <div class="history">
-        @for (h of item.historico; track h.id) {
-          <article class="entry">
-            <p><strong>{{ statusLabel(h.statusAnterior) }}</strong> → <strong>{{ statusLabel(h.statusNovo) }}</strong></p>
-            <p>{{ h.observacao || '-' }}</p>
-            <small>{{ h.data | date: 'dd/MM/yyyy HH:mm' }}</small>
-          </article>
+    <!-- Arquivos -->
+    @if (item.pdfAutocad || item.imagens.length > 0) {
+      <div class="files-section">
+        @if (item.pdfAutocad) {
+          <a [href]="item.pdfAutocad" [download]="item.pdfNome || 'autocad.pdf'" class="file-btn">📄 Abrir PDF AutoCAD</a>
+        }
+        @if (item.imagens.length > 0) {
+          <div class="images-row">
+            @for (img of item.imagens; track $index) {
+              <img [src]="img" alt="imagem peça" />
+            }
+          </div>
         }
       </div>
     }
+
+    <!-- Operações -->
+    <div class="ops-section">
+      <h2>Operações</h2>
+      @for (op of item.operacoes; track op.id) {
+        <div class="op-card" [class]="op.status">
+          <div class="op-top">
+            <div class="op-title">{{ op.numero }}ª — {{ op.tipoOperacao }}</div>
+            <span class="chip-op" [class]="op.status">
+              @if (op.status === 'pendente') { Pendente }
+              @if (op.status === 'em_andamento') { Em andamento }
+              @if (op.status === 'concluida') { Concluída ✓ }
+            </span>
+          </div>
+
+          @if (op.status !== 'pendente') {
+            <div class="op-info">
+              @if (op.operador) { <span>Operador: <strong>{{ op.operador }}</strong></span> }
+              @if (op.maquina) { <span>Máquina: <strong>{{ op.maquina }}</strong></span> }
+              @if (op.programador) { <span>Prog.: <strong>{{ op.programador }}</strong></span> }
+              @if (op.dataHoraInicial) { <span>Início: <strong>{{ formatarDataHora(op.dataHoraInicial) }}</strong></span> }
+              @if (op.dataHoraFinal) { <span>Conclusão: <strong>{{ formatarDataHora(op.dataHoraFinal) }}</strong></span> }
+              @if (op.pecasRefugadas > 0) { <span class="refugo">Refugadas: <strong>{{ op.pecasRefugadas }}</strong></span> }
+            </div>
+            <!-- Medições -->
+            <div class="medicoes">
+              @for (m of op.medicoes; track $index) {
+                @if (m.predefinido || m.encontrado) {
+                  <div class="medicao-row">
+                    <span class="m-label">{{ m.label }}</span>
+                    <span class="m-pre">Pré: {{ m.predefinido || '—' }}</span>
+                    <span class="m-enc" [class.ok]="m.encontrado">Enc: {{ m.encontrado || '—' }}</span>
+                  </div>
+                }
+              }
+            </div>
+          }
+
+          <!-- Botões de ação -->
+          <div class="op-actions">
+            @if (op.status === 'pendente') {
+              <button class="btn-action iniciar" (click)="abrirIniciar(op)">▶ Iniciar Operação</button>
+            }
+            @if (op.status === 'em_andamento') {
+              <button class="btn-action concluir" (click)="abrirConcluir(op)">✓ Concluir Operação</button>
+            }
+          </div>
+        </div>
+      }
+    </div>
+
   } @else {
-    <p>Ordem não encontrada.</p>
+    <p class="not-found">Ordem não encontrada.</p>
   }
+
+  <!-- Modal de Apontamento -->
+  @if (apontamentoForm && operacaoAtiva) {
+    <div class="modal-overlay" (click)="cancelar()">
+      <div class="modal" (click)="$event.stopPropagation()">
+        <div class="modal-header">
+          <h3>
+            @if (acao === 'iniciar') { ▶ Iniciar: }
+            @if (acao === 'concluir') { ✓ Concluir: }
+            {{ operacaoAtiva.tipoOperacao }}
+          </h3>
+          <button class="btn-close" (click)="cancelar()">✕</button>
+        </div>
+
+        <div class="modal-body">
+          <label class="field">
+            Operador <span class="req">*</span>
+            <input [(ngModel)]="apontamentoForm.operador" placeholder="Nome do operador" />
+          </label>
+          <label class="field">
+            Máquina
+            <input [(ngModel)]="apontamentoForm.maquina" placeholder="Ex: CNC-01" />
+          </label>
+          <label class="field">
+            Programador
+            <input [(ngModel)]="apontamentoForm.programador" placeholder="Nome do programador" />
+          </label>
+
+          @if (acao === 'concluir') {
+            <label class="field">
+              Quantidade produzida
+              <input type="number" [(ngModel)]="apontamentoForm.quantidade" min="0" />
+            </label>
+            <label class="field">
+              Peças Refugadas
+              <input type="number" [(ngModel)]="apontamentoForm.pecasRefugadas" min="0" />
+            </label>
+            <label class="field">
+              Horário de Conclusão
+              <input type="time" [(ngModel)]="apontamentoForm.horarioConclusao" />
+            </label>
+            <label class="field">
+              Observações
+              <textarea [(ngModel)]="apontamentoForm.observacoes" rows="2"></textarea>
+            </label>
+
+            <!-- Medições Encontradas -->
+            <div class="medicoes-form">
+              <p class="medicoes-title">Medidas Encontradas</p>
+              @for (m of apontamentoForm.medicoes; track $index) {
+                <div class="medicao-input-row">
+                  <span class="m-name">{{ m.label }} (pré: {{ m.predefinido || '—' }})</span>
+                  <input [(ngModel)]="m.encontrado" placeholder="Valor encontrado" />
+                </div>
+              }
+            </div>
+          }
+
+          <!-- Foto obrigatória -->
+          <div class="foto-field">
+            <p class="foto-label">📷 Foto do Responsável <span class="req">*</span></p>
+            <label class="btn-foto">
+              {{ apontamentoForm.foto ? '✓ Foto capturada — trocar' : 'Tirar Foto' }}
+              <input type="file" accept="image/*" capture="user" (change)="onFoto($event)" hidden />
+            </label>
+            @if (apontamentoForm.foto) {
+              <img [src]="apontamentoForm.foto" alt="foto do responsável" class="foto-preview" />
+            }
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button class="btn-cancel" (click)="cancelar()">Cancelar</button>
+          <button class="btn-confirm" (click)="confirmar()" [disabled]="salvando">
+            {{ acao === 'iniciar' ? 'Confirmar Início' : 'Confirmar Conclusão' }}
+          </button>
+        </div>
+      </div>
+    </div>
+  }
+
 </section>
+

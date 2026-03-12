@@ -1,31 +1,164 @@
 <section class="page">
   @if (ordem$ | async; as ordem) {
-    <header class="header">
-      <h1>{{ ordem.numero }}</h1>
-      <div class="actions">
-        <a routerLink="/admin" class="btn">Voltar</a>
+
+    <header class="page-header">
+      <div>
+        <span class="op-num">OP {{ ordem.numeroOP }}</span>
+        <h1>{{ ordem.nomePeca }}</h1>
+        <span class="chip" [class]="ordem.status">{{ statusOPLabel(ordem.status) }}</span>
+      </div>
+      <div class="header-actions">
+        <a routerLink="/admin" class="btn">← Voltar</a>
         <a [routerLink]="['/admin/ordem', ordem.id, 'editar']" class="btn primary">Editar</a>
       </div>
     </header>
-    <p><strong>Status:</strong> {{ statusLabel(ordem.status) }}</p>
-    <p><strong>Cliente:</strong> {{ ordem.cliente }}</p>
-    <p><strong>Descrição:</strong> {{ ordem.descricao }}</p>
-    <p><strong>Material:</strong> {{ ordem.material }}</p>
-    <p><strong>Medidas:</strong> {{ ordem.medidas }}</p>
-    <p><strong>Observações:</strong> {{ ordem.observacoes || '-' }}</p>
 
-    @if (ordem.pdfAutocad) {
-      <p><a [href]="ordem.pdfAutocad" [download]="ordem.pdfNomeArquivo || 'arquivo.pdf'">Baixar PDF AutoCAD</a></p>
+    <!-- Dados Gerais -->
+    <div class="section-card">
+      <h2>Dados Gerais</h2>
+      <div class="info-grid">
+        <div class="info-item"><span>Material</span><strong>{{ ordem.material }}</strong></div>
+        <div class="info-item"><span>Quantidade</span><strong>{{ ordem.quantidade }} pçs</strong></div>
+        <div class="info-item"><span>Prazo</span><strong>{{ formatarData(ordem.prazoEntrega) }}</strong></div>
+        <div class="info-item"><span>Cliente</span><strong>{{ ordem.cliente || '—' }}</strong></div>
+        @if (ordem.observacoes) {
+          <div class="info-item full"><span>Observações</span><strong>{{ ordem.observacoes }}</strong></div>
+        }
+      </div>
+    </div>
+
+    <!-- Operações -->
+    <div class="section-card">
+      <h2>Operações</h2>
+      @for (op of ordem.operacoes; track op.id) {
+        <div class="op-card" [class]="op.status">
+          <div class="op-header">
+            <span class="op-title">{{ op.numero }}ª — {{ op.tipoOperacao }}</span>
+            <span class="chip-sm" [class]="op.status">{{ statusOpLabel(op.status) }}</span>
+          </div>
+          <div class="op-info">
+            @if (op.operador) {
+              <span><strong>Operador:</strong> {{ op.operador }}</span>
+            }
+            @if (op.programador) {
+              <span><strong>Programador:</strong> {{ op.programador }}</span>
+            }
+            @if (op.conferente) {
+              <span><strong>Conferente:</strong> {{ op.conferente }}</span>
+            }
+            @if (op.maquina) {
+              <span><strong>Máquina:</strong> {{ op.maquina }}</span>
+            }
+            @if (op.quantidade) {
+              <span><strong>Qtd produzida:</strong> {{ op.quantidade }}</span>
+            }
+            @if (op.pecasRefugadas > 0) {
+              <span class="refugo"><strong>Refugadas:</strong> {{ op.pecasRefugadas }}</span>
+            }
+            @if (op.dataHoraInicial) {
+              <span><strong>Início:</strong> {{ formatarDataHora(op.dataHoraInicial) }}</span>
+            }
+            @if (op.dataHoraFinal) {
+              <span><strong>Conclusão:</strong> {{ formatarDataHora(op.dataHoraFinal) }}</span>
+            }
+          </div>
+
+          <!-- Medições -->
+          @if (op.medicoes.length > 0) {
+            <table class="medicoes-table">
+              <thead>
+                <tr>
+                  <th>Ponto</th>
+                  <th>Pré-definido</th>
+                  <th>Encontrado</th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (m of op.medicoes; track $index) {
+                  <tr>
+                    <td>{{ m.label }}</td>
+                    <td>{{ m.predefinido || '—' }}</td>
+                    <td [class.vazio]="!m.encontrado">{{ m.encontrado || '—' }}</td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          }
+
+          @if (op.fotoResponsavel) {
+            <div class="foto-section">
+              <span>Foto do responsável:</span>
+              <img [src]="op.fotoResponsavel" alt="foto responsável" class="foto-thumb" />
+            </div>
+          }
+        </div>
+      }
+    </div>
+
+    <!-- Apontamentos -->
+    @if (getApontamentos(ordem.id).length > 0) {
+      <div class="section-card">
+        <h2>Apontamentos</h2>
+        <div class="table-wrapper">
+          <table>
+            <thead>
+              <tr>
+                <th>Data</th>
+                <th>Horário</th>
+                <th>Tipo</th>
+                <th>Operador</th>
+                <th>Máquina</th>
+                <th>Qtd</th>
+                <th>Refugo</th>
+                <th>Conclusão</th>
+                <th>Foto</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (a of getApontamentos(ordem.id); track a.id) {
+                <tr>
+                  <td>{{ a.data }}</td>
+                  <td>{{ a.horario }}</td>
+                  <td>{{ a.tipoOperacao }}</td>
+                  <td>{{ a.operador }}</td>
+                  <td>{{ a.maquina || '—' }}</td>
+                  <td>{{ a.quantidade }}</td>
+                  <td>{{ a.quantidadeRefugada || '—' }}</td>
+                  <td>{{ a.horarioConclusao || '—' }}</td>
+                  <td>
+                    @if (a.foto) {
+                      <img [src]="a.foto" alt="foto" class="apto-foto" />
+                    }
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      </div>
     }
-    @if (ordem.imagens.length > 0) {
-      <h3>Imagens</h3>
-      <div class="images">
-        @for (img of ordem.imagens; track $index) {
-          <img [src]="img" alt="Imagem da peça" />
+
+    <!-- Arquivos -->
+    @if (ordem.pdfAutocad || ordem.imagens.length > 0) {
+      <div class="section-card">
+        <h2>Arquivos</h2>
+        @if (ordem.pdfAutocad) {
+          <a [href]="ordem.pdfAutocad" [download]="ordem.pdfNome || 'autocad.pdf'" class="btn">
+            📄 Baixar PDF AutoCAD
+          </a>
+        }
+        @if (ordem.imagens.length > 0) {
+          <div class="images-grid">
+            @for (img of ordem.imagens; track $index) {
+              <img [src]="img" alt="imagem da peça" />
+            }
+          </div>
         }
       </div>
     }
+
   } @else {
     <p>Ordem não encontrada.</p>
   }
 </section>
+

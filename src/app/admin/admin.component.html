@@ -1,33 +1,85 @@
 <section class="page">
-  <header class="header">
-    <h1>Administração de Ordens</h1>
-    <a routerLink="/admin/nova" class="btn primary">Nova ordem</a>
+  <header class="page-header">
+    <h1>Ordens de Produção</h1>
+    <a routerLink="/admin/nova" class="btn primary">+ Nova OP</a>
   </header>
 
-  <div class="toolbar">
-    <input
-      [(ngModel)]="filtro"
-      (input)="aplicarFiltro()"
-      placeholder="Buscar por número, descrição ou cliente"
-    />
+  <!-- Stats -->
+  <div class="stats">
+    <div class="stat-card pendente">
+      <span class="stat-value">{{ totalPendente }}</span>
+      <span class="stat-label">Pendentes</span>
+    </div>
+    <div class="stat-card em_producao">
+      <span class="stat-value">{{ totalEmProducao }}</span>
+      <span class="stat-label">Em produção</span>
+    </div>
+    <div class="stat-card concluida">
+      <span class="stat-value">{{ totalConcluida }}</span>
+      <span class="stat-label">Concluídas</span>
+    </div>
   </div>
 
-  <div class="cards">
-    @for (ordem of ordensFiltradas; track ordem.id) {
-      <article class="card">
-        <div class="line">
-          <strong>{{ ordem.numero }}</strong>
-          <span class="chip">{{ statusLabel(ordem.status) }}</span>
-        </div>
-        <p>{{ ordem.descricao }}</p>
-        <small>{{ ordem.cliente }} • {{ ordem.material }}</small>
-        <div class="actions">
-          <a [routerLink]="['/admin/ordem', ordem.id]" class="btn">Ver</a>
-          <a [routerLink]="['/admin/ordem', ordem.id, 'editar']" class="btn">Editar</a>
-        </div>
-      </article>
-    } @empty {
-      <p>Nenhuma ordem encontrada.</p>
-    }
+  <!-- Filtros -->
+  <div class="toolbar">
+    <input
+      [(ngModel)]="busca"
+      (input)="filtrar()"
+      placeholder="Buscar por Nº OP, peça ou cliente…"
+      class="search-input"
+    />
+    <select [(ngModel)]="filtroStatus" (change)="filtrar()" class="select-status">
+      <option value="">Todos os status</option>
+      <option value="pendente">Pendente</option>
+      <option value="em_producao">Em produção</option>
+      <option value="concluida">Concluída</option>
+      <option value="cancelada">Cancelada</option>
+    </select>
+  </div>
+
+  <!-- Tabela -->
+  <div class="table-wrapper">
+    <table>
+      <thead>
+        <tr>
+          <th>Nº OP</th>
+          <th>Peça</th>
+          <th>Material</th>
+          <th>Qtd</th>
+          <th>Prazo</th>
+          <th>Cliente</th>
+          <th>Operações</th>
+          <th>Status</th>
+          <th>Ações</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (o of ordensFiltradas; track o.id) {
+          <tr>
+            <td class="op-num">{{ o.numeroOP }}</td>
+            <td class="peca">{{ o.nomePeca }}</td>
+            <td>{{ o.material }}</td>
+            <td>{{ o.quantidade }}</td>
+            <td>{{ formatarData(o.prazoEntrega) }}</td>
+            <td>{{ o.cliente || '—' }}</td>
+            <td>
+              <span class="ops-count">{{ o.operacoes.length }}x</span>
+              @for (op of o.operacoes; track op.id) {
+                <span class="chip-op" [class]="op.status">{{ op.numero }}ª</span>
+              }
+            </td>
+            <td><span class="chip" [class]="o.status">{{ statusLabel(o.status) }}</span></td>
+            <td class="actions">
+              <a [routerLink]="['/admin/ordem', o.id]" class="btn sm">Ver</a>
+              <a [routerLink]="['/admin/ordem', o.id, 'editar']" class="btn sm">Editar</a>
+              <button class="btn sm danger" (click)="excluir(o.id)">Excluir</button>
+            </td>
+          </tr>
+        } @empty {
+          <tr><td colspan="9" class="empty">Nenhuma ordem encontrada.</td></tr>
+        }
+      </tbody>
+    </table>
   </div>
 </section>
+

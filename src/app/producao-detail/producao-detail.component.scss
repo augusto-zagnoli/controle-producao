@@ -1,9 +1,271 @@
 .page {
+  min-height: 100vh;
+  background: #f1f5f9;
+  padding-bottom: 32px;
+}
+
+.tab-header {
+  background: #1e3a5f;
+  color: #fff;
+  padding: 12px 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.btn-back {
+  color: rgba(255,255,255,.8);
+  text-decoration: none;
+  font-size: 15px;
+  &:hover { color: #fff; }
+}
+.header-info {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-left: auto;
+}
+.op-num { font-size: 14px; font-weight: 700; color: rgba(255,255,255,.9); }
+
+.chip {
+  display: inline-block;
+  border-radius: 999px;
+  padding: 3px 10px;
+  font-size: 12px;
+  font-weight: 600;
+  &.pendente { background: #fef3c7; color: #92400e; }
+  &.em_producao { background: #dbeafe; color: #1e40af; }
+  &.concluida { background: #d1fae5; color: #065f46; }
+}
+
+.info-card {
+  margin: 16px;
+  background: #fff;
+  border-radius: 12px;
   padding: 16px;
+  border: 1px solid #e5e7eb;
 }
-.tablet {
-  font-size: 18px;
+.peca-nome { font-size: 22px; font-weight: 800; color: #111827; margin-bottom: 10px; }
+.info-row { display: flex; flex-wrap: wrap; gap: 12px; font-size: 14px; color: #6b7280; }
+.obs { margin-top: 8px; font-size: 14px; color: #6b7280; font-style: italic; }
+
+.files-section {
+  margin: 0 16px 16px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
 }
+.file-btn {
+  display: inline-block;
+  background: #2563eb;
+  color: #fff;
+  border-radius: 8px;
+  padding: 10px 16px;
+  text-decoration: none;
+  font-size: 14px;
+}
+.images-row {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  img { width: 80px; height: 80px; object-fit: cover; border-radius: 8px; border: 1px solid #e5e7eb; }
+}
+
+.ops-section {
+  margin: 0 16px;
+  h2 { font-size: 14px; font-weight: 700; color: #6b7280; text-transform: uppercase; letter-spacing: .5px; margin: 0 0 12px; }
+}
+
+.op-card {
+  background: #fff;
+  border-radius: 12px;
+  border: 1px solid #e5e7eb;
+  border-left: 5px solid #e5e7eb;
+  padding: 14px;
+  margin-bottom: 12px;
+  &.pendente { border-left-color: #f59e0b; }
+  &.em_andamento { border-left-color: #2563eb; }
+  &.concluida { border-left-color: #16a34a; opacity: .85; }
+}
+.op-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+.op-title { font-size: 16px; font-weight: 700; }
+.chip-op {
+  display: inline-block;
+  border-radius: 999px;
+  padding: 4px 12px;
+  font-size: 12px;
+  font-weight: 600;
+  &.pendente { background: #fef3c7; color: #92400e; }
+  &.em_andamento { background: #dbeafe; color: #1e40af; }
+  &.concluida { background: #d1fae5; color: #065f46; }
+}
+
+.op-info {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  font-size: 14px;
+  color: #374151;
+  margin-bottom: 8px;
+}
+.refugo { color: #dc2626; }
+
+.medicoes { margin-top: 8px; }
+.medicao-row {
+  display: flex;
+  gap: 10px;
+  font-size: 13px;
+  padding: 4px 0;
+  border-bottom: 1px solid #f3f4f6;
+}
+.m-label { font-weight: 600; flex: 1; }
+.m-pre { color: #6b7280; flex: 1; }
+.m-enc { flex: 1; &.ok { color: #16a34a; font-weight: 600; } }
+
+.op-actions { margin-top: 12px; display: flex; gap: 8px; }
+.btn-action {
+  width: 100%;
+  padding: 14px;
+  border: none;
+  border-radius: 10px;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  &.iniciar { background: #2563eb; color: #fff; }
+  &.concluir { background: #16a34a; color: #fff; }
+  &:active { opacity: .85; }
+}
+
+.not-found { padding: 32px; text-align: center; color: #9ca3af; }
+
+/* Modal */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,.5);
+  z-index: 100;
+  display: flex;
+  align-items: flex-end;
+}
+.modal {
+  background: #fff;
+  width: 100%;
+  max-height: 90vh;
+  border-radius: 20px 20px 0 0;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+}
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 20px;
+  border-bottom: 1px solid #e5e7eb;
+  h3 { margin: 0; font-size: 17px; }
+}
+.btn-close { background: none; border: none; font-size: 20px; cursor: pointer; color: #6b7280; padding: 0; }
+
+.modal-body {
+  padding: 16px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  overflow-y: auto;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #374151;
+}
+.req { color: #dc2626; }
+input, textarea, select {
+  padding: 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  font-size: 15px;
+  font-family: inherit;
+  &:focus { outline: 2px solid #2563eb; border-color: transparent; }
+}
+textarea { resize: vertical; }
+
+.medicoes-form { }
+.medicoes-title { font-size: 13px; font-weight: 700; color: #6b7280; margin-bottom: 8px; }
+.medicao-input-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+.m-name { font-size: 13px; color: #374151; flex: 1; }
+.medicao-input-row input { flex: 1; }
+
+.foto-field {
+  background: #f9fafb;
+  border: 2px dashed #d1d5db;
+  border-radius: 10px;
+  padding: 16px;
+  text-align: center;
+}
+.foto-label { font-size: 15px; font-weight: 700; color: #374151; margin: 0 0 12px; }
+.btn-foto {
+  display: inline-block;
+  background: #1e3a5f;
+  color: #fff;
+  border-radius: 10px;
+  padding: 14px 24px;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+}
+.foto-preview {
+  display: block;
+  margin: 12px auto 0;
+  width: 140px;
+  height: 140px;
+  object-fit: cover;
+  border-radius: 10px;
+  border: 2px solid #16a34a;
+}
+
+.modal-footer {
+  padding: 16px 20px;
+  border-top: 1px solid #e5e7eb;
+  display: flex;
+  gap: 10px;
+}
+.btn-cancel {
+  flex: 1;
+  padding: 14px;
+  border: 1px solid #d1d5db;
+  border-radius: 10px;
+  background: #fff;
+  font-size: 16px;
+  cursor: pointer;
+}
+.btn-confirm {
+  flex: 2;
+  padding: 14px;
+  border: none;
+  border-radius: 10px;
+  background: #2563eb;
+  color: #fff;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  &:disabled { opacity: .6; cursor: not-allowed; }
+  &:active { opacity: .85; }
+}
+
 select,
 textarea,
 input[type='file'] {
