@@ -1,0 +1,24 @@
+<section class="page">
+  <h1>{{ edicao ? 'Editar ordem' : 'Nova ordem' }}</h1>
+  <form [formGroup]="form" (ngSubmit)="salvar()" class="form">
+    <label>Descrição <input formControlName="descricao" /></label>
+    <label>Cliente <input formControlName="cliente" /></label>
+    <label>Prioridade
+      <select formControlName="prioridade">
+        <option value="baixa">Baixa</option>
+        <option value="media">Média</option>
+        <option value="alta">Alta</option>
+        <option value="urgente">Urgente</option>
+      </select>
+    </label>
+    <label>Material <input formControlName="material" /></label>
+    <label>Medidas <input formControlName="medidas" /></label>
+    <label>Observações <textarea formControlName="observacoes"></textarea></label>
+    <label>Imagens da peça <input type="file" accept="image/*" multiple (change)="onImagens($event)" /></label>
+    <label>PDF AutoCAD <input type="file" accept="application/pdf" (change)="onPdf($event)" /></label>
+    <div class="actions">
+      <a routerLink="/admin" class="btn">Cancelar</a>
+      <button type="submit" class="btn primary">Salvar</button>
+    </div>
+  </form>
+</section>

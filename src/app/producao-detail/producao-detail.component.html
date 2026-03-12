@@ -1,0 +1,43 @@
+<section class="page tablet">
+  @if (ordem; as item) {
+    <a routerLink="/producao" class="btn">Voltar</a>
+    <h1>{{ item.numero }}</h1>
+    <p><strong>Status:</strong> {{ statusLabel(item.status) }}</p>
+    <p><strong>Descrição:</strong> {{ item.descricao }}</p>
+    <p><strong>Material:</strong> {{ item.material }}</p>
+    <p><strong>Medidas:</strong> {{ item.medidas }}</p>
+    <p><strong>Obs:</strong> {{ item.observacoes || '-' }}</p>
+
+    <h3>Mudar status</h3>
+    <select [(ngModel)]="statusNovo">
+      <option value="pendente">Pendente</option>
+      <option value="em_producao">Em produção</option>
+      <option value="concluida">Concluída</option>
+      <option value="cancelada">Cancelada</option>
+    </select>
+    <textarea [(ngModel)]="observacao" placeholder="Observação da alteração"></textarea>
+    <label class="photo-label">
+      Foto de quem alterou (obrigatória)
+      <input type="file" accept="image/*" capture="user" (change)="onFoto($event)" />
+    </label>
+    @if (fotoBase64) {
+      <img [src]="fotoBase64" alt="Foto do responsável" class="preview" />
+    }
+    <button class="btn primary" (click)="alterarStatus()">Salvar alteração</button>
+
+    @if (item.historico.length > 0) {
+      <h3>Histórico</h3>
+      <div class="history">
+        @for (h of item.historico; track h.id) {
+          <article class="entry">
+            <p><strong>{{ statusLabel(h.statusAnterior) }}</strong> → <strong>{{ statusLabel(h.statusNovo) }}</strong></p>
+            <p>{{ h.observacao || '-' }}</p>
+            <small>{{ h.data | date: 'dd/MM/yyyy HH:mm' }}</small>
+          </article>
+        }
+      </div>
+    }
+  } @else {
+    <p>Ordem não encontrada.</p>
+  }
+</section>

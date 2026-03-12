@@ -1,0 +1,44 @@
+.page {
+  padding: 16px;
+}
+.tablet {
+  font-size: 18px;
+}
+select,
+textarea,
+input[type='file'] {
+  width: 100%;
+  padding: 12px;
+  margin: 8px 0;
+  font-size: 16px;
+}
+.photo-label {
+  display: block;
+}
+.preview {
+  width: 240px;
+  max-width: 100%;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  margin-bottom: 10px;
+}
+.btn {
+  border: 1px solid #999;
+  border-radius: 6px;
+  padding: 10px 14px;
+  background: #fff;
+}
+.btn.primary {
+  background: #2563eb;
+  border-color: #2563eb;
+  color: #fff;
+}
+.history {
+  display: grid;
+  gap: 10px;
+}
+.entry {
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 10px;
+}

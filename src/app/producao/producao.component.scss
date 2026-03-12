@@ -1,0 +1,33 @@
+.page {
+  padding: 16px;
+}
+.tablet {
+  font-size: 18px;
+}
+.search {
+  width: 100%;
+  padding: 14px;
+  font-size: 18px;
+  margin: 10px 0 14px;
+}
+.cards {
+  display: grid;
+  gap: 12px;
+}
+.card {
+  display: grid;
+  gap: 4px;
+  text-decoration: none;
+  color: inherit;
+  padding: 14px;
+  border-radius: 10px;
+  border: 1px solid #d1d5db;
+  background: #fff;
+}
+.chip {
+  width: fit-content;
+  background: #dbeafe;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 14px;
+}

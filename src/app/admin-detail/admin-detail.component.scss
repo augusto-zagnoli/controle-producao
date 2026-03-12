@@ -1,0 +1,35 @@
+.page {
+  padding: 16px;
+}
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+}
+.actions {
+  display: flex;
+  gap: 8px;
+}
+.images {
+  display: grid;
+  gap: 10px;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+}
+img {
+  width: 100%;
+  border-radius: 8px;
+  border: 1px solid #ddd;
+}
+.btn {
+  border: 1px solid #999;
+  border-radius: 6px;
+  padding: 8px 12px;
+  text-decoration: none;
+  color: inherit;
+}
+.btn.primary {
+  background: #2563eb;
+  border-color: #2563eb;
+  color: white;
+}

@@ -1,0 +1,33 @@
+<section class="page">
+  <header class="header">
+    <h1>Administração de Ordens</h1>
+    <a routerLink="/admin/nova" class="btn primary">Nova ordem</a>
+  </header>
+
+  <div class="toolbar">
+    <input
+      [(ngModel)]="filtro"
+      (input)="aplicarFiltro()"
+      placeholder="Buscar por número, descrição ou cliente"
+    />
+  </div>
+
+  <div class="cards">
+    @for (ordem of ordensFiltradas; track ordem.id) {
+      <article class="card">
+        <div class="line">
+          <strong>{{ ordem.numero }}</strong>
+          <span class="chip">{{ statusLabel(ordem.status) }}</span>
+        </div>
+        <p>{{ ordem.descricao }}</p>
+        <small>{{ ordem.cliente }} • {{ ordem.material }}</small>
+        <div class="actions">
+          <a [routerLink]="['/admin/ordem', ordem.id]" class="btn">Ver</a>
+          <a [routerLink]="['/admin/ordem', ordem.id, 'editar']" class="btn">Editar</a>
+        </div>
+      </article>
+    } @empty {
+      <p>Nenhuma ordem encontrada.</p>
+    }
+  </div>
+</section>

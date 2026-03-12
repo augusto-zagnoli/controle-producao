@@ -1,0 +1,24 @@
+<section class="page tablet">
+  <header class="header">
+    <h1>Painel de Produção</h1>
+  </header>
+  <input
+    class="search"
+    [(ngModel)]="filtro"
+    (input)="aplicarFiltro()"
+    placeholder="Pesquisar OS por número, cliente ou descrição"
+  />
+
+  <div class="cards">
+    @for (ordem of ordensFiltradas; track ordem.id) {
+      <a [routerLink]="['/producao/ordem', ordem.id]" class="card">
+        <strong>{{ ordem.numero }}</strong>
+        <span>{{ ordem.descricao }}</span>
+        <small>{{ ordem.cliente }}</small>
+        <span class="chip">{{ statusLabel(ordem.status) }}</span>
+      </a>
+    } @empty {
+      <p>Nenhuma ordem encontrada.</p>
+    }
+  </div>
+</section>

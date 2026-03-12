@@ -1,0 +1,31 @@
+<section class="page">
+  @if (ordem$ | async; as ordem) {
+    <header class="header">
+      <h1>{{ ordem.numero }}</h1>
+      <div class="actions">
+        <a routerLink="/admin" class="btn">Voltar</a>
+        <a [routerLink]="['/admin/ordem', ordem.id, 'editar']" class="btn primary">Editar</a>
+      </div>
+    </header>
+    <p><strong>Status:</strong> {{ statusLabel(ordem.status) }}</p>
+    <p><strong>Cliente:</strong> {{ ordem.cliente }}</p>
+    <p><strong>Descrição:</strong> {{ ordem.descricao }}</p>
+    <p><strong>Material:</strong> {{ ordem.material }}</p>
+    <p><strong>Medidas:</strong> {{ ordem.medidas }}</p>
+    <p><strong>Observações:</strong> {{ ordem.observacoes || '-' }}</p>
+
+    @if (ordem.pdfAutocad) {
+      <p><a [href]="ordem.pdfAutocad" [download]="ordem.pdfNomeArquivo || 'arquivo.pdf'">Baixar PDF AutoCAD</a></p>
+    }
+    @if (ordem.imagens.length > 0) {
+      <h3>Imagens</h3>
+      <div class="images">
+        @for (img of ordem.imagens; track $index) {
+          <img [src]="img" alt="Imagem da peça" />
+        }
+      </div>
+    }
+  } @else {
+    <p>Ordem não encontrada.</p>
+  }
+</section>
