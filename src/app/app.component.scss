@@ -17,6 +17,7 @@ h1 {
 
 nav {
   display: flex;
+  align-items: center;
   gap: 8px;
 }
 
@@ -32,8 +33,14 @@ a.active {
   color: #fff;
 }
 
+.usuario {
+  color: #9ca3af;
+  font-size: 13px;
+  padding: 0 4px;
+}
+
 main {
-  min-height: calc(100vh - 64px);
+  min-height: calc(100vh - 56px);
   background: #f3f4f6;
 }
 

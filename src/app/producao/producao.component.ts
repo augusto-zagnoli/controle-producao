@@ -1,10 +1,9 @@
 import { CommonModule } from '@angular/common';
-import { Component, DestroyRef, inject } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { OrdemProducao, STATUS_OP_LABELS } from '../ordem-servico.model';
-import { OrdensServicoService } from '../ordens-servico.service';
+import { OrdemServico, STATUS_LABELS } from '../models/ordem-servico.model';
+import { OrdensService } from '../services/ordens.service';
 
 @Component({
   selector: 'app-producao',
@@ -13,45 +12,43 @@ import { OrdensServicoService } from '../ordens-servico.service';
   templateUrl: './producao.component.html',
   styleUrl: './producao.component.scss'
 })
-export class ProducaoComponent {
-  private readonly service = inject(OrdensServicoService);
-  private readonly destroyRef = inject(DestroyRef);
+export class ProducaoComponent implements OnInit {
+  private readonly service = inject(OrdensService);
 
   busca = '';
-  ordens: OrdemProducao[] = [];
-  ordensFiltradas: OrdemProducao[] = [];
+  status = '';
+  ordens: OrdemServico[] = [];
+  carregando = false;
+  erro = '';
 
-  constructor() {
-    this.service.ordens$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((ordens) => {
-      // Tablet mostra apenas ordens pendentes ou em produção
-      this.ordens = ordens.filter(o => o.status !== 'cancelada' && o.status !== 'concluida');
-      this.filtrar();
+  ngOnInit(): void {
+    this.carregar();
+  }
+
+  carregar(): void {
+    this.carregando = true;
+    this.erro = '';
+    this.service.listar(this.busca, this.status).subscribe({
+      next: lista => {
+        // Tablet shows all non-Finalizada orders
+        this.ordens = lista.filter(o => o.status !== 'Finalizada');
+        this.carregando = false;
+      },
+      error: () => {
+        this.erro = 'Erro ao carregar ordens.';
+        this.carregando = false;
+      }
     });
   }
 
-  filtrar(): void {
-    const termo = this.busca.trim().toLowerCase();
-    this.ordensFiltradas = !termo
-      ? [...this.ordens]
-      : this.ordens.filter(o =>
-          o.nomePeca.toLowerCase().includes(termo) ||
-          o.numeroOP.toString().includes(termo) ||
-          (o.cliente ?? '').toLowerCase().includes(termo)
-        );
-  }
-
-  statusLabel(status: OrdemProducao['status']): string {
-    return STATUS_OP_LABELS[status];
+  statusLabel(s: string): string {
+    return (STATUS_LABELS as Record<string, string>)[s] ?? s;
   }
 
   formatarData(iso: string): string {
     if (!iso) return '—';
-    const [y, m, d] = iso.split('-');
-    return `${d}/${m}/${y}`;
-  }
-
-  operacoesPendentes(o: OrdemProducao): number {
-    return o.operacoes.filter(op => op.status !== 'concluida').length;
+    const d = new Date(iso);
+    return d.toLocaleDateString('pt-BR');
   }
 }
 

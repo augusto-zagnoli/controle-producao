@@ -1,9 +1,10 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
-import { switchMap, map } from 'rxjs';
-import { Apontamento, OrdemProducao, STATUS_OP_LABELS, STATUS_OPERACAO_LABELS } from '../ordem-servico.model';
-import { OrdensServicoService } from '../ordens-servico.service';
+import { HistoricoItem, OrdemServico, STATUS_LABELS } from '../models/ordem-servico.model';
+import { OrdensService } from '../services/ordens.service';
+import { AuthService } from '../auth/auth.service';
+import { forkJoin } from 'rxjs';
 
 @Component({
   selector: 'app-admin-detail',
@@ -12,32 +13,44 @@ import { OrdensServicoService } from '../ordens-servico.service';
   templateUrl: './admin-detail.component.html',
   styleUrl: './admin-detail.component.scss'
 })
-export class AdminDetailComponent {
+export class AdminDetailComponent implements OnInit {
   private readonly route = inject(ActivatedRoute);
-  private readonly service = inject(OrdensServicoService);
+  private readonly service = inject(OrdensService);
+  readonly auth = inject(AuthService);
 
-  readonly ordemId$ = this.route.paramMap.pipe(map(p => p.get('id') ?? ''));
-  readonly ordem$ = this.route.paramMap.pipe(
-    switchMap((params) => this.service.getById(params.get('id') ?? ''))
-  );
+  ordem: OrdemServico | null = null;
+  historico: HistoricoItem[] = [];
+  carregando = true;
+  erro = '';
 
-  getApontamentos(ordemId: string): Apontamento[] {
-    return this.service.getApontamentos(ordemId);
+  readonly statusLabels = STATUS_LABELS;
+
+  ngOnInit(): void {
+    const id = Number(this.route.snapshot.paramMap.get('id'));
+    forkJoin({
+      ordem: this.service.obter(id),
+      historico: this.service.historico(id)
+    }).subscribe({
+      next: ({ ordem, historico }) => {
+        this.ordem = ordem;
+        this.historico = historico;
+        this.carregando = false;
+      },
+      error: () => { this.erro = 'Erro ao carregar ordem.'; this.carregando = false; }
+    });
   }
 
-  statusOPLabel(s: OrdemProducao['status']): string { return STATUS_OP_LABELS[s]; }
-  statusOpLabel(s: string): string { return STATUS_OPERACAO_LABELS[s as keyof typeof STATUS_OPERACAO_LABELS] ?? s; }
+  statusLabel(s: string): string {
+    return STATUS_LABELS[s as keyof typeof STATUS_LABELS] ?? s;
+  }
 
   formatarData(iso: string): string {
     if (!iso) return '—';
-    const [y, m, d] = iso.split('-');
-    return `${d}/${m}/${y}`;
+    return new Date(iso).toLocaleString('pt-BR');
   }
 
-  formatarDataHora(iso: string): string {
-    if (!iso) return '—';
-    const d = new Date(iso);
-    return d.toLocaleString('pt-BR');
+  origemLabel(origem: string): string {
+    return origem === 'Tablet' ? 'Tablet (Chão de Fábrica)' : 'Administrativo';
   }
 }
 

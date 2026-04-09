@@ -1,13 +1,11 @@
-import { CommonModule } from '@angular/common';
-import { Component, inject } from '@angular/core';
-import { AbstractControl, FormArray, FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+﻿import { CommonModule } from '@angular/common';
+import { Component, OnInit, inject } from '@angular/core';
+import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
-import { Operacao, OrdemProducao, TipoOperacao } from '../ordem-servico.model';
-import { OrdensServicoService } from '../ordens-servico.service';
-
-const TIPOS_OPERACAO: TipoOperacao[] = [
-  '1ª OPERAÇÃO', '2ª OPERAÇÃO', '3ª OPERAÇÃO', '4ª OPERAÇÃO', '5ª OPERAÇÃO', 'COMPLETO'
-];
+import { OrdemServico } from '../models/ordem-servico.model';
+import { OrdensService } from '../services/ordens.service';
+import { forkJoin, Observable, of } from 'rxjs';
+import { switchMap } from 'rxjs/operators';
 
 @Component({
   selector: 'app-admin-form',
@@ -16,165 +14,145 @@ const TIPOS_OPERACAO: TipoOperacao[] = [
   templateUrl: './admin-form.component.html',
   styleUrl: './admin-form.component.scss'
 })
-export class AdminFormComponent {
+export class AdminFormComponent implements OnInit {
   private readonly fb = inject(FormBuilder);
-  private readonly service = inject(OrdensServicoService);
+  private readonly service = inject(OrdensService);
   private readonly router = inject(Router);
   private readonly route = inject(ActivatedRoute);
 
   edicao = false;
-  ordemId: string | null = null;
-  imagens: string[] = [];
-  pdfBase64 = '';
-  pdfNome = '';
-  readonly tiposOperacao = TIPOS_OPERACAO;
+  ordemId: number | null = null;
+  ordemAtual: OrdemServico | null = null;
+  salvando = false;
+  erro = '';
 
-  readonly form = this.fb.group({
-    nomePeca: ['', Validators.required],
+  // Uploads pendentes (novos arquivos selecionados)
+  imagensPendentes: File[] = [];
+  documentosPendentes: File[] = [];
+
+  // RemoÃ§Ãµes pendentes
+  imagensParaRemover: number[] = [];
+  documentosParaRemover: number[] = [];
+
+  readonly form = this.fb.nonNullable.group({
+    descricaoPeca: ['', Validators.required],
     material: ['', Validators.required],
+    medidas: [''],
     quantidade: [1, [Validators.required, Validators.min(1)]],
-    prazoEntrega: ['', Validators.required],
-    cliente: [''],
-    observacoes: [''],
-    operacoes: this.fb.array([])
+    observacoes: ['']
   });
 
-  get operacoesArray(): FormArray { return this.form.get('operacoes') as FormArray; }
-  get operacoesControls(): FormGroup[] { return this.operacoesArray.controls as FormGroup[]; }
-
-  constructor() {
-    this.ordemId = this.route.snapshot.paramMap.get('id');
-    if (this.ordemId) {
+  ngOnInit(): void {
+    const idParam = this.route.snapshot.paramMap.get('id');
+    if (idParam) {
       this.edicao = true;
-      const ordem = this.service.getOrdens().find(o => o.id === this.ordemId);
-      if (ordem) { this.carregarOrdem(ordem); }
-    } else {
-      this.adicionarOperacao(); // começa com 1 operação
+      this.ordemId = Number(idParam);
+      this.service.obter(this.ordemId).subscribe({
+        next: (o) => {
+          this.ordemAtual = o;
+          this.form.patchValue({
+            descricaoPeca: o.descricaoPeca,
+            material: o.material,
+            medidas: o.medidas ?? '',
+            quantidade: o.quantidade,
+            observacoes: o.observacoes ?? ''
+          });
+        },
+        error: () => this.erro = 'Erro ao carregar ordem.'
+      });
     }
   }
 
-  private criarOperacaoGroup(op?: Partial<Operacao>): FormGroup {
-    const medicoes = this.fb.array(
-      (op?.medicoes ?? [
-        { label: 'Ponto 1', predefinido: '', encontrado: '' },
-        { label: 'Ponto 2', predefinido: '', encontrado: '' },
-        { label: 'Ponto 3', predefinido: '', encontrado: '' },
-        { label: 'Ponto 4', predefinido: '', encontrado: '' }
-      ]).map(m => this.fb.group({ label: [m.label], predefinido: [m.predefinido], encontrado: [m.encontrado] }))
-    );
-    return this.fb.group({
-      tipoOperacao: [op?.tipoOperacao ?? '1ª OPERAÇÃO', Validators.required],
-      medicoes
-    });
-  }
-
-  getMedicoesArray(opGroup: AbstractControl): FormGroup[] {
-    return ((opGroup as FormGroup).get('medicoes') as FormArray).controls as FormGroup[];
-  }
-
-  adicionarOperacao(): void {
-    if (this.operacoesArray.length >= 5) return;
-    this.operacoesArray.push(this.criarOperacaoGroup());
-  }
-
-  removerOperacao(i: number): void {
-    this.operacoesArray.removeAt(i);
-  }
-
-  private carregarOrdem(ordem: OrdemProducao): void {
-    this.form.patchValue({
-      nomePeca: ordem.nomePeca,
-      material: ordem.material,
-      quantidade: ordem.quantidade,
-      prazoEntrega: ordem.prazoEntrega,
-      cliente: ordem.cliente ?? '',
-      observacoes: ordem.observacoes ?? ''
-    });
-    this.imagens = [...ordem.imagens];
-    this.pdfBase64 = ordem.pdfAutocad ?? '';
-    this.pdfNome = ordem.pdfNome ?? '';
-    this.operacoesArray.clear();
-    for (const op of ordem.operacoes) {
-      this.operacoesArray.push(this.criarOperacaoGroup(op));
-    }
-  }
-
-  async onImagens(event: Event): Promise<void> {
+  onImagens(event: Event): void {
     const input = event.target as HTMLInputElement;
     const files = input.files ? Array.from(input.files) : [];
-    const novos = await Promise.all(files.map(f => this.readFile(f)));
-    this.imagens = [...this.imagens, ...novos];
+    this.imagensPendentes = [...this.imagensPendentes, ...files];
   }
 
-  removerImagem(i: number): void { this.imagens.splice(i, 1); }
-
-  async onPdf(event: Event): Promise<void> {
+  onDocumentos(event: Event): void {
     const input = event.target as HTMLInputElement;
-    const file = input.files?.[0];
-    if (!file) return;
-    this.pdfBase64 = await this.readFile(file);
-    this.pdfNome = file.name;
+    const files = input.files ? Array.from(input.files) : [];
+    this.documentosPendentes = [...this.documentosPendentes, ...files];
+  }
+
+  removerImagemExistente(id: number): void {
+    this.imagensParaRemover.push(id);
+    if (this.ordemAtual) {
+      this.ordemAtual = {
+        ...this.ordemAtual,
+        imagens: this.ordemAtual.imagens.filter(i => i.id !== id)
+      };
+    }
+  }
+
+  removerDocumentoExistente(id: number): void {
+    this.documentosParaRemover.push(id);
+    if (this.ordemAtual) {
+      this.ordemAtual = {
+        ...this.ordemAtual,
+        documentos: this.ordemAtual.documentos.filter(d => d.id !== id)
+      };
+    }
+  }
+
+  removerImagemPendente(i: number): void {
+    this.imagensPendentes.splice(i, 1);
+  }
+
+  removerDocumentoPendente(i: number): void {
+    this.documentosPendentes.splice(i, 1);
   }
 
   salvar(): void {
     if (this.form.invalid) { this.form.markAllAsTouched(); return; }
-    const raw = this.form.getRawValue();
+    this.salvando = true;
+    this.erro = '';
 
-    const operacoes: Omit<Operacao, 'id'>[] = (raw.operacoes as {tipoOperacao: string; medicoes: {label:string;predefinido:string;encontrado:string}[]}[]).map((op, i) => ({
-      numero: i + 1,
-      tipoOperacao: op.tipoOperacao as TipoOperacao,
-      medicoes: op.medicoes,
-      pecasRefugadas: 0,
-      status: 'pendente' as const
-    }));
+    const { descricaoPeca, material, medidas, quantidade, observacoes } = this.form.getRawValue();
+    const dto = {
+      descricaoPeca,
+      material,
+      medidas: medidas || null,
+      quantidade,
+      observacoes: observacoes || null
+    };
 
-    if (this.ordemId && this.edicao) {
-      const existente = this.service.getOrdens().find(o => o.id === this.ordemId);
-      const ops: Operacao[] = operacoes.map((op, i) => {
-        const existOp = existente?.operacoes[i];
-        return existOp
-          ? { ...existOp, tipoOperacao: op.tipoOperacao, medicoes: op.medicoes }
-          : { ...op, id: `${Date.now()}-${i}` };
-      });
-      this.service.atualizar(this.ordemId, {
-        nomePeca: raw.nomePeca ?? '',
-        material: raw.material ?? '',
-        quantidade: raw.quantidade ?? 1,
-        prazoEntrega: raw.prazoEntrega ?? '',
-        cliente: raw.cliente ?? undefined,
-        observacoes: raw.observacoes ?? undefined,
-        imagens: this.imagens,
-        pdfAutocad: this.pdfBase64 || undefined,
-        pdfNome: this.pdfNome || undefined,
-        operacoes: ops
-      });
-      void this.router.navigate(['/admin/ordem', this.ordemId]);
-      return;
-    }
+    const salvarDados$ = this.edicao && this.ordemId
+      ? this.service.atualizar(this.ordemId, dto)
+      : this.service.criar(dto);
 
-    const ops: Operacao[] = operacoes.map((op, i) => ({ ...op, id: `${Date.now()}-${i}` }));
-    const nova = this.service.criar({
-      nomePeca: raw.nomePeca ?? '',
-      material: raw.material ?? '',
-      quantidade: raw.quantidade ?? 1,
-      prazoEntrega: raw.prazoEntrega ?? '',
-      cliente: raw.cliente ?? undefined,
-      observacoes: raw.observacoes ?? undefined,
-      imagens: this.imagens,
-      pdfAutocad: this.pdfBase64 || undefined,
-      pdfNome: this.pdfNome || undefined,
-      operacoes: ops,
-      status: 'pendente'
-    });
-    void this.router.navigate(['/admin/ordem', nova.id]);
-  }
+    salvarDados$.pipe(
+      switchMap((ordem) => {
+        const ops: Observable<unknown>[] = [];
 
-  private readFile(file: File): Promise<string> {
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.onload = () => resolve(String(reader.result ?? ''));
-      reader.onerror = () => reject(new Error('Erro ao ler arquivo.'));
-      reader.readAsDataURL(file);
+        // Remover imagens marcadas
+        for (const imgId of this.imagensParaRemover) {
+          ops.push(this.service.removerImagem(ordem.id, imgId));
+        }
+        // Remover documentos marcados
+        for (const docId of this.documentosParaRemover) {
+          ops.push(this.service.removerDocumento(ordem.id, docId));
+        }
+        // Upload de novas imagens
+        for (const f of this.imagensPendentes) {
+          ops.push(this.service.adicionarImagem(ordem.id, f));
+        }
+        // Upload de novos documentos
+        for (const f of this.documentosPendentes) {
+          ops.push(this.service.adicionarDocumento(ordem.id, f));
+        }
+
+        return ops.length > 0 ? forkJoin(ops).pipe(switchMap(() => of(ordem))) : of(ordem);
+      })
+    ).subscribe({
+      next: (ordem) => {
+        this.salvando = false;
+        void this.router.navigate(['/admin/ordem', ordem.id]);
+      },
+      error: () => {
+        this.salvando = false;
+        this.erro = 'Erro ao salvar. Verifique os dados e tente novamente.';
+      }
     });
   }
 }

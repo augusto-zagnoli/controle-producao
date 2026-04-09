@@ -1,176 +1,124 @@
-<section class="page tablet">
+﻿<section class="page tablet">
 
-  <!-- Header -->
   <div class="tab-header">
-    <a routerLink="/producao" class="btn-back">← Voltar</a>
+    <a routerLink="/producao" class="btn-back">â† Voltar</a>
     <div class="header-info">
-      <span class="op-num">OP {{ ordem?.numeroOP }}</span>
       @if (ordem) {
-        <span class="chip" [class]="ordem.status">{{ statusOPLabel(ordem.status) }}</span>
+        <span class="op-num">OS #{{ ordem.codigo }}</span>
+        <span class="chip" [class]="ordem.status">{{ statusLabel(ordem.status) }}</span>
       }
     </div>
   </div>
 
-  @if (ordem; as item) {
+  @if (carregando) {
+    <p class="info">Carregando...</p>
+  } @else if (erro) {
+    <p class="erro">{{ erro }}</p>
+  } @else if (ordem) {
 
-    <!-- OP Info -->
     <div class="info-card">
-      <div class="peca-nome">{{ item.nomePeca }}</div>
+      <div class="peca-nome">{{ ordem.descricaoPeca }}</div>
       <div class="info-row">
-        <span><strong>Material:</strong> {{ item.material }}</span>
-        <span><strong>Qtd:</strong> {{ item.quantidade }} pçs</span>
-        <span><strong>Prazo:</strong> {{ formatarData(item.prazoEntrega) }}</span>
-        @if (item.cliente) { <span><strong>Cliente:</strong> {{ item.cliente }}</span> }
+        @if (ordem.material) { <span><strong>Material:</strong> {{ ordem.material }}</span> }
+        <span><strong>Qtd:</strong> {{ ordem.quantidade }} pÃ§s</span>
       </div>
-      @if (item.observacoes) {
-        <div class="obs">{{ item.observacoes }}</div>
+      @if (ordem.medidas) {
+        <div class="medidas">{{ ordem.medidas }}</div>
+      }
+      @if (ordem.observacoes) {
+        <div class="obs">{{ ordem.observacoes }}</div>
       }
     </div>
 
-    <!-- Arquivos -->
-    @if (item.pdfAutocad || item.imagens.length > 0) {
+    @if (ordem.imagens.length) {
       <div class="files-section">
-        @if (item.pdfAutocad) {
-          <a [href]="item.pdfAutocad" [download]="item.pdfNome || 'autocad.pdf'" class="file-btn">📄 Abrir PDF AutoCAD</a>
+        <h3>Imagens</h3>
+        <div class="images-row">
+          @for (img of ordem.imagens; track img.id) {
+            <a [href]="img.url" target="_blank">
+              <img [src]="img.url" [alt]="img.nomeArquivo" class="thumb" />
+            </a>
+          }
+        </div>
+      </div>
+    }
+
+    @if (ordem.documentos.length) {
+      <div class="files-section">
+        <h3>Documentos</h3>
+        @for (doc of ordem.documentos; track doc.id) {
+          <a [href]="doc.url" target="_blank" class="doc-link">ðŸ“„ {{ doc.nomeArquivo }}</a>
         }
-        @if (item.imagens.length > 0) {
-          <div class="images-row">
-            @for (img of item.imagens; track $index) {
-              <img [src]="img" alt="imagem peça" />
+      </div>
+    }
+
+    <div class="action-section">
+      <button class="btn-status" (click)="abrirModal()">Alterar Status da OS</button>
+    </div>
+
+    @if (historico.length) {
+      <div class="historico-section">
+        <h3>HistÃ³rico</h3>
+        @for (h of historico; track h.id) {
+          <div class="hist-item">
+            <div class="hist-header">
+              <span class="hist-acao">{{ h.acao }}</span>
+              <span class="hist-data">{{ formatarData(h.dataHora) }}</span>
+            </div>
+            <div class="hist-meta">{{ h.nomeUsuario }}</div>
+            @if (h.observacao) { <p class="hist-obs">{{ h.observacao }}</p> }
+            @if (h.fotoOperadorUrl) {
+              <img [src]="h.fotoOperadorUrl" alt="Foto operador" class="foto-op" />
             }
           </div>
         }
       </div>
     }
 
-    <!-- Operações -->
-    <div class="ops-section">
-      <h2>Operações</h2>
-      @for (op of item.operacoes; track op.id) {
-        <div class="op-card" [class]="op.status">
-          <div class="op-top">
-            <div class="op-title">{{ op.numero }}ª — {{ op.tipoOperacao }}</div>
-            <span class="chip-op" [class]="op.status">
-              @if (op.status === 'pendente') { Pendente }
-              @if (op.status === 'em_andamento') { Em andamento }
-              @if (op.status === 'concluida') { Concluída ✓ }
-            </span>
-          </div>
-
-          @if (op.status !== 'pendente') {
-            <div class="op-info">
-              @if (op.operador) { <span>Operador: <strong>{{ op.operador }}</strong></span> }
-              @if (op.maquina) { <span>Máquina: <strong>{{ op.maquina }}</strong></span> }
-              @if (op.programador) { <span>Prog.: <strong>{{ op.programador }}</strong></span> }
-              @if (op.dataHoraInicial) { <span>Início: <strong>{{ formatarDataHora(op.dataHoraInicial) }}</strong></span> }
-              @if (op.dataHoraFinal) { <span>Conclusão: <strong>{{ formatarDataHora(op.dataHoraFinal) }}</strong></span> }
-              @if (op.pecasRefugadas > 0) { <span class="refugo">Refugadas: <strong>{{ op.pecasRefugadas }}</strong></span> }
-            </div>
-            <!-- Medições -->
-            <div class="medicoes">
-              @for (m of op.medicoes; track $index) {
-                @if (m.predefinido || m.encontrado) {
-                  <div class="medicao-row">
-                    <span class="m-label">{{ m.label }}</span>
-                    <span class="m-pre">Pré: {{ m.predefinido || '—' }}</span>
-                    <span class="m-enc" [class.ok]="m.encontrado">Enc: {{ m.encontrado || '—' }}</span>
-                  </div>
-                }
-              }
-            </div>
-          }
-
-          <!-- Botões de ação -->
-          <div class="op-actions">
-            @if (op.status === 'pendente') {
-              <button class="btn-action iniciar" (click)="abrirIniciar(op)">▶ Iniciar Operação</button>
-            }
-            @if (op.status === 'em_andamento') {
-              <button class="btn-action concluir" (click)="abrirConcluir(op)">✓ Concluir Operação</button>
-            }
-          </div>
-        </div>
-      }
-    </div>
-
   } @else {
-    <p class="not-found">Ordem não encontrada.</p>
+    <p class="info">Ordem nÃ£o encontrada.</p>
   }
 
-  <!-- Modal de Apontamento -->
-  @if (apontamentoForm && operacaoAtiva) {
-    <div class="modal-overlay" (click)="cancelar()">
+  <!-- Modal de alteraÃ§Ã£o de status -->
+  @if (modalAberto) {
+    <div class="modal-overlay" (click)="fecharModal()">
       <div class="modal" (click)="$event.stopPropagation()">
         <div class="modal-header">
-          <h3>
-            @if (acao === 'iniciar') { ▶ Iniciar: }
-            @if (acao === 'concluir') { ✓ Concluir: }
-            {{ operacaoAtiva.tipoOperacao }}
-          </h3>
-          <button class="btn-close" (click)="cancelar()">✕</button>
+          <h3>Alterar Status</h3>
+          <button class="btn-close" (click)="fecharModal()">âœ•</button>
         </div>
-
         <div class="modal-body">
           <label class="field">
-            Operador <span class="req">*</span>
-            <input [(ngModel)]="apontamentoForm.operador" placeholder="Nome do operador" />
-          </label>
-          <label class="field">
-            Máquina
-            <input [(ngModel)]="apontamentoForm.maquina" placeholder="Ex: CNC-01" />
-          </label>
-          <label class="field">
-            Programador
-            <input [(ngModel)]="apontamentoForm.programador" placeholder="Nome do programador" />
-          </label>
-
-          @if (acao === 'concluir') {
-            <label class="field">
-              Quantidade produzida
-              <input type="number" [(ngModel)]="apontamentoForm.quantidade" min="0" />
-            </label>
-            <label class="field">
-              Peças Refugadas
-              <input type="number" [(ngModel)]="apontamentoForm.pecasRefugadas" min="0" />
-            </label>
-            <label class="field">
-              Horário de Conclusão
-              <input type="time" [(ngModel)]="apontamentoForm.horarioConclusao" />
-            </label>
-            <label class="field">
-              Observações
-              <textarea [(ngModel)]="apontamentoForm.observacoes" rows="2"></textarea>
-            </label>
-
-            <!-- Medições Encontradas -->
-            <div class="medicoes-form">
-              <p class="medicoes-title">Medidas Encontradas</p>
-              @for (m of apontamentoForm.medicoes; track $index) {
-                <div class="medicao-input-row">
-                  <span class="m-name">{{ m.label }} (pré: {{ m.predefinido || '—' }})</span>
-                  <input [(ngModel)]="m.encontrado" placeholder="Valor encontrado" />
-                </div>
+            Novo Status <span class="req">*</span>
+            <select [(ngModel)]="novoStatus">
+              @for (opt of statusOptions; track opt.value) {
+                <option [value]="opt.value">{{ opt.label }}</option>
               }
-            </div>
-          }
+            </select>
+          </label>
+          <label class="field">
+            ObservaÃ§Ã£o
+            <textarea [(ngModel)]="observacao" rows="3" placeholder="Opcional"></textarea>
+          </label>
 
-          <!-- Foto obrigatória -->
           <div class="foto-field">
-            <p class="foto-label">📷 Foto do Responsável <span class="req">*</span></p>
+            <p class="foto-label">ðŸ“· Foto do Operador <span class="req">*</span></p>
             <label class="btn-foto">
-              {{ apontamentoForm.foto ? '✓ Foto capturada — trocar' : 'Tirar Foto' }}
-              <input type="file" accept="image/*" capture="user" (change)="onFoto($event)" hidden />
+              {{ fotoOperador ? 'âœ“ Foto capturada â€” trocar' : 'Tirar / Selecionar Foto' }}
+              <input type="file" accept="image/*" capture="environment" (change)="onFoto($event)" hidden />
             </label>
-            @if (apontamentoForm.foto) {
-              <img [src]="apontamentoForm.foto" alt="foto do responsável" class="foto-preview" />
+            @if (fotoPreview) {
+              <img [src]="fotoPreview" alt="PrÃ©via da foto" class="foto-preview" />
+            }
+            @if (erroModal) {
+              <p class="erro-modal">{{ erroModal }}</p>
             }
           </div>
         </div>
-
         <div class="modal-footer">
-          <button class="btn-cancel" (click)="cancelar()">Cancelar</button>
-          <button class="btn-confirm" (click)="confirmar()" [disabled]="salvando">
-            {{ acao === 'iniciar' ? 'Confirmar Início' : 'Confirmar Conclusão' }}
+          <button class="btn-cancel" (click)="fecharModal()">Cancelar</button>
+          <button class="btn-confirm" (click)="confirmarStatus()" [disabled]="salvando">
+            {{ salvando ? 'Salvando...' : 'Confirmar' }}
           </button>
         </div>
       </div>
@@ -178,4 +126,3 @@
   }
 
 </section>
-

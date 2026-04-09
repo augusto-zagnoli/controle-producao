@@ -16,6 +16,13 @@ export class AppComponent {
 
   logout(): void {
     this.auth.logout();
-    void this.router.navigate(['/login']);
+  }
+
+  irParaAdmin(): void {
+    void this.router.navigate(['/admin']);
+  }
+
+  irParaProducao(): void {
+    void this.router.navigate(['/producao']);
   }
 }

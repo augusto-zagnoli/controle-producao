@@ -1,8 +1,8 @@
 <section class="page tablet">
   <header class="tab-header">
     <div class="logo-area">
-      <span class="logo-text">VEMEX</span>
-      <span class="logo-sub">Controle de Produção</span>
+      <span class="logo-text">Controle de Produção</span>
+      <span class="logo-sub">Interface do Operador</span>
     </div>
   </header>
 
@@ -10,43 +10,37 @@
     <input
       class="search-input"
       [(ngModel)]="busca"
-      (input)="filtrar()"
-      placeholder="🔍  Buscar por Nº OP, peça ou cliente…"
+      (input)="carregar()"
+      placeholder="🔍  Buscar por Nº OS, peça..."
       autocomplete="off"
     />
   </div>
 
-  <div class="cards">
-    @for (o of ordensFiltradas; track o.id) {
-      <a [routerLink]="['/producao/ordem', o.id]" class="card">
-        <div class="card-top">
-          <span class="op-num">OP {{ o.numeroOP }}</span>
-          <span class="chip" [class]="o.status">{{ statusLabel(o.status) }}</span>
+  @if (carregando) {
+    <p class="info">Carregando...</p>
+  } @else if (erro) {
+    <p class="erro">{{ erro }}</p>
+  } @else {
+    <div class="cards">
+      @for (o of ordens; track o.id) {
+        <a [routerLink]="['/producao/ordem', o.id]" class="card">
+          <div class="card-top">
+            <span class="op-num">OS #{{ o.codigo }}</span>
+            <span class="chip" [class]="o.status">{{ statusLabel(o.status) }}</span>
+          </div>
+          <div class="peca-nome">{{ o.descricaoPeca }}</div>
+          <div class="card-info">
+            @if (o.material) { <span>{{ o.material }}</span> }
+            <span>{{ o.quantidade }} pçs</span>
+          </div>
+        </a>
+      } @empty {
+        <div class="empty">
+          <p>Nenhuma ordem ativa encontrada.</p>
+          <small>Todas as ordens estão finalizadas ou não há ordens cadastradas.</small>
         </div>
-        <div class="peca-nome">{{ o.nomePeca }}</div>
-        <div class="card-info">
-          <span>{{ o.material }}</span>
-          <span>{{ o.quantidade }} pçs</span>
-          @if (o.cliente) { <span>{{ o.cliente }}</span> }
-          <span>Prazo: {{ formatarData(o.prazoEntrega) }}</span>
-        </div>
-        <div class="ops-status">
-          @for (op of o.operacoes; track op.id) {
-            <span class="op-badge" [class]="op.status">
-              {{ op.numero }}ª {{ op.tipoOperacao === 'COMPLETO' ? '(COMPLETO)' : '' }}
-            </span>
-          }
-        </div>
-        @if (operacoesPendentes(o) > 0) {
-          <div class="pendente-tag">{{ operacoesPendentes(o) }} operação(ões) pendente(s)</div>
-        }
-      </a>
-    } @empty {
-      <div class="empty">
-        <p>Nenhuma ordem encontrada.</p>
-        <small>Digite o número da OP ou nome da peça para buscar.</small>
-      </div>
-    }
-  </div>
+      }
+    </div>
+  }
 </section>
 

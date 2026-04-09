@@ -1,10 +1,9 @@
 import { CommonModule } from '@angular/common';
-import { Component, DestroyRef, inject } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { OrdemProducao, STATUS_OP_LABELS, StatusOP } from '../ordem-servico.model';
-import { OrdensServicoService } from '../ordens-servico.service';
+import { OrdemServico, OrdemServicoStatus, STATUS_LABELS } from '../models/ordem-servico.model';
+import { OrdensService } from '../services/ordens.service';
 
 @Component({
   selector: 'app-admin',
@@ -13,53 +12,57 @@ import { OrdensServicoService } from '../ordens-servico.service';
   templateUrl: './admin.component.html',
   styleUrl: './admin.component.scss'
 })
-export class AdminComponent {
-  private readonly service = inject(OrdensServicoService);
-  private readonly destroyRef = inject(DestroyRef);
+export class AdminComponent implements OnInit {
+  private readonly service = inject(OrdensService);
 
   busca = '';
-  filtroStatus: StatusOP | '' = '';
-  ordens: OrdemProducao[] = [];
-  ordensFiltradas: OrdemProducao[] = [];
+  filtroStatus = '';
+  ordens: OrdemServico[] = [];
+  carregando = false;
+  erro = '';
 
-  constructor() {
-    this.service.ordens$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((ordens) => {
-      this.ordens = ordens;
-      this.filtrar();
+  readonly statusLabels = STATUS_LABELS;
+  readonly statusOpcoes: Array<{ valor: string; label: string }> = [
+    { valor: '', label: 'Todos' },
+    { valor: 'Pendente', label: 'Pendente' },
+    { valor: 'EmProducao', label: 'Em Produção' },
+    { valor: 'Pausada', label: 'Pausada' },
+    { valor: 'Finalizada', label: 'Finalizada' }
+  ];
+
+  ngOnInit(): void {
+    this.carregar();
+  }
+
+  carregar(): void {
+    this.carregando = true;
+    this.erro = '';
+    this.service.listar(this.busca || undefined, this.filtroStatus || undefined).subscribe({
+      next: (ordens) => { this.ordens = ordens; this.carregando = false; },
+      error: () => { this.erro = 'Erro ao carregar ordens.'; this.carregando = false; }
     });
   }
 
-  filtrar(): void {
-    const termo = this.busca.trim().toLowerCase();
-    this.ordensFiltradas = this.ordens.filter((o) => {
-      const matchBusca =
-        !termo ||
-        o.nomePeca.toLowerCase().includes(termo) ||
-        o.numeroOP.toString().includes(termo) ||
-        (o.cliente ?? '').toLowerCase().includes(termo);
-      const matchStatus = !this.filtroStatus || o.status === this.filtroStatus;
-      return matchBusca && matchStatus;
+  statusLabel(s: OrdemServicoStatus): string {
+    return STATUS_LABELS[s] ?? s;
+  }
+
+  excluir(id: number): void {
+    if (!confirm('Excluir esta Ordem de Serviço?')) return;
+    this.service.excluir(id).subscribe({
+      next: () => this.carregar(),
+      error: () => alert('Erro ao excluir.')
     });
-  }
-
-  statusLabel(status: StatusOP): string {
-    return STATUS_OP_LABELS[status];
-  }
-
-  excluir(id: string): void {
-    if (confirm('Excluir esta Ordem de Produção?')) {
-      this.service.excluir(id);
-    }
   }
 
   formatarData(iso: string): string {
-    if (!iso) return '-';
-    const [y, m, d] = iso.split('-');
-    return `${d}/${m}/${y}`;
+    if (!iso) return '—';
+    return new Date(iso).toLocaleDateString('pt-BR');
   }
 
-  get totalPendente(): number { return this.ordens.filter(o => o.status === 'pendente').length; }
-  get totalEmProducao(): number { return this.ordens.filter(o => o.status === 'em_producao').length; }
-  get totalConcluida(): number { return this.ordens.filter(o => o.status === 'concluida').length; }
+  get totalPendente(): number { return this.ordens.filter(o => o.status === 'Pendente').length; }
+  get totalEmProducao(): number { return this.ordens.filter(o => o.status === 'EmProducao').length; }
+  get totalPausada(): number { return this.ordens.filter(o => o.status === 'Pausada').length; }
+  get totalFinalizada(): number { return this.ordens.filter(o => o.status === 'Finalizada').length; }
 }
 

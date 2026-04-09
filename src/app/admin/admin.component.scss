@@ -24,8 +24,9 @@
   gap: 4px;
   color: #fff;
   &.pendente { background: #f59e0b; }
-  &.em_producao { background: #2563eb; }
-  &.concluida { background: #16a34a; }
+  &.em-producao { background: #2563eb; }
+  &.pausada { background: #7c3aed; }
+  &.finalizada { background: #16a34a; }
 }
 .stat-value { font-size: 28px; font-weight: 700; }
 .stat-label { font-size: 13px; opacity: .9; }
@@ -50,6 +51,9 @@
   border-radius: 6px;
   font-size: 14px;
 }
+
+.info { color: #6b7280; padding: 12px 0; }
+.erro { color: #dc2626; padding: 12px 0; }
 
 .table-wrapper {
   overflow-x: auto;
@@ -80,33 +84,19 @@ tr:last-child td { border-bottom: none; }
 tr:hover td { background: #f9fafb; }
 .op-num { font-weight: 700; font-size: 16px; }
 .peca { font-weight: 600; }
+.medidas { color: #6b7280; font-size: 12px; max-width: 150px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .empty { text-align: center; color: #9ca3af; padding: 32px; }
 
-.ops-count { font-size: 12px; color: #6b7280; margin-right: 4px; }
-.chip-op {
-  display: inline-block;
-  width: 22px;
-  height: 22px;
-  border-radius: 50%;
-  font-size: 11px;
-  line-height: 22px;
-  text-align: center;
-  font-weight: 600;
-  margin-right: 2px;
-  &.pendente { background: #fef3c7; color: #92400e; }
-  &.em_andamento { background: #dbeafe; color: #1e40af; }
-  &.concluida { background: #d1fae5; color: #065f46; }
-}
 .chip {
   display: inline-block;
   border-radius: 999px;
   padding: 3px 10px;
   font-size: 12px;
   font-weight: 600;
-  &.pendente { background: #fef3c7; color: #92400e; }
-  &.em_producao { background: #dbeafe; color: #1e40af; }
-  &.concluida { background: #d1fae5; color: #065f46; }
-  &.cancelada { background: #fee2e2; color: #991b1b; }
+  &.Pendente { background: #fef3c7; color: #92400e; }
+  &.EmProducao { background: #dbeafe; color: #1e40af; }
+  &.Pausada { background: #ede9fe; color: #5b21b6; }
+  &.Finalizada { background: #d1fae5; color: #065f46; }
 }
 .actions { display: flex; gap: 6px; flex-wrap: wrap; }
 .btn {
@@ -123,30 +113,6 @@ tr:hover td { background: #f9fafb; }
   &.primary { background: #2563eb; color: #fff; border-color: #2563eb; }
   &.danger { background: #fee2e2; color: #991b1b; border-color: #fca5a5; }
   &:hover { opacity: .85; }
-}
-
-.header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 12px;
-  flex-wrap: wrap;
-}
-.toolbar input {
-  margin: 16px 0;
-  width: 100%;
-  padding: 10px;
-}
-.cards {
-  display: grid;
-  gap: 12px;
-  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-}
-.card {
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  padding: 12px;
-  background: #fff;
 }
 .line {
   display: flex;

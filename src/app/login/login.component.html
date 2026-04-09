@@ -1,19 +1,23 @@
 <section class="login-page">
   <div class="login-card">
-    <h1>Acesso Administrativo</h1>
-    <form (ngSubmit)="entrar()" class="form">
+    <h1>Controle de Produção</h1>
+    <p class="subtitle">Tornearia — Faça login para continuar</p>
+    <form [formGroup]="form" (ngSubmit)="entrar()" class="form">
       <label>
-        Usuário
-        <input [(ngModel)]="usuario" name="usuario" autocomplete="username" />
+        Login
+        <input formControlName="login" autocomplete="username" />
       </label>
       <label>
         Senha
-        <input [(ngModel)]="senha" name="senha" type="password" autocomplete="current-password" />
+        <input formControlName="senha" type="password" autocomplete="current-password" />
       </label>
       @if (erro) {
-        <p class="erro">Usuário ou senha incorretos.</p>
+        <p class="erro">{{ erro }}</p>
       }
-      <button type="submit" class="btn primary">Entrar</button>
+      <button type="submit" class="btn primary" [disabled]="carregando">
+        {{ carregando ? 'Aguarde...' : 'Entrar' }}
+      </button>
     </form>
+    <p class="hint">Admin: <code>admin / admin123</code> &nbsp;|&nbsp; Técnico: <code>tecnico / tecnico123</code></p>
   </div>
 </section>

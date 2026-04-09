@@ -1,139 +1,111 @@
-<section class="page">
+﻿<section class="page">
   <header class="page-header">
-    <h1>{{ edicao ? 'Editar OP' : 'Nova Ordem de Produção' }}</h1>
-    <a routerLink="/admin" class="btn">← Voltar</a>
+    <h1>{{ edicao ? 'Editar Ordem de ServiÃ§o' : 'Nova Ordem de ServiÃ§o' }}</h1>
+    <a routerLink="/admin" class="btn">Cancelar</a>
   </header>
 
-  <form [formGroup]="form" (ngSubmit)="salvar()" class="form">
+  @if (erro) { <p class="erro">{{ erro }}</p> }
 
-    <!-- Dados da OP -->
-    <div class="section-card">
-      <h2>Dados Gerais</h2>
-      <div class="grid-2">
-        <label class="field">
-          Nome da Peça <span class="req">*</span>
-          <input formControlName="nomePeca" placeholder="Ex: Terminal 1W32FH32" />
-          @if (form.get('nomePeca')?.invalid && form.get('nomePeca')?.touched) {
-            <span class="err">Obrigatório</span>
-          }
-        </label>
-        <label class="field">
-          Material <span class="req">*</span>
-          <input formControlName="material" placeholder="Ex: SAE 1020" />
-          @if (form.get('material')?.invalid && form.get('material')?.touched) {
-            <span class="err">Obrigatório</span>
-          }
-        </label>
-        <label class="field">
-          Quantidade <span class="req">*</span>
-          <input type="number" formControlName="quantidade" min="1" />
-        </label>
-        <label class="field">
-          Prazo de Entrega <span class="req">*</span>
-          <input type="date" formControlName="prazoEntrega" />
-          @if (form.get('prazoEntrega')?.invalid && form.get('prazoEntrega')?.touched) {
-            <span class="err">Obrigatório</span>
-          }
-        </label>
-        <label class="field">
-          Cliente
-          <input formControlName="cliente" placeholder="Ex: VEMEX" />
-        </label>
-        <label class="field full">
-          Observações
-          <textarea formControlName="observacoes" rows="3"></textarea>
-        </label>
+  <form [formGroup]="form" (ngSubmit)="salvar()" class="form-card">
+
+    <!-- Dados bÃ¡sicos -->
+    <div class="section-title">Dados da PeÃ§a</div>
+
+    <div class="field">
+      <label>DescriÃ§Ã£o da PeÃ§a *</label>
+      <input formControlName="descricaoPeca" placeholder="Ex: Terminal 1W32FH32" />
+      @if (form.get('descricaoPeca')?.invalid && form.get('descricaoPeca')?.touched) {
+        <span class="field-erro">Campo obrigatÃ³rio</span>
+      }
+    </div>
+
+    <div class="row">
+      <div class="field">
+        <label>Material *</label>
+        <input formControlName="material" placeholder="Ex: SAE 1020" />
+        @if (form.get('material')?.invalid && form.get('material')?.touched) {
+          <span class="field-erro">Campo obrigatÃ³rio</span>
+        }
+      </div>
+      <div class="field">
+        <label>Quantidade *</label>
+        <input formControlName="quantidade" type="number" min="1" />
       </div>
     </div>
 
-    <!-- Operações -->
-    <div class="section-card">
-      <div class="section-header">
-        <h2>Operações (até 5)</h2>
-        @if (operacoesArray.length < 5) {
-          <button type="button" class="btn sm primary" (click)="adicionarOperacao()">+ Adicionar</button>
-        }
-      </div>
+    <div class="field">
+      <label>Medidas</label>
+      <textarea formControlName="medidas" rows="3" placeholder="Ex: Ã˜ 32mm x 80mm, Rosca M20, Chanfro 1x45Â°"></textarea>
+    </div>
 
-      @if (operacoesControls.length === 0) {
-        <p class="hint">Nenhuma operação adicionada. Clique em "+ Adicionar".</p>
-      }
+    <div class="field">
+      <label>ObservaÃ§Ãµes</label>
+      <textarea formControlName="observacoes" rows="3" placeholder="ObservaÃ§Ãµes adicionaisâ€¦"></textarea>
+    </div>
 
-      <div formArrayName="operacoes">
-        @for (opGroup of operacoesControls; track $index; let i = $index) {
-          <div class="op-card" [formGroupName]="i">
-            <div class="op-header">
-              <span class="op-num">{{ i + 1 }}ª Operação</span>
-              <button type="button" class="btn sm danger" (click)="removerOperacao(i)">Remover</button>
-            </div>
-            <label class="field">
-              Tipo de Operação
-              <select formControlName="tipoOperacao">
-                @for (t of tiposOperacao; track t) {
-                  <option [value]="t">{{ t }}</option>
-                }
-              </select>
-            </label>
+    <!-- Imagens -->
+    <div class="section-title">Imagens da PeÃ§a</div>
 
-            <!-- Medições Pré-definidas -->
-            <div class="medicoes-grid">
-              <p class="medicoes-title">Medidas Pré-definidas (4 pontos)</p>
-              <div formArrayName="medicoes">
-                @for (medGroup of getMedicoesArray(opGroup); track $index; let mi = $index) {
-                  <div class="medicao-row" [formGroupName]="mi">
-                    <label class="field sm">
-                      Ponto {{ mi + 1 }}
-                      <input formControlName="label" placeholder="Ex: Ø externo" />
-                    </label>
-                    <label class="field sm">
-                      Valor Pré-definido
-                      <input formControlName="predefinido" placeholder="Ex: 32,00mm" />
-                    </label>
-                    <label class="field sm disabled">
-                      Valor Encontrado
-                      <input formControlName="encontrado" placeholder="—" readonly />
-                    </label>
-                  </div>
-                }
-              </div>
-            </div>
+    @if (ordemAtual?.imagens?.length) {
+      <div class="anexos-grid">
+        @for (img of ordemAtual!.imagens; track img.id) {
+          <div class="anexo-item">
+            <img [src]="img.url" [alt]="img.nomeArquivo" class="thumb" />
+            <button type="button" class="btn-remover" (click)="removerImagemExistente(img.id)">âœ•</button>
+            <span class="anexo-nome">{{ img.nomeArquivo }}</span>
           </div>
         }
       </div>
-    </div>
+    }
 
-    <!-- Arquivos -->
-    <div class="section-card">
-      <h2>Arquivos</h2>
-      <div class="grid-2">
-        <label class="field">
-          Imagens da Peça
-          <input type="file" accept="image/*" multiple (change)="onImagens($event)" />
-          @if (imagens.length > 0) {
-            <div class="image-preview">
-              @for (img of imagens; track $index; let ii = $index) {
-                <div class="thumb">
-                  <img [src]="img" alt="imagem {{ ii + 1 }}" />
-                  <button type="button" class="rm-img" (click)="removerImagem(ii)">✕</button>
-                </div>
-              }
-            </div>
-          }
-        </label>
-        <label class="field">
-          PDF AutoCAD
-          <input type="file" accept="application/pdf" (change)="onPdf($event)" />
-          @if (pdfNome) {
-            <small class="pdf-name">📄 {{ pdfNome }}</small>
-          }
-        </label>
+    @if (imagensPendentes.length) {
+      <div class="pendentes-list">
+        @for (f of imagensPendentes; track $index) {
+          <div class="pendente-item">
+            <span>ðŸ–¼ {{ f.name }}</span>
+            <button type="button" class="btn-remover" (click)="removerImagemPendente($index)">âœ•</button>
+          </div>
+        }
       </div>
-    </div>
+    }
 
+    <input type="file" accept="image/*" multiple (change)="onImagens($event)" hidden #inputImagens />
+    <button type="button" class="btn" (click)="inputImagens.click()">+ Adicionar Imagens</button>
+
+    <!-- Documentos (PDF / DWG) -->
+    <div class="section-title">Documentos (PDF / AutoCAD)</div>
+
+    @if (ordemAtual?.documentos?.length) {
+      <div class="docs-list">
+        @for (doc of ordemAtual!.documentos; track doc.id) {
+          <div class="doc-item">
+            <a [href]="doc.url" target="_blank" class="doc-link">ðŸ“„ {{ doc.nomeArquivo }}</a>
+            <button type="button" class="btn-remover" (click)="removerDocumentoExistente(doc.id)">âœ•</button>
+          </div>
+        }
+      </div>
+    }
+
+    @if (documentosPendentes.length) {
+      <div class="pendentes-list">
+        @for (f of documentosPendentes; track $index) {
+          <div class="pendente-item">
+            <span>ðŸ“„ {{ f.name }}</span>
+            <button type="button" class="btn-remover" (click)="removerDocumentoPendente($index)">âœ•</button>
+          </div>
+        }
+      </div>
+    }
+
+    <input type="file" accept=".pdf,.dwg,.dxf" multiple (change)="onDocumentos($event)" hidden #inputDocs />
+    <button type="button" class="btn" (click)="inputDocs.click()">+ Adicionar Documentos</button>
+
+    <!-- AÃ§Ãµes -->
     <div class="form-actions">
+      <button type="submit" class="btn primary" [disabled]="salvando">
+        {{ salvando ? 'Salvando...' : (edicao ? 'Salvar AlteraÃ§Ãµes' : 'Criar Ordem') }}
+      </button>
       <a routerLink="/admin" class="btn">Cancelar</a>
-      <button type="submit" class="btn primary">{{ edicao ? 'Salvar Alterações' : 'Criar OP' }}</button>
     </div>
   </form>
 </section>
-
