@@ -5,6 +5,8 @@ import { LoginComponent } from './login/login.component';
 import { AdminComponent } from './admin/admin.component';
 import { AdminDetailComponent } from './admin-detail/admin-detail.component';
 import { AdminFormComponent } from './admin-form/admin-form.component';
+import { AdminFuncionariosComponent } from './admin-funcionarios/admin-funcionarios.component';
+import { AdminUsuariosComponent } from './admin-usuarios/admin-usuarios.component';
 import { ProducaoComponent } from './producao/producao.component';
 import { ProducaoDetailComponent } from './producao-detail/producao-detail.component';
 
@@ -15,6 +17,8 @@ export const routes: Routes = [
   { path: 'admin/nova', component: AdminFormComponent, canActivate: [adminGuard] },
   { path: 'admin/ordem/:id', component: AdminDetailComponent, canActivate: [adminGuard] },
   { path: 'admin/ordem/:id/editar', component: AdminFormComponent, canActivate: [adminGuard] },
+  { path: 'admin/funcionarios', component: AdminFuncionariosComponent, canActivate: [adminGuard] },
+  { path: 'admin/usuarios', component: AdminUsuariosComponent, canActivate: [adminGuard] },
   { path: 'producao', component: ProducaoComponent, canActivate: [authGuard] },
   { path: 'producao/ordem/:id', component: ProducaoDetailComponent, canActivate: [authGuard] },
   { path: '**', redirectTo: 'login' }

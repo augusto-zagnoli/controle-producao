@@ -77,6 +77,42 @@
 
 .empty { color: #9ca3af; font-size: 14px; }
 
+.badge-prioridade {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 600;
+  &.baixa   { background: #d1fae5; color: #065f46; }
+  &.media   { background: #fef3c7; color: #92400e; }
+  &.alta    { background: #fee2e2; color: #991b1b; }
+  &.urgente { background: #fce7f3; color: #9d174d; }
+}
+
+.operacoes-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.op-badge {
+  padding: 5px 12px;
+  border-radius: 6px;
+  background: #eff6ff;
+  color: #1d4ed8;
+  font-size: 13px;
+  font-weight: 600;
+  border: 1px solid #bfdbfe;
+}
+
+.obs-text {
+  color: #374151;
+  font-size: 14px;
+  line-height: 1.6;
+  white-space: pre-wrap;
+  margin: 0;
+}
+
 .historico-list {
   display: flex;
   flex-direction: column;
@@ -124,6 +160,13 @@
 }
 
 .hist-obs { font-size: 13px; color: #374151; margin: 6px 0 0; }
+
+.hist-funcionario {
+  font-size: 13px;
+  font-weight: 600;
+  color: #1d4ed8;
+  margin-top: 6px;
+}
 
 .foto-operador {
   width: 80px;

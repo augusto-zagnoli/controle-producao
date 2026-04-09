@@ -1,0 +1,90 @@
+<section class="page">
+  <header class="page-header">
+    <div class="header-left">
+      <a routerLink="/admin" class="btn sm">← Voltar</a>
+      <h1>Funcionários</h1>
+    </div>
+    <button class="btn primary" (click)="abrirNovo()">+ Novo Funcionário</button>
+  </header>
+
+  <!-- Formulário inline -->
+  @if (mostrarForm) {
+    <div class="form-card">
+      <h2>{{ editandoId ? 'Editar Funcionário' : 'Novo Funcionário' }}</h2>
+      <form [formGroup]="form" (ngSubmit)="salvar()">
+        <div class="field">
+          <label>Nome *</label>
+          <input formControlName="nome" type="text" placeholder="Nome completo" />
+        </div>
+        <div class="row-2">
+          <div class="field">
+            <label>Função</label>
+            <select formControlName="funcao">
+              @for (f of funcaoList; track f) {
+                <option [value]="f">{{ funcaoLabels[f] }}</option>
+              }
+            </select>
+          </div>
+          <div class="field">
+            <label>Setor</label>
+            <select formControlName="setor">
+              @for (s of setorList; track s) {
+                <option [value]="s">{{ setorLabels[s] }}</option>
+              }
+            </select>
+          </div>
+        </div>
+        @if (erroForm) { <p class="erro">{{ erroForm }}</p> }
+        <div class="form-actions">
+          <button type="button" class="btn" (click)="cancelar()">Cancelar</button>
+          <button type="submit" class="btn primary" [disabled]="form.invalid || salvando">
+            {{ salvando ? 'Salvando...' : 'Salvar' }}
+          </button>
+        </div>
+      </form>
+    </div>
+  }
+
+  @if (carregando) {
+    <p class="info">Carregando...</p>
+  } @else if (erro) {
+    <p class="erro">{{ erro }}</p>
+  } @else {
+    <div class="table-wrapper">
+      <table>
+        <thead>
+          <tr>
+            <th>Nome</th>
+            <th>Função</th>
+            <th>Setor</th>
+            <th>Status</th>
+            <th>Ações</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (f of funcionarios; track f.id) {
+            <tr [class.inativo]="!f.ativo">
+              <td class="nome">{{ f.nome }}</td>
+              <td>{{ funcaoLabels[f.funcao] }}</td>
+              <td>{{ setorLabels[f.setor] }}</td>
+              <td>
+                <span class="chip" [class.ativo]="f.ativo" [class.inativo-chip]="!f.ativo">
+                  {{ f.ativo ? 'Ativo' : 'Inativo' }}
+                </span>
+              </td>
+              <td class="actions">
+                <button class="btn sm" (click)="abrirEdicao(f)">Editar</button>
+                <button class="btn sm" [class.danger]="f.ativo" (click)="alternarAtivo(f)">
+                  {{ f.ativo ? 'Desativar' : 'Ativar' }}
+                </button>
+                <button class="btn sm danger" (click)="excluir(f)">Excluir</button>
+              </td>
+            </tr>
+          } @empty {
+            <tr><td colspan="5" class="empty">Nenhum funcionário cadastrado.</td></tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+</section>

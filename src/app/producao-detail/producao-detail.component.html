@@ -1,7 +1,7 @@
 ﻿<section class="page tablet">
 
   <div class="tab-header">
-    <a routerLink="/producao" class="btn-back">â† Voltar</a>
+    <a routerLink="/producao" class="btn-back">← Voltar</a>
     <div class="header-info">
       @if (ordem) {
         <span class="op-num">OS #{{ ordem.codigo }}</span>
@@ -17,14 +17,12 @@
   } @else if (ordem) {
 
     <div class="info-card">
-      <div class="peca-nome">{{ ordem.descricaoPeca }}</div>
+      <div class="peca-nome">{{ ordem.nomeProduto }}</div>
       <div class="info-row">
-        @if (ordem.material) { <span><strong>Material:</strong> {{ ordem.material }}</span> }
-        <span><strong>Qtd:</strong> {{ ordem.quantidade }} pÃ§s</span>
+        @if (ordem.unidade) { <span>{{ ordem.unidade }}</span> }
+        <span><strong>Qtd:</strong> {{ ordem.quantidade }}</span>
+        @if (ordem.funcao) { <span>{{ ordem.funcao }}</span> }
       </div>
-      @if (ordem.medidas) {
-        <div class="medidas">{{ ordem.medidas }}</div>
-      }
       @if (ordem.observacoes) {
         <div class="obs">{{ ordem.observacoes }}</div>
       }
@@ -47,7 +45,7 @@
       <div class="files-section">
         <h3>Documentos</h3>
         @for (doc of ordem.documentos; track doc.id) {
-          <a [href]="doc.url" target="_blank" class="doc-link">ðŸ“„ {{ doc.nomeArquivo }}</a>
+          <a [href]="doc.url" target="_blank" class="doc-link">📄 {{ doc.nomeArquivo }}</a>
         }
       </div>
     }
@@ -58,7 +56,7 @@
 
     @if (historico.length) {
       <div class="historico-section">
-        <h3>HistÃ³rico</h3>
+        <h3>Histórico</h3>
         @for (h of historico; track h.id) {
           <div class="hist-item">
             <div class="hist-header">
@@ -66,6 +64,9 @@
               <span class="hist-data">{{ formatarData(h.dataHora) }}</span>
             </div>
             <div class="hist-meta">{{ h.nomeUsuario }}</div>
+            @if (h.nomeFuncionario) {
+              <div class="hist-funcionario">👷 {{ h.nomeFuncionario }}</div>
+            }
             @if (h.observacao) { <p class="hist-obs">{{ h.observacao }}</p> }
             @if (h.fotoOperadorUrl) {
               <img [src]="h.fotoOperadorUrl" alt="Foto operador" class="foto-op" />
@@ -76,18 +77,27 @@
     }
 
   } @else {
-    <p class="info">Ordem nÃ£o encontrada.</p>
+    <p class="info">Ordem não encontrada.</p>
   }
 
-  <!-- Modal de alteraÃ§Ã£o de status -->
+  <!-- Modal de alteração de status -->
   @if (modalAberto) {
     <div class="modal-overlay" (click)="fecharModal()">
       <div class="modal" (click)="$event.stopPropagation()">
         <div class="modal-header">
           <h3>Alterar Status</h3>
-          <button class="btn-close" (click)="fecharModal()">âœ•</button>
+          <button class="btn-close" (click)="fecharModal()">✕</button>
         </div>
         <div class="modal-body">
+          <label class="field">
+            Funcionário que está realizando a ação <span class="req">*</span>
+            <select [(ngModel)]="funcionarioSelecionadoId">
+              <option [value]="0" disabled>Selecione seu nome…</option>
+              @for (f of funcionarios; track f.id) {
+                <option [value]="f.id">{{ f.nome }}</option>
+              }
+            </select>
+          </label>
           <label class="field">
             Novo Status <span class="req">*</span>
             <select [(ngModel)]="novoStatus">
@@ -97,18 +107,18 @@
             </select>
           </label>
           <label class="field">
-            ObservaÃ§Ã£o
+            Observação
             <textarea [(ngModel)]="observacao" rows="3" placeholder="Opcional"></textarea>
           </label>
 
           <div class="foto-field">
-            <p class="foto-label">ðŸ“· Foto do Operador <span class="req">*</span></p>
+            <p class="foto-label">📷 Foto do Operador <span class="req">*</span></p>
             <label class="btn-foto">
-              {{ fotoOperador ? 'âœ“ Foto capturada â€” trocar' : 'Tirar / Selecionar Foto' }}
+              {{ fotoOperador ? '✓ Foto capturada — trocar' : 'Tirar / Selecionar Foto' }}
               <input type="file" accept="image/*" capture="environment" (change)="onFoto($event)" hidden />
             </label>
             @if (fotoPreview) {
-              <img [src]="fotoPreview" alt="PrÃ©via da foto" class="foto-preview" />
+              <img [src]="fotoPreview" alt="Prévia da foto" class="foto-preview" />
             }
             @if (erroModal) {
               <p class="erro-modal">{{ erroModal }}</p>

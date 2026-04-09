@@ -1,111 +1,224 @@
-﻿<section class="page">
+<section class="page">
+
+  <!-- Cabeçalho -->
   <header class="page-header">
-    <h1>{{ edicao ? 'Editar Ordem de ServiÃ§o' : 'Nova Ordem de ServiÃ§o' }}</h1>
-    <a routerLink="/admin" class="btn">Cancelar</a>
+    <a routerLink="/admin" class="btn-voltar">← Voltar</a>
+    <h1>{{ edicao ? 'Editar Ordem' : 'Nova Ordem' }}</h1>
+    <button type="button" class="btn primary" (click)="salvar()" [disabled]="salvando">
+      {{ salvando ? 'Salvando...' : (edicao ? 'Salvar' : 'Criar') }}
+    </button>
   </header>
 
-  @if (erro) { <p class="erro">{{ erro }}</p> }
+  @if (erro) {
+    <div class="alerta-erro">{{ erro }}</div>
+  }
 
-  <form [formGroup]="form" (ngSubmit)="salvar()" class="form-card">
+  <form [formGroup]="form" (ngSubmit)="salvar()" class="form-scroll">
 
-    <!-- Dados bÃ¡sicos -->
-    <div class="section-title">Dados da PeÃ§a</div>
+    <!-- ── Seção Produto ──────────────────────────────────────── -->
+    <div class="card">
+      <div class="card-titulo">Produto</div>
 
-    <div class="field">
-      <label>DescriÃ§Ã£o da PeÃ§a *</label>
-      <input formControlName="descricaoPeca" placeholder="Ex: Terminal 1W32FH32" />
-      @if (form.get('descricaoPeca')?.invalid && form.get('descricaoPeca')?.touched) {
-        <span class="field-erro">Campo obrigatÃ³rio</span>
+      <div class="field">
+        <label>Nome do Produto <span class="req">*</span></label>
+        <input formControlName="nomeProduto" placeholder="Ex: Parafuso M8 × 25mm" />
+        @if (form.get('nomeProduto')?.invalid && form.get('nomeProduto')?.touched) {
+          <span class="field-erro">Campo obrigatório</span>
+        }
+      </div>
+
+      <div class="field">
+        <label>Descrição</label>
+        <textarea formControlName="descricao" rows="2" placeholder="Descrição adicional do produto…"></textarea>
+      </div>
+
+      <div class="row-2">
+        <div class="field">
+          <label>Quantidade <span class="req">*</span></label>
+          <input formControlName="quantidade" type="number" min="0.001" step="0.001" />
+          @if (form.get('quantidade')?.invalid && form.get('quantidade')?.touched) {
+            <span class="field-erro">Informe uma quantidade válida</span>
+          }
+        </div>
+        <div class="field">
+          <label>Unidade</label>
+          <input formControlName="unidade" placeholder="un, kg, mm…" maxlength="20" />
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Seção Prioridade ──────────────────────────────────── -->
+    <div class="card">
+      <div class="card-titulo">Prioridade</div>
+      <div class="chip-group">
+        @for (p of prioridades; track p) {
+          <button
+            type="button"
+            class="chip-btn"
+            [class.baixa]="p === 'Baixa'"
+            [class.media]="p === 'Media'"
+            [class.alta]="p === 'Alta'"
+            [class.urgente]="p === 'Urgente'"
+            [class.ativo]="prioridadeSelecionada === p"
+            (click)="selecionarPrioridade(p)">
+            {{ prioridadeLabels[p] }}
+          </button>
+        }
+      </div>
+    </div>
+
+    <!-- ── Seção Responsável e Função ───────────────────────── -->
+    <div class="card">
+      <div class="card-titulo">Responsável</div>
+
+      <div class="field">
+        <label>Funcionário Responsável</label>
+        <select formControlName="funcionarioId">
+          <option value="0">Selecione o funcionário…</option>
+          @for (f of funcionarios; track f.id) {
+            <option [value]="f.id">{{ f.nome }} — {{ funcaoLabels[f.funcao] }} / {{ setorLabels[f.setor] }}</option>
+          }
+        </select>
+      </div>
+
+      <div class="sub-titulo">Função da Ordem</div>
+      <div class="chip-group">
+        @for (f of funcoes; track f) {
+          <button
+            type="button"
+            class="chip-btn neutro"
+            [class.ativo]="funcaoSelecionada === f"
+            (click)="selecionarFuncao(f)">
+            {{ funcaoLabels[f] }}
+          </button>
+        }
+      </div>
+
+      <div class="sub-titulo" style="margin-top: 14px;">Setor da Ordem</div>
+      <div class="chip-group">
+        @for (s of setores; track s) {
+          <button
+            type="button"
+            class="chip-btn neutro"
+            [class.ativo]="setorSelecionado === s"
+            (click)="selecionarSetor(s)">
+            {{ setorLabels[s] }}
+          </button>
+        }
+      </div>
+    </div>
+
+    <!-- ── Seção Operações ───────────────────────────────────── -->
+    <div class="card">
+      <div class="card-titulo">Operações</div>
+      <div class="chip-group flex-wrap">
+        @for (op of operacoes; track op) {
+          <button
+            type="button"
+            class="chip-btn check"
+            [class.ativo]="isOperacaoSelecionada(op)"
+            (click)="toggleOperacao(op)">
+            <span class="check-icon">{{ isOperacaoSelecionada(op) ? '✓' : '+' }}</span>
+            {{ operacaoLabels[op] }}
+          </button>
+        }
+      </div>
+    </div>
+
+    <!-- ── Seção Datas ───────────────────────────────────────── -->
+    <div class="card">
+      <div class="card-titulo">Datas</div>
+      <div class="row-2">
+        <div class="field">
+          <label>Data de Início</label>
+          <input formControlName="dataInicio" type="date" />
+        </div>
+        <div class="field">
+          <label>Prazo Previsto <span class="req">*</span></label>
+          <input formControlName="prazoPrevisto" type="date" />
+          @if (form.get('prazoPrevisto')?.invalid && form.get('prazoPrevisto')?.touched) {
+            <span class="field-erro">Campo obrigatório</span>
+          }
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Seção Observações ─────────────────────────────────── -->
+    <div class="card">
+      <div class="card-titulo">Observações</div>
+      <div class="field">
+        <textarea formControlName="observacoes" rows="4" placeholder="Observações adicionais sobre a ordem…"></textarea>
+      </div>
+    </div>
+
+    <!-- ── Seção Imagens ─────────────────────────────────────── -->
+    <div class="card">
+      <div class="card-titulo">Imagens da Peça</div>
+
+      @if (ordemAtual?.imagens?.length) {
+        <div class="anexos-grid">
+          @for (img of ordemAtual!.imagens; track img.id) {
+            <div class="anexo-item">
+              <img [src]="img.url" [alt]="img.nomeArquivo" class="thumb" />
+              <button type="button" class="btn-remover" (click)="removerImagemExistente(img.id)">✕</button>
+              <span class="anexo-nome">{{ img.nomeArquivo }}</span>
+            </div>
+          }
+        </div>
       }
+
+      @if (imagensPendentes.length) {
+        <div class="pendentes-list">
+          @for (f of imagensPendentes; track $index) {
+            <div class="pendente-item">
+              <span>🖼 {{ f.name }}</span>
+              <button type="button" class="btn-remover" (click)="removerImagemPendente($index)">✕</button>
+            </div>
+          }
+        </div>
+      }
+
+      <input type="file" accept="image/*" multiple (change)="onImagens($event)" hidden #inputImagens />
+      <button type="button" class="btn sm" (click)="inputImagens.click()">+ Adicionar Imagens</button>
     </div>
 
-    <div class="row">
-      <div class="field">
-        <label>Material *</label>
-        <input formControlName="material" placeholder="Ex: SAE 1020" />
-        @if (form.get('material')?.invalid && form.get('material')?.touched) {
-          <span class="field-erro">Campo obrigatÃ³rio</span>
-        }
-      </div>
-      <div class="field">
-        <label>Quantidade *</label>
-        <input formControlName="quantidade" type="number" min="1" />
-      </div>
+    <!-- ── Seção Documentos ──────────────────────────────────── -->
+    <div class="card">
+      <div class="card-titulo">Documentos (PDF / AutoCAD)</div>
+
+      @if (ordemAtual?.documentos?.length) {
+        <div class="docs-list">
+          @for (doc of ordemAtual!.documentos; track doc.id) {
+            <div class="doc-item">
+              <a [href]="doc.url" target="_blank" class="doc-link">📄 {{ doc.nomeArquivo }}</a>
+              <button type="button" class="btn-remover" (click)="removerDocumentoExistente(doc.id)">✕</button>
+            </div>
+          }
+        </div>
+      }
+
+      @if (documentosPendentes.length) {
+        <div class="pendentes-list">
+          @for (f of documentosPendentes; track $index) {
+            <div class="pendente-item">
+              <span>📄 {{ f.name }}</span>
+              <button type="button" class="btn-remover" (click)="removerDocumentoPendente($index)">✕</button>
+            </div>
+          }
+        </div>
+      }
+
+      <input type="file" accept=".pdf,.dwg,.dxf" multiple (change)="onDocumentos($event)" hidden #inputDocs />
+      <button type="button" class="btn sm" (click)="inputDocs.click()">+ Adicionar Documentos</button>
     </div>
 
-    <div class="field">
-      <label>Medidas</label>
-      <textarea formControlName="medidas" rows="3" placeholder="Ex: Ã˜ 32mm x 80mm, Rosca M20, Chanfro 1x45Â°"></textarea>
-    </div>
-
-    <div class="field">
-      <label>ObservaÃ§Ãµes</label>
-      <textarea formControlName="observacoes" rows="3" placeholder="ObservaÃ§Ãµes adicionaisâ€¦"></textarea>
-    </div>
-
-    <!-- Imagens -->
-    <div class="section-title">Imagens da PeÃ§a</div>
-
-    @if (ordemAtual?.imagens?.length) {
-      <div class="anexos-grid">
-        @for (img of ordemAtual!.imagens; track img.id) {
-          <div class="anexo-item">
-            <img [src]="img.url" [alt]="img.nomeArquivo" class="thumb" />
-            <button type="button" class="btn-remover" (click)="removerImagemExistente(img.id)">âœ•</button>
-            <span class="anexo-nome">{{ img.nomeArquivo }}</span>
-          </div>
-        }
-      </div>
-    }
-
-    @if (imagensPendentes.length) {
-      <div class="pendentes-list">
-        @for (f of imagensPendentes; track $index) {
-          <div class="pendente-item">
-            <span>ðŸ–¼ {{ f.name }}</span>
-            <button type="button" class="btn-remover" (click)="removerImagemPendente($index)">âœ•</button>
-          </div>
-        }
-      </div>
-    }
-
-    <input type="file" accept="image/*" multiple (change)="onImagens($event)" hidden #inputImagens />
-    <button type="button" class="btn" (click)="inputImagens.click()">+ Adicionar Imagens</button>
-
-    <!-- Documentos (PDF / DWG) -->
-    <div class="section-title">Documentos (PDF / AutoCAD)</div>
-
-    @if (ordemAtual?.documentos?.length) {
-      <div class="docs-list">
-        @for (doc of ordemAtual!.documentos; track doc.id) {
-          <div class="doc-item">
-            <a [href]="doc.url" target="_blank" class="doc-link">ðŸ“„ {{ doc.nomeArquivo }}</a>
-            <button type="button" class="btn-remover" (click)="removerDocumentoExistente(doc.id)">âœ•</button>
-          </div>
-        }
-      </div>
-    }
-
-    @if (documentosPendentes.length) {
-      <div class="pendentes-list">
-        @for (f of documentosPendentes; track $index) {
-          <div class="pendente-item">
-            <span>ðŸ“„ {{ f.name }}</span>
-            <button type="button" class="btn-remover" (click)="removerDocumentoPendente($index)">âœ•</button>
-          </div>
-        }
-      </div>
-    }
-
-    <input type="file" accept=".pdf,.dwg,.dxf" multiple (change)="onDocumentos($event)" hidden #inputDocs />
-    <button type="button" class="btn" (click)="inputDocs.click()">+ Adicionar Documentos</button>
-
-    <!-- AÃ§Ãµes -->
+    <!-- Ações finais -->
     <div class="form-actions">
-      <button type="submit" class="btn primary" [disabled]="salvando">
-        {{ salvando ? 'Salvando...' : (edicao ? 'Salvar AlteraÃ§Ãµes' : 'Criar Ordem') }}
+      <button type="submit" class="btn primary large" [disabled]="salvando">
+        {{ salvando ? 'Salvando...' : (edicao ? 'Salvar Alterações' : 'Criar Ordem') }}
       </button>
-      <a routerLink="/admin" class="btn">Cancelar</a>
+      <a routerLink="/admin" class="btn large">Cancelar</a>
     </div>
+
   </form>
 </section>

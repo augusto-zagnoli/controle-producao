@@ -4,7 +4,9 @@ import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { forkJoin, switchMap } from 'rxjs';
 import { OrdemServico, HistoricoItem, STATUS_LABELS, OrdemServicoStatus } from '../models/ordem-servico.model';
+import { Funcionario } from '../models/funcionario.model';
 import { OrdensService } from '../services/ordens.service';
+import { FuncionariosService } from '../services/funcionarios.service';
 
 @Component({
   selector: 'app-producao-detail',
@@ -16,6 +18,7 @@ import { OrdensService } from '../services/ordens.service';
 export class ProducaoDetailComponent implements OnInit {
   private readonly route = inject(ActivatedRoute);
   private readonly service = inject(OrdensService);
+  private readonly funcionariosService = inject(FuncionariosService);
 
   ordem: OrdemServico | null = null;
   historico: HistoricoItem[] = [];
@@ -30,6 +33,9 @@ export class ProducaoDetailComponent implements OnInit {
   salvando = false;
   erroModal = '';
 
+  funcionarios: Funcionario[] = [];
+  funcionarioSelecionadoId: number = 0;
+
   readonly statusOptions: { value: OrdemServicoStatus; label: string }[] = [
     { value: 'Pendente', label: 'Pendente' },
     { value: 'EmProducao', label: 'Em Producao' },
@@ -38,6 +44,9 @@ export class ProducaoDetailComponent implements OnInit {
   ];
 
   ngOnInit(): void {
+    this.funcionariosService.listar(true).subscribe({
+      next: lista => { this.funcionarios = lista; }
+    });
     const id = Number(this.route.snapshot.paramMap.get('id'));
     this.carregando = true;
     forkJoin({
@@ -63,6 +72,7 @@ export class ProducaoDetailComponent implements OnInit {
     this.fotoOperador = null;
     this.fotoPreview = null;
     this.erroModal = '';
+    this.funcionarioSelecionadoId = 0;
     this.modalAberto = true;
   }
 
@@ -81,6 +91,10 @@ export class ProducaoDetailComponent implements OnInit {
   }
 
   confirmarStatus(): void {
+    if (!this.funcionarioSelecionadoId) {
+      this.erroModal = 'Selecione o funcionario responsavel.';
+      return;
+    }
     if (!this.fotoOperador) {
       this.erroModal = 'A foto do operador e obrigatoria.';
       return;
@@ -89,7 +103,7 @@ export class ProducaoDetailComponent implements OnInit {
     this.salvando = true;
     this.erroModal = '';
 
-    this.service.alterarStatus(this.ordem.id, this.novoStatus, this.observacao, this.fotoOperador).pipe(
+    this.service.alterarStatus(this.ordem.id, this.novoStatus, this.observacao, this.fotoOperador, this.funcionarioSelecionadoId).pipe(
       switchMap(() => forkJoin({
         ordem: this.service.obter(this.ordem!.id),
         historico: this.service.historico(this.ordem!.id)

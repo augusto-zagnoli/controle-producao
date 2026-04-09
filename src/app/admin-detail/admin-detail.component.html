@@ -1,4 +1,4 @@
-﻿<section class="page">
+<section class="page">
   @if (carregando) {
     <p class="info">Carregando...</p>
   } @else if (erro) {
@@ -6,38 +6,73 @@
   } @else if (ordem) {
 
     <header class="page-header">
-      <div>
+      <div class="header-left">
         <span class="op-num">OS #{{ ordem.codigo }}</span>
-        <h1>{{ ordem.descricaoPeca }}</h1>
+        <h1>{{ ordem.nomeProduto }}</h1>
         <span class="chip" [class]="ordem.status">{{ statusLabel(ordem.status) }}</span>
       </div>
       <div class="header-actions">
-        <a routerLink="/admin" class="btn">â† Voltar</a>
+        <a routerLink="/admin" class="btn">← Voltar</a>
         <a [routerLink]="['/admin/ordem', ordem.id, 'editar']" class="btn primary">Editar</a>
       </div>
     </header>
 
-    <!-- Dados Gerais -->
+    <!-- Produto -->
     <div class="section-card">
-      <h2>Dados da PeÃ§a</h2>
+      <h2>Produto</h2>
       <div class="info-grid">
-        <div class="info-item"><span>Material</span><strong>{{ ordem.material }}</strong></div>
-        <div class="info-item"><span>Quantidade</span><strong>{{ ordem.quantidade }} pÃ§s</strong></div>
-        <div class="info-item"><span>Criado por</span><strong>{{ ordem.usuarioCriacao.nome }}</strong></div>
-        <div class="info-item"><span>Data de criaÃ§Ã£o</span><strong>{{ formatarData(ordem.dataCriacao) }}</strong></div>
-        @if (ordem.medidas) {
-          <div class="info-item full"><span>Medidas</span><strong class="medidas-text">{{ ordem.medidas }}</strong></div>
-        }
-        @if (ordem.observacoes) {
-          <div class="info-item full"><span>ObservaÃ§Ãµes</span><strong>{{ ordem.observacoes }}</strong></div>
+        <div class="info-item"><span>Nome do Produto</span><strong>{{ ordem.nomeProduto }}</strong></div>
+        <div class="info-item"><span>Quantidade</span><strong>{{ ordem.quantidade }}{{ ordem.unidade ? ' ' + ordem.unidade : '' }}</strong></div>
+        @if (ordem.descricao) {
+          <div class="info-item full"><span>Descrição</span><strong>{{ ordem.descricao }}</strong></div>
         }
       </div>
     </div>
 
+    <!-- Prioridade, Responsável e Setor -->
+    <div class="section-card">
+      <h2>Ordem</h2>
+      <div class="info-grid">
+        <div class="info-item">
+          <span>Prioridade</span>
+          <strong><span class="badge-prioridade" [class]="ordem.prioridade.toLowerCase()">{{ ordem.prioridade }}</span></strong>
+        </div>
+        <div class="info-item"><span>Responsável</span><strong>{{ ordem.funcionario?.nome ?? '—' }}</strong></div>
+        <div class="info-item"><span>Função</span><strong>{{ ordem.funcao }}</strong></div>
+        <div class="info-item"><span>Setor</span><strong>{{ ordem.setor }}</strong></div>
+        @if (ordem.dataInicio) {
+          <div class="info-item"><span>Data de Início</span><strong>{{ formatarData(ordem.dataInicio) }}</strong></div>
+        }
+        <div class="info-item"><span>Prazo Previsto</span><strong>{{ formatarData(ordem.prazoPrevisto) }}</strong></div>
+        <div class="info-item"><span>Criado por</span><strong>{{ ordem.usuarioCriacao.nome }}</strong></div>
+        <div class="info-item"><span>Data de Criação</span><strong>{{ formatarData(ordem.dataCriacao) }}</strong></div>
+      </div>
+    </div>
+
+    <!-- Operações -->
+    @if (ordem.operacoes.length) {
+      <div class="section-card">
+        <h2>Operações</h2>
+        <div class="operacoes-list">
+          @for (op of ordem.operacoes; track op.id) {
+            <span class="op-badge">{{ op.tipo }}</span>
+          }
+        </div>
+      </div>
+    }
+
+    <!-- Observações -->
+    @if (ordem.observacoes) {
+      <div class="section-card">
+        <h2>Observações</h2>
+        <p class="obs-text">{{ ordem.observacoes }}</p>
+      </div>
+    }
+
     <!-- Imagens -->
     @if (ordem.imagens.length) {
       <div class="section-card">
-        <h2>Imagens da PeÃ§a</h2>
+        <h2>Imagens da Peça</h2>
         <div class="imagens-grid">
           @for (img of ordem.imagens; track img.id) {
             <a [href]="img.url" target="_blank">
@@ -54,17 +89,17 @@
         <h2>Documentos</h2>
         <div class="docs-list">
           @for (doc of ordem.documentos; track doc.id) {
-            <a [href]="doc.url" target="_blank" class="doc-link">ðŸ“„ {{ doc.nomeArquivo }}</a>
+            <a [href]="doc.url" target="_blank" class="doc-link">📄 {{ doc.nomeArquivo }}</a>
           }
         </div>
       </div>
     }
 
-    <!-- HistÃ³rico -->
+    <!-- Histórico -->
     <div class="section-card">
-      <h2>HistÃ³rico de AlteraÃ§Ãµes</h2>
+      <h2>Histórico de Alterações</h2>
       @if (!historico.length) {
-        <p class="empty">Nenhum registro no histÃ³rico.</p>
+        <p class="empty">Nenhum registro no histórico.</p>
       }
       <div class="historico-list">
         @for (h of historico; track h.id) {
@@ -77,12 +112,15 @@
               <span>{{ h.nomeUsuario }}</span>
               <span>{{ formatarData(h.dataHora) }}</span>
             </div>
-            @if (h.observacao) {
-              <p class="hist-obs">{{ h.observacao }}</p>
+            @if (h.nomeFuncionario) {
+              <div class="hist-funcionario">👷 {{ h.nomeFuncionario }}</div>
             }
+            @if (h.observacao) { <p class="hist-obs">{{ h.observacao }}</p> }
             @if (h.fotoOperadorUrl) {
               <div class="hist-foto">
-                <img [src]="h.fotoOperadorUrl" alt="Foto do operador" class="foto-operador" />
+                <a [href]="h.fotoOperadorUrl" target="_blank">
+                  <img [src]="h.fotoOperadorUrl" alt="Foto do operador" class="foto-operador" />
+                </a>
               </div>
             }
           </div>
@@ -90,5 +128,5 @@
       </div>
     </div>
 
-  } <!-- end if ordem -->
+  }
 </section>

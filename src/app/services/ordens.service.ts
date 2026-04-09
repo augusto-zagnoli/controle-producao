@@ -66,12 +66,14 @@ export class OrdensService {
     id: number,
     novoStatus: string,
     observacao: string | null,
-    fotoOperador: File | null
+    fotoOperador: File | null,
+    funcionarioId: number | null
   ): Observable<HistoricoItem> {
     const form = new FormData();
     form.append('novoStatus', novoStatus);
     if (observacao) form.append('observacao', observacao);
     if (fotoOperador) form.append('fotoOperador', fotoOperador);
+    if (funcionarioId !== null) form.append('funcionarioId', String(funcionarioId));
     return this.http.post<HistoricoItem>(`${this.base}/${id}/alterar-status`, form);
   }
 

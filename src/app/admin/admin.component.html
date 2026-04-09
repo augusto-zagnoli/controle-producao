@@ -1,7 +1,11 @@
 <section class="page">
   <header class="page-header">
     <h1>Ordens de Serviço</h1>
-    <a routerLink="/admin/nova" class="btn primary">+ Nova OS</a>
+    <div class="header-actions">
+      <a routerLink="/admin/funcionarios" class="btn secondary">👷 Funcionários</a>
+      <a routerLink="/admin/usuarios" class="btn secondary">👤 Usuários</a>
+      <a routerLink="/admin/nova" class="btn primary">+ Nova OS</a>
+    </div>
   </header>
 
   <!-- Stats -->
@@ -52,10 +56,10 @@
       <thead>
         <tr>
           <th>Cód.</th>
-          <th>Peça</th>
-          <th>Material</th>
-          <th>Medidas</th>
-          <th>Qtd</th>
+          <th>Produto</th>
+          <th>Responsável</th>
+          <th>Prioridade</th>
+          <th>Prazo</th>
           <th>Status</th>
           <th>Criado em</th>
           <th>Ações</th>
@@ -65,10 +69,10 @@
         @for (o of ordens; track o.id) {
           <tr>
             <td class="op-num">{{ o.codigo }}</td>
-            <td class="peca">{{ o.descricaoPeca }}</td>
-            <td>{{ o.material }}</td>
-            <td class="medidas">{{ o.medidas || '—' }}</td>
-            <td>{{ o.quantidade }}</td>
+            <td class="peca">{{ o.nomeProduto }}</td>
+            <td>{{ o.funcionario?.nome ?? '—' }}</td>
+            <td><span class="chip-prioridade" [class]="o.prioridade.toLowerCase()">{{ o.prioridade }}</span></td>
+            <td>{{ formatarData(o.prazoPrevisto) }}</td>
             <td><span class="chip" [class]="o.status">{{ statusLabel(o.status) }}</span></td>
             <td>{{ formatarData(o.dataCriacao) }}</td>
             <td class="actions">

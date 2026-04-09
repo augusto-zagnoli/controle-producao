@@ -28,9 +28,9 @@
             <span class="op-num">OS #{{ o.codigo }}</span>
             <span class="chip" [class]="o.status">{{ statusLabel(o.status) }}</span>
           </div>
-          <div class="peca-nome">{{ o.descricaoPeca }}</div>
+          <div class="peca-nome">{{ o.nomeProduto }}</div>
           <div class="card-info">
-            @if (o.material) { <span>{{ o.material }}</span> }
+            @if (o.unidade) { <span>{{ o.unidade }}</span> }
             <span>{{ o.quantidade }} pçs</span>
           </div>
         </a>
