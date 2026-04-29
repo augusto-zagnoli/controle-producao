@@ -35,9 +35,23 @@
   border: 1px solid #e5e7eb;
 }
 .peca-nome { font-size: 22px; font-weight: 700; margin-bottom: 10px; }
-.info-row { display: flex; flex-wrap: wrap; gap: 10px; font-size: 14px; color: #374151; margin-bottom: 8px; }
+.info-row { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; font-size: 14px; color: #374151; margin-bottom: 8px; }
 .medidas { white-space: pre-line; font-size: 14px; color: #6b7280; margin-bottom: 6px; }
 .obs { font-size: 14px; color: #6b7280; font-style: italic; }
+
+.badge-prioridade {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  &.baixa   { background: #d1fae5; color: #065f46; }
+  &.media   { background: #fef3c7; color: #92400e; }
+  &.alta    { background: #fee2e2; color: #991b1b; }
+  &.urgente { background: #fce7f3; color: #9d174d; }
+}
 
 .files-section {
   background: #fff;

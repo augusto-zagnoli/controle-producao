@@ -22,6 +22,9 @@
         @if (ordem.unidade) { <span>{{ ordem.unidade }}</span> }
         <span><strong>Qtd:</strong> {{ ordem.quantidade }}</span>
         @if (ordem.funcao) { <span>{{ ordem.funcao }}</span> }
+        @if (ordem.prioridade) {
+          <span class="badge-prioridade" [class]="ordem.prioridade.toLowerCase()">{{ ordem.prioridade }}</span>
+        }
       </div>
       @if (ordem.observacoes) {
         <div class="obs">{{ ordem.observacoes }}</div>
