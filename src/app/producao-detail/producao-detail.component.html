@@ -54,28 +54,6 @@
       <button class="btn-status" (click)="abrirModal()">Alterar Status da OS</button>
     </div>
 
-    @if (historico.length) {
-      <div class="historico-section">
-        <h3>Histórico</h3>
-        @for (h of historico; track h.id) {
-          <div class="hist-item">
-            <div class="hist-header">
-              <span class="hist-acao">{{ h.acao }}</span>
-              <span class="hist-data">{{ formatarData(h.dataHora) }}</span>
-            </div>
-            <div class="hist-meta">{{ h.nomeUsuario }}</div>
-            @if (h.nomeFuncionario) {
-              <div class="hist-funcionario">👷 {{ h.nomeFuncionario }}</div>
-            }
-            @if (h.observacao) { <p class="hist-obs">{{ h.observacao }}</p> }
-            @if (h.fotoOperadorUrl) {
-              <img [src]="h.fotoOperadorUrl" alt="Foto operador" class="foto-op" />
-            }
-          </div>
-        }
-      </div>
-    }
-
   } @else {
     <p class="info">Ordem não encontrada.</p>
   }

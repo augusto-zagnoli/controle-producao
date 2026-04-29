@@ -2,8 +2,8 @@
 import { Component, ElementRef, OnDestroy, OnInit, ViewChild, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, RouterLink } from '@angular/router';
-import { forkJoin, switchMap } from 'rxjs';
-import { OrdemServico, HistoricoItem, STATUS_LABELS, OrdemServicoStatus } from '../models/ordem-servico.model';
+import { switchMap } from 'rxjs';
+import { OrdemServico, STATUS_LABELS, OrdemServicoStatus } from '../models/ordem-servico.model';
 import { Funcionario } from '../models/funcionario.model';
 import { OrdensService } from '../services/ordens.service';
 import { FuncionariosService } from '../services/funcionarios.service';
@@ -23,7 +23,6 @@ export class ProducaoDetailComponent implements OnInit, OnDestroy {
   @ViewChild('videoEl') videoEl?: ElementRef<HTMLVideoElement>;
 
   ordem: OrdemServico | null = null;
-  historico: HistoricoItem[] = [];
   carregando = true;
   erro = '';
 
@@ -55,13 +54,9 @@ export class ProducaoDetailComponent implements OnInit, OnDestroy {
     });
     const id = Number(this.route.snapshot.paramMap.get('id'));
     this.carregando = true;
-    forkJoin({
-      ordem: this.service.obter(id),
-      historico: this.service.historico(id)
-    }).subscribe({
-      next: ({ ordem, historico }) => {
+    this.service.obter(id).subscribe({
+      next: ordem => {
         this.ordem = ordem;
-        this.historico = historico;
         this.carregando = false;
       },
       error: () => {
@@ -169,16 +164,13 @@ export class ProducaoDetailComponent implements OnInit, OnDestroy {
     this.erroModal = '';
 
     this.service.alterarStatus(this.ordem.id, this.novoStatus, this.observacao, this.fotoOperador, this.funcionarioSelecionadoId).pipe(
-      switchMap(() => forkJoin({
-        ordem: this.service.obter(this.ordem!.id),
-        historico: this.service.historico(this.ordem!.id)
-      }))
+      switchMap(() => this.service.obter(this.ordem!.id))
     ).subscribe({
-      next: ({ ordem, historico }) => {
+      next: ordem => {
         this.ordem = ordem;
-        this.historico = historico;
         this.modalAberto = false;
         this.salvando = false;
+        this.pararCamera();
       },
       error: () => {
         this.erroModal = 'Erro ao alterar status. Tente novamente.';
