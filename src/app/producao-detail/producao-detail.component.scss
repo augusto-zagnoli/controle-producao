@@ -50,6 +50,8 @@
 .images-row { display: flex; gap: 10px; flex-wrap: wrap; }
 .thumb { width: 90px; height: 90px; object-fit: cover; border-radius: 8px; border: 1px solid #e5e7eb; }
 .doc-link { display: block; color: #2563eb; font-size: 14px; padding: 4px 0; text-decoration: none; &:hover { text-decoration: underline; } }
+.docs-list { display: flex; flex-direction: column; gap: 4px; }
+.empty { font-size: 13px; color: #9ca3af; font-style: italic; margin: 0; }
 
 .action-section {
   margin: 0 16px 16px;

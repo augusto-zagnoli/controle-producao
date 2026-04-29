@@ -7,6 +7,7 @@ import { OrdemServico, STATUS_LABELS, OrdemServicoStatus } from '../models/ordem
 import { Funcionario } from '../models/funcionario.model';
 import { OrdensService } from '../services/ordens.service';
 import { FuncionariosService } from '../services/funcionarios.service';
+import { environment } from '../../environments/environment';
 
 @Component({
   selector: 'app-producao-detail',
@@ -186,5 +187,12 @@ export class ProducaoDetailComponent implements OnInit, OnDestroy {
   formatarData(iso: string): string {
     if (!iso) return '-';
     return new Date(iso).toLocaleString('pt-BR');
+  }
+
+  arquivoUrl(url: string | null | undefined): string {
+    if (!url) return '#';
+    if (/^https?:\/\//i.test(url)) return url;
+    const base = (environment.apiUrl || '').replace(/\/$/, '');
+    return url.startsWith('/') ? `${base}${url}` : `${base}/${url}`;
   }
 }

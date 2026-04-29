@@ -28,27 +28,33 @@
       }
     </div>
 
-    @if (ordem.imagens.length) {
-      <div class="files-section">
-        <h3>Imagens</h3>
+    <div class="files-section">
+      <h3>Imagens da Peça</h3>
+      @if (ordem.imagens.length) {
         <div class="images-row">
           @for (img of ordem.imagens; track img.id) {
-            <a [href]="img.url" target="_blank">
-              <img [src]="img.url" [alt]="img.nomeArquivo" class="thumb" />
+            <a [href]="arquivoUrl(img.url)" target="_blank" rel="noopener">
+              <img [src]="arquivoUrl(img.url)" [alt]="img.nomeArquivo" class="thumb" />
             </a>
           }
         </div>
-      </div>
-    }
+      } @else {
+        <p class="empty">Nenhuma imagem anexada.</p>
+      }
+    </div>
 
-    @if (ordem.documentos.length) {
-      <div class="files-section">
-        <h3>Documentos</h3>
-        @for (doc of ordem.documentos; track doc.id) {
-          <a [href]="doc.url" target="_blank" class="doc-link">📄 {{ doc.nomeArquivo }}</a>
-        }
-      </div>
-    }
+    <div class="files-section">
+      <h3>Documentos / Anexos</h3>
+      @if (ordem.documentos.length) {
+        <div class="docs-list">
+          @for (doc of ordem.documentos; track doc.id) {
+            <a [href]="arquivoUrl(doc.url)" target="_blank" rel="noopener" class="doc-link">📄 {{ doc.nomeArquivo }}</a>
+          }
+        </div>
+      } @else {
+        <p class="empty">Nenhum documento anexado.</p>
+      }
+    </div>
 
     <div class="action-section">
       <button class="btn-status" (click)="abrirModal()">Alterar Status da OS</button>
