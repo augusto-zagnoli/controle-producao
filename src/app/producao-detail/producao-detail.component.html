@@ -113,13 +113,21 @@
 
           <div class="foto-field">
             <p class="foto-label">📷 Foto do Operador <span class="req">*</span></p>
-            <label class="btn-foto">
-              {{ fotoOperador ? '✓ Foto capturada — trocar' : 'Tirar / Selecionar Foto' }}
-              <input type="file" accept="image/*" capture="environment" (change)="onFoto($event)" hidden />
-            </label>
-            @if (fotoPreview) {
+
+            @if (cameraAtiva) {
+              <div class="camera-wrap">
+                <video #videoEl class="camera-video" autoplay playsinline muted></video>
+              </div>
+              <button type="button" class="btn-foto" (click)="capturarFoto()">📸 Capturar Foto</button>
+            } @else if (fotoPreview) {
               <img [src]="fotoPreview" alt="Prévia da foto" class="foto-preview" />
+              <button type="button" class="btn-foto" (click)="refazerFoto()">🔄 Refazer Foto</button>
+            } @else {
+              <button type="button" class="btn-foto" (click)="iniciarCamera()" [disabled]="iniciandoCamera">
+                {{ iniciandoCamera ? 'Iniciando câmera...' : '📷 Abrir Câmera' }}
+              </button>
             }
+
             @if (erroModal) {
               <p class="erro-modal">{{ erroModal }}</p>
             }

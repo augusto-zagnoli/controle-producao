@@ -19,7 +19,7 @@ export const routes: Routes = [
   { path: 'admin/ordem/:id/editar', component: AdminFormComponent, canActivate: [adminGuard] },
   { path: 'admin/funcionarios', component: AdminFuncionariosComponent, canActivate: [adminGuard] },
   { path: 'admin/usuarios', component: AdminUsuariosComponent, canActivate: [adminGuard] },
-  { path: 'producao', component: ProducaoComponent, canActivate: [authGuard] },
-  { path: 'producao/ordem/:id', component: ProducaoDetailComponent, canActivate: [authGuard] },
+  { path: 'producao', component: ProducaoComponent },
+  { path: 'producao/ordem/:id', component: ProducaoDetailComponent },
   { path: '**', redirectTo: 'login' }
 ];

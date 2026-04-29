@@ -1,5 +1,5 @@
 ﻿import { CommonModule } from '@angular/common';
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, ElementRef, OnDestroy, OnInit, ViewChild, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { forkJoin, switchMap } from 'rxjs';
@@ -15,10 +15,12 @@ import { FuncionariosService } from '../services/funcionarios.service';
   templateUrl: './producao-detail.component.html',
   styleUrl: './producao-detail.component.scss'
 })
-export class ProducaoDetailComponent implements OnInit {
+export class ProducaoDetailComponent implements OnInit, OnDestroy {
   private readonly route = inject(ActivatedRoute);
   private readonly service = inject(OrdensService);
   private readonly funcionariosService = inject(FuncionariosService);
+
+  @ViewChild('videoEl') videoEl?: ElementRef<HTMLVideoElement>;
 
   ordem: OrdemServico | null = null;
   historico: HistoricoItem[] = [];
@@ -32,6 +34,10 @@ export class ProducaoDetailComponent implements OnInit {
   fotoPreview: string | null = null;
   salvando = false;
   erroModal = '';
+
+  cameraAtiva = false;
+  iniciandoCamera = false;
+  private stream: MediaStream | null = null;
 
   funcionarios: Funcionario[] = [];
   funcionarioSelecionadoId: number = 0;
@@ -74,20 +80,79 @@ export class ProducaoDetailComponent implements OnInit {
     this.erroModal = '';
     this.funcionarioSelecionadoId = 0;
     this.modalAberto = true;
+    setTimeout(() => this.iniciarCamera(), 0);
   }
 
   fecharModal(): void {
     this.modalAberto = false;
+    this.pararCamera();
   }
 
-  onFoto(event: Event): void {
-    const input = event.target as HTMLInputElement;
-    const file = input.files?.[0];
-    if (!file) return;
-    this.fotoOperador = file;
-    const reader = new FileReader();
-    reader.onload = () => { this.fotoPreview = reader.result as string; };
-    reader.readAsDataURL(file);
+  ngOnDestroy(): void {
+    this.pararCamera();
+  }
+
+  async iniciarCamera(): Promise<void> {
+    if (this.cameraAtiva || this.iniciandoCamera) return;
+    if (!navigator.mediaDevices?.getUserMedia) {
+      this.erroModal = 'Câmera não disponível neste dispositivo/navegador.';
+      return;
+    }
+    this.iniciandoCamera = true;
+    this.erroModal = '';
+    try {
+      this.stream = await navigator.mediaDevices.getUserMedia({
+        video: { facingMode: 'environment', width: { ideal: 1280 }, height: { ideal: 720 } },
+        audio: false
+      });
+      this.cameraAtiva = true;
+      // aguarda o @if renderizar o <video>
+      setTimeout(() => {
+        if (this.videoEl?.nativeElement && this.stream) {
+          this.videoEl.nativeElement.srcObject = this.stream;
+          this.videoEl.nativeElement.play().catch(() => { /* ignore */ });
+        }
+      }, 0);
+    } catch {
+      this.erroModal = 'Não foi possível acessar a câmera. Verifique as permissões.';
+      this.cameraAtiva = false;
+    } finally {
+      this.iniciandoCamera = false;
+    }
+  }
+
+  pararCamera(): void {
+    if (this.stream) {
+      this.stream.getTracks().forEach(t => t.stop());
+      this.stream = null;
+    }
+    if (this.videoEl?.nativeElement) {
+      this.videoEl.nativeElement.srcObject = null;
+    }
+    this.cameraAtiva = false;
+  }
+
+  capturarFoto(): void {
+    const video = this.videoEl?.nativeElement;
+    if (!video || !this.cameraAtiva) return;
+    const canvas = document.createElement('canvas');
+    canvas.width = video.videoWidth || 1280;
+    canvas.height = video.videoHeight || 720;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+    ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+    canvas.toBlob(blob => {
+      if (!blob) return;
+      this.fotoOperador = new File([blob], `foto-operador-${Date.now()}.jpg`, { type: 'image/jpeg' });
+      this.fotoPreview = canvas.toDataURL('image/jpeg', 0.9);
+      this.pararCamera();
+    }, 'image/jpeg', 0.9);
+  }
+
+  refazerFoto(): void {
+    this.fotoOperador = null;
+    this.fotoPreview = null;
+    this.iniciarCamera();
   }
 
   confirmarStatus(): void {
