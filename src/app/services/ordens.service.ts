@@ -77,6 +77,20 @@ export class OrdensService {
     return this.http.post<HistoricoItem>(`${this.base}/${id}/alterar-status`, form);
   }
 
+  // Função / Setor (chão de fábrica)
+  alterarFuncaoSetor(
+    id: number,
+    funcao: string,
+    setor: string,
+    funcionarioId: number | null
+  ): Observable<OrdemServico> {
+    return this.http.post<OrdemServico>(`${this.base}/${id}/funcao-setor`, {
+      funcao,
+      setor,
+      funcionarioId
+    });
+  }
+
   // Histórico
   historico(id: number): Observable<HistoricoItem[]> {
     return this.http.get<HistoricoItem[]>(`${this.base}/${id}/historico`);

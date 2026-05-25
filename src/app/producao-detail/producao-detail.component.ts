@@ -3,7 +3,7 @@ import { Component, ElementRef, OnDestroy, OnInit, ViewChild, inject } from '@an
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { switchMap } from 'rxjs';
-import { OrdemServico, STATUS_LABELS, OrdemServicoStatus } from '../models/ordem-servico.model';
+import { OrdemServico, STATUS_LABELS, OrdemServicoStatus, Funcao, Setor, FUNCAO_LIST, SETOR_LIST } from '../models/ordem-servico.model';
 import { Funcionario } from '../models/funcionario.model';
 import { OrdensService } from '../services/ordens.service';
 import { FuncionariosService } from '../services/funcionarios.service';
@@ -48,6 +48,17 @@ export class ProducaoDetailComponent implements OnInit, OnDestroy {
     { value: 'Pausada', label: 'Pausada' },
     { value: 'Finalizada', label: 'Finalizada' },
   ];
+
+  readonly funcaoOptions = FUNCAO_LIST;
+  readonly setorOptions = SETOR_LIST;
+
+  // Edição função/setor
+  editandoFuncaoSetor = false;
+  funcaoEdit: Funcao = 'Operador';
+  setorEdit: Setor = 'Usinagem';
+  funcionarioFuncaoSetorId = 0;
+  salvandoFuncaoSetor = false;
+  erroFuncaoSetor = '';
 
   ngOnInit(): void {
     this.funcionariosService.listar(true).subscribe({
@@ -194,5 +205,40 @@ export class ProducaoDetailComponent implements OnInit, OnDestroy {
     if (/^https?:\/\//i.test(url)) return url;
     const base = (environment.apiUrl || '').replace(/\/$/, '');
     return url.startsWith('/') ? `${base}${url}` : `${base}/${url}`;
+  }
+
+  abrirEdicaoFuncaoSetor(): void {
+    if (!this.ordem) return;
+    this.funcaoEdit = this.ordem.funcao;
+    this.setorEdit = this.ordem.setor;
+    this.funcionarioFuncaoSetorId = 0;
+    this.erroFuncaoSetor = '';
+    this.editandoFuncaoSetor = true;
+  }
+
+  cancelarEdicaoFuncaoSetor(): void {
+    this.editandoFuncaoSetor = false;
+    this.erroFuncaoSetor = '';
+  }
+
+  salvarFuncaoSetor(): void {
+    if (!this.ordem) return;
+    if (!this.funcionarioFuncaoSetorId) {
+      this.erroFuncaoSetor = 'Selecione o funcionário responsável pela alteração.';
+      return;
+    }
+    this.salvandoFuncaoSetor = true;
+    this.erroFuncaoSetor = '';
+    this.service.alterarFuncaoSetor(this.ordem.id, this.funcaoEdit, this.setorEdit, this.funcionarioFuncaoSetorId).subscribe({
+      next: ordem => {
+        this.ordem = ordem;
+        this.editandoFuncaoSetor = false;
+        this.salvandoFuncaoSetor = false;
+      },
+      error: () => {
+        this.erroFuncaoSetor = 'Erro ao salvar. Tente novamente.';
+        this.salvandoFuncaoSetor = false;
+      }
+    });
   }
 }

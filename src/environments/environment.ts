@@ -1,4 +1,4 @@
 export const environment = {
   production: false,
-  apiUrl: 'https://legendarios.cloud:5002'
+  apiUrl: 'https://producaovemexhidraulica.tech:5002'
 };
