@@ -1,6 +1,6 @@
 <section class="opcoes-page">
   <h2 class="page-title">Opções de Campos</h2>
-  <p class="page-sub">Gerencie as opções de <strong>Função</strong> e <strong>Setor</strong> disponíveis no sistema.</p>
+  <p class="page-sub">Gerencie as opções de <strong>Função</strong>, <strong>Setor</strong> e <strong>Equipamento</strong> disponíveis no sistema.</p>
 
   @if (sucesso) { <div class="alert sucesso">{{ sucesso }}</div> }
   @if (erro)    { <div class="alert erro">{{ erro }}</div> }
@@ -14,6 +14,7 @@
         <select [(ngModel)]="novoTipo">
           <option value="Funcao">Função</option>
           <option value="Setor">Setor</option>
+          <option value="Equipamento">Equipamento</option>
         </select>
       </label>
       <label class="field">
@@ -115,6 +116,52 @@
                   <td class="actions">
                     <button class="btn-edit" (click)="iniciarEdicao(s)">✏️</button>
                     <button class="btn-del" (click)="excluir(s.id)">🗑️</button>
+                  </td>
+                </tr>
+              }
+            }
+          </tbody>
+        </table>
+      }
+    </div>
+
+    <!-- Equipamentos -->
+    <div class="card">
+      <h3>Equipamentos</h3>
+      @if (carregando) {
+        <p class="info">Carregando...</p>
+      } @else if (equipamentos.length === 0) {
+        <p class="info">Nenhum equipamento cadastrado.</p>
+      } @else {
+        <table class="opcoes-table">
+          <thead>
+            <tr><th>Nome</th><th>Ordem</th><th>Ativo</th><th></th></tr>
+          </thead>
+          <tbody>
+            @for (e of equipamentos; track e.id) {
+              @if (editandoId === e.id) {
+                <tr class="edit-row">
+                  <td><input type="text" [(ngModel)]="editNome" class="input-inline" /></td>
+                  <td><input type="number" [(ngModel)]="editOrdem" class="input-inline input-sm" /></td>
+                  <td>
+                    <label class="toggle">
+                      <input type="checkbox" [(ngModel)]="editAtivo" />
+                      <span>{{ editAtivo ? 'Sim' : 'Não' }}</span>
+                    </label>
+                  </td>
+                  <td class="actions">
+                    <button class="btn-save" (click)="salvarEdicao()" [disabled]="salvandoEdit">✔</button>
+                    <button class="btn-cancel" (click)="cancelarEdicao()">✕</button>
+                  </td>
+                </tr>
+              } @else {
+                <tr [class.inativo]="!e.ativo">
+                  <td>{{ e.nome }}</td>
+                  <td>{{ e.ordem }}</td>
+                  <td>{{ e.ativo ? 'Sim' : 'Não' }}</td>
+                  <td class="actions">
+                    <button class="btn-edit" (click)="iniciarEdicao(e)">✏️</button>
+                    <button class="btn-del" (click)="excluir(e.id)">🗑️</button>
                   </td>
                 </tr>
               }

@@ -92,6 +92,7 @@ export interface OrdemServico {
   funcionario: FuncionarioResumo | null;
   funcao: Funcao;
   setor: Setor;
+  equipamento: string | null;
   // Operações
   operacoes: OperacaoItem[];
   // Datas

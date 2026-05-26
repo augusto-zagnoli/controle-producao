@@ -49,6 +49,15 @@
             </select>
           </label>
           <label class="field">
+            Equipamento
+            <select [(ngModel)]="equipamentoEdit">
+              <option value="">— Nenhum —</option>
+              @for (e of equipamentoOptions; track e) {
+                <option [value]="e">{{ e }}</option>
+              }
+            </select>
+          </label>
+          <label class="field">
             Funcionário responsável <span class="req">*</span>
             <select [(ngModel)]="funcionarioFuncaoSetorId">
               <option [value]="0" disabled>Selecione seu nome…</option>
