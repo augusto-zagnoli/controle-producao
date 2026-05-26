@@ -1,0 +1,173 @@
+<div class="dashboard">
+
+  <!-- Header -->
+  <header class="dash-header">
+    <div class="dash-brand">
+      @if (settings?.logoUrl) {
+        <img [src]="logoUrl(settings!.logoUrl)" alt="Logo" class="dash-logo" />
+      }
+      <span class="dash-nome">{{ settings?.nomeEmpresa || 'Controle de Produção' }}</span>
+    </div>
+    <div class="dash-clock">{{ horaAtual }}</div>
+    <div class="dash-refresh">
+      @if (carregando) {
+        <span class="pulse">Atualizando...</span>
+      } @else {
+        <span>Atualizado às {{ ultimaAtualizacao }}</span>
+      }
+    </div>
+  </header>
+
+  <!-- Contadores -->
+  <div class="counters">
+    <div class="counter em-producao">
+      <span class="counter-num">{{ emProducao.length }}</span>
+      <span class="counter-label">Em Produção</span>
+    </div>
+    <div class="counter pendente">
+      <span class="counter-num">{{ pendentes.length }}</span>
+      <span class="counter-label">Pendentes</span>
+    </div>
+    <div class="counter pausada">
+      <span class="counter-num">{{ pausadas.length }}</span>
+      <span class="counter-label">Pausadas</span>
+    </div>
+    <div class="counter total">
+      <span class="counter-num">{{ ordens.length }}</span>
+      <span class="counter-label">Total Ativas</span>
+    </div>
+  </div>
+
+  <!-- Máquinas em uso -->
+  @if (maquinas.length) {
+    <section class="section">
+      <h2 class="section-title">Máquinas em Operação</h2>
+      <div class="maquinas-grid">
+        @for (m of maquinas; track m.nome) {
+          <div class="maquina-card" [class.sem-nome]="m.nome === '—'">
+            <div class="maquina-header">
+              <span class="maquina-icone">🔧</span>
+              <span class="maquina-nome">{{ m.nome === '—' ? 'Sem máquina' : m.nome }}</span>
+              <span class="maquina-qtd">{{ m.ordens.length }} OS</span>
+            </div>
+            <div class="maquina-ordens">
+              @for (o of m.ordens; track o.id) {
+                <div class="maquina-os">
+                  <span class="os-code">#{{ o.codigo }}</span>
+                  <span class="os-produto">{{ o.nomeProduto }}</span>
+                  @if (o.funcionario) {
+                    <span class="os-op">👷 {{ o.funcionario.nome }}</span>
+                  }
+                </div>
+              }
+            </div>
+          </div>
+        }
+      </div>
+    </section>
+  }
+
+  <!-- Board de OS -->
+  <section class="section board">
+
+    <!-- Em Produção -->
+    <div class="col">
+      <div class="col-header em-producao-header">
+        <span class="col-dot"></span>
+        <span class="col-title">Em Produção</span>
+        <span class="col-count">{{ emProducao.length }}</span>
+      </div>
+      <div class="col-cards">
+        @if (!emProducao.length) {
+          <p class="col-empty">Nenhuma OS em produção</p>
+        }
+        @for (o of emProducao; track o.id) {
+          <div class="os-card em-producao-card">
+            <div class="os-card-top">
+              <span class="os-num">OS #{{ o.codigo }}</span>
+              <span class="prioridade" [class]="o.prioridade.toLowerCase()">{{ o.prioridade }}</span>
+            </div>
+            <div class="os-card-produto">{{ o.nomeProduto }}</div>
+            <div class="os-card-info">
+              @if (o.quantidade) {
+                <span>{{ o.quantidade }}{{ o.unidade ? ' ' + o.unidade : '' }}</span>
+              }
+              @if (o.setor) { <span>{{ o.setor }}</span> }
+              @if (o.equipamento) { <span class="tag-maquina">🔧 {{ o.equipamento }}</span> }
+            </div>
+            @if (o.funcionario) {
+              <div class="os-card-op">👷 {{ o.funcionario.nome }}</div>
+            }
+            <div class="os-card-prazo" [class.vencido]="prazoVencido(o.prazoPrevisto)">
+              📅 {{ prazoLabel(o.prazoPrevisto) }}
+            </div>
+          </div>
+        }
+      </div>
+    </div>
+
+    <!-- Pendentes -->
+    <div class="col">
+      <div class="col-header pendente-header">
+        <span class="col-dot"></span>
+        <span class="col-title">Pendente</span>
+        <span class="col-count">{{ pendentes.length }}</span>
+      </div>
+      <div class="col-cards">
+        @if (!pendentes.length) {
+          <p class="col-empty">Nenhuma OS pendente</p>
+        }
+        @for (o of pendentes; track o.id) {
+          <div class="os-card pendente-card">
+            <div class="os-card-top">
+              <span class="os-num">OS #{{ o.codigo }}</span>
+              <span class="prioridade" [class]="o.prioridade.toLowerCase()">{{ o.prioridade }}</span>
+            </div>
+            <div class="os-card-produto">{{ o.nomeProduto }}</div>
+            <div class="os-card-info">
+              @if (o.quantidade) {
+                <span>{{ o.quantidade }}{{ o.unidade ? ' ' + o.unidade : '' }}</span>
+              }
+              @if (o.setor) { <span>{{ o.setor }}</span> }
+            </div>
+            <div class="os-card-prazo" [class.vencido]="prazoVencido(o.prazoPrevisto)">
+              📅 {{ prazoLabel(o.prazoPrevisto) }}
+            </div>
+          </div>
+        }
+      </div>
+    </div>
+
+    <!-- Pausadas -->
+    <div class="col">
+      <div class="col-header pausada-header">
+        <span class="col-dot"></span>
+        <span class="col-title">Pausada</span>
+        <span class="col-count">{{ pausadas.length }}</span>
+      </div>
+      <div class="col-cards">
+        @if (!pausadas.length) {
+          <p class="col-empty">Nenhuma OS pausada</p>
+        }
+        @for (o of pausadas; track o.id) {
+          <div class="os-card pausada-card">
+            <div class="os-card-top">
+              <span class="os-num">OS #{{ o.codigo }}</span>
+              <span class="prioridade" [class]="o.prioridade.toLowerCase()">{{ o.prioridade }}</span>
+            </div>
+            <div class="os-card-produto">{{ o.nomeProduto }}</div>
+            <div class="os-card-info">
+              @if (o.setor) { <span>{{ o.setor }}</span> }
+              @if (o.equipamento) { <span class="tag-maquina">🔧 {{ o.equipamento }}</span> }
+            </div>
+            <div class="os-card-prazo" [class.vencido]="prazoVencido(o.prazoPrevisto)">
+              📅 {{ prazoLabel(o.prazoPrevisto) }}
+            </div>
+          </div>
+        }
+      </div>
+    </div>
+
+  </section>
+
+</div>

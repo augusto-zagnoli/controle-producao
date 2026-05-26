@@ -9,7 +9,9 @@
       "WebFetch(domain:localhost)",
       "Bash(curl -s http://localhost:4200/producao/ordem/1)",
       "Bash(Get-ChildItem -Path \"c:\\\\Users\\\\Augusto Zagnoli\\\\Desktop\\\\Projects\\\\Augusto\\\\controle-producao\\\\controle-producao-Back\" -Recurse -Filter \"*historico*\" -o ErrorAction SilentlyContinue)",
-      "Bash(Select-Object -ExpandProperty FullName)"
+      "Bash(Select-Object -ExpandProperty FullName)",
+      "Bash(node -e \"const a=require\\('./angular.json'\\); const b=a.projects['controle-producao'].architect.build.options; console.log\\(JSON.stringify\\({prerender:b.prerender,ssr:b.ssr},null,2\\)\\)\")",
+      "Bash(node -e ' *)"
     ]
   }
 }

@@ -12,6 +12,7 @@ import { AdminOpcoesComponent } from './admin-opcoes/admin-opcoes.component';
 import { AdminLayoutComponent } from './shared/admin-layout/admin-layout.component';
 import { ProducaoComponent } from './Public/producao/producao.component';
 import { ProducaoDetailComponent } from './Public/producao-detail/producao-detail.component';
+import { DashboardComponent } from './Public/dashboard/dashboard.component';
 
 export const routes: Routes = [
   { path: '', pathMatch: 'full', redirectTo: 'login' },
@@ -33,5 +34,6 @@ export const routes: Routes = [
   },
   { path: 'producao', component: ProducaoComponent },
   { path: 'producao/ordem/:id', component: ProducaoDetailComponent },
+  { path: 'dashboard', component: DashboardComponent },
   { path: '**', redirectTo: 'login' }
 ];
