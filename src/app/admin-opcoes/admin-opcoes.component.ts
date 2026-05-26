@@ -16,11 +16,12 @@ export class AdminOpcoesComponent implements OnInit {
 
   funcoes: OpcaoCampo[] = [];
   setores: OpcaoCampo[] = [];
+  operacoes: OpcaoCampo[] = [];
   equipamentos: OpcaoCampo[] = [];
   carregando = false;
 
   // Novo item
-  novoTipo: 'Funcao' | 'Setor' | 'Equipamento' = 'Funcao';
+  novoTipo: 'Funcao' | 'Setor' | 'Operacao' | 'Equipamento' = 'Funcao';
   novoNome = '';
   novaOrdem = 0;
   salvandoNovo = false;
@@ -46,6 +47,7 @@ export class AdminOpcoesComponent implements OnInit {
       next: lista => {
         this.funcoes      = lista.filter(o => o.tipo === 'Funcao');
         this.setores      = lista.filter(o => o.tipo === 'Setor');
+        this.operacoes    = lista.filter(o => o.tipo === 'Operacao');
         this.equipamentos = lista.filter(o => o.tipo === 'Equipamento');
         this.carregando = false;
       },

@@ -56,6 +56,7 @@ export class AdminSidebarComponent {
         { icon: '⚙️', label: 'Configurações', route: '/admin/configuracoes' },
         { icon: '🏷️', label: 'Funções', route: '/admin/funcoes' },
         { icon: '🏢', label: 'Setores', route: '/admin/setores' },
+        { icon: '🔧', label: 'Operações', route: '/admin/operacoes' },
         { icon: '🔩', label: 'Equipamentos', route: '/admin/equipamentos' }
       ]
     }
