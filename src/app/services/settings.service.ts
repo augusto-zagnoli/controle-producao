@@ -21,7 +21,7 @@ export interface UpdateSettingsDto {
 })
 export class SettingsService {
   private readonly http = inject(HttpClient);
-  private readonly apiUrl = `${environment.apiUrl}/settings`;
+  private readonly apiUrl = `${environment.apiUrl}/api/settings`;
   
   private settingsSubject = new BehaviorSubject<Settings | null>(null);
   public settings$ = this.settingsSubject.asObservable();
