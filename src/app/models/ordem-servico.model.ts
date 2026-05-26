@@ -140,6 +140,13 @@ export interface HistoricoItem {
   dataHora: string;
   fotoOperadorUrl: string | null;
   origemAlteracao: 'Admin' | 'Tablet';
+  // Rastreio estruturado
+  equipamento: string | null;
+  funcaoAnterior: string | null;
+  setorAnterior: string | null;
+  funcaoNova: string | null;
+  setorNovo: string | null;
+  quantidadeRecebida: number | null;
 }
 
 export interface UsuarioLogado {

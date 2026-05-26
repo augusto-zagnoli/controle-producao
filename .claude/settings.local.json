@@ -7,7 +7,9 @@
       "Bash(npx ng *)",
       "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://localhost:4200/producao/ordem/1)",
       "WebFetch(domain:localhost)",
-      "Bash(curl -s http://localhost:4200/producao/ordem/1)"
+      "Bash(curl -s http://localhost:4200/producao/ordem/1)",
+      "Bash(Get-ChildItem -Path \"c:\\\\Users\\\\Augusto Zagnoli\\\\Desktop\\\\Projects\\\\Augusto\\\\controle-producao\\\\controle-producao-Back\" -Recurse -Filter \"*historico*\" -o ErrorAction SilentlyContinue)",
+      "Bash(Select-Object -ExpandProperty FullName)"
     ]
   }
 }

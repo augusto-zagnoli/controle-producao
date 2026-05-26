@@ -95,37 +95,103 @@
       </div>
     }
 
-    <!-- Histórico -->
+    <!-- Rastreio / Histórico -->
     <div class="section-card">
-      <h2>Histórico de Alterações</h2>
+      <h2>Rastreio da OS</h2>
       @if (!historico.length) {
         <p class="empty">Nenhum registro no histórico.</p>
-      }
-      <div class="historico-list">
-        @for (h of historico; track h.id) {
-          <div class="hist-item" [class.tablet]="h.origemAlteracao === 'Tablet'">
-            <div class="hist-header">
-              <span class="hist-acao">{{ h.acao }}</span>
-              <span class="hist-origem">{{ origemLabel(h.origemAlteracao) }}</span>
-            </div>
-            <div class="hist-meta">
-              <span>{{ h.nomeUsuario }}</span>
-              <span>{{ formatarData(h.dataHora) }}</span>
-            </div>
-            @if (h.nomeFuncionario) {
-              <div class="hist-funcionario">👷 {{ h.nomeFuncionario }}</div>
-            }
-            @if (h.observacao) { <p class="hist-obs">{{ h.observacao }}</p> }
-            @if (h.fotoOperadorUrl) {
-              <div class="hist-foto">
-                <a [href]="h.fotoOperadorUrl" target="_blank">
-                  <img [src]="h.fotoOperadorUrl" alt="Foto do operador" class="foto-operador" />
-                </a>
+      } @else {
+        <div class="timeline">
+          @for (h of historico; track h.id) {
+            <div class="tl-item" [class.tablet]="h.origemAlteracao === 'Tablet'" [class.admin]="h.origemAlteracao === 'Admin'">
+              <div class="tl-dot">{{ acaoIcone(h.acao) }}</div>
+              <div class="tl-content">
+
+                <div class="tl-header">
+                  <span class="tl-acao">{{ h.acao }}</span>
+                  <span class="tl-tag" [class.tag-tablet]="h.origemAlteracao === 'Tablet'" [class.tag-admin]="h.origemAlteracao === 'Admin'">
+                    {{ origemLabel(h.origemAlteracao) }}
+                  </span>
+                  <span class="tl-hora">{{ formatarData(h.dataHora) }}</span>
+                </div>
+
+                <div class="tl-meta">
+                  @if (h.nomeFuncionario) {
+                    <span class="tl-funcionario">👷 {{ h.nomeFuncionario }}</span>
+                  }
+                  @if (!h.nomeFuncionario && h.nomeUsuario) {
+                    <span class="tl-usuario">{{ h.nomeUsuario }}</span>
+                  }
+                </div>
+
+                <!-- Mudança de status -->
+                @if (h.statusAnterior || h.statusNovo) {
+                  <div class="tl-status-change">
+                    @if (h.statusAnterior) {
+                      <span class="chip" [class]="h.statusAnterior">{{ statusLabel(h.statusAnterior) }}</span>
+                    }
+                    <span class="arrow">→</span>
+                    @if (h.statusNovo) {
+                      <span class="chip" [class]="h.statusNovo">{{ statusLabel(h.statusNovo) }}</span>
+                    }
+                  </div>
+                }
+
+                <!-- Mudança de função/setor/máquina -->
+                @if (h.funcaoNova || h.setorNovo || h.equipamento) {
+                  <div class="tl-rastreio">
+                    @if (h.equipamento) {
+                      <div class="tl-rastreio-row">
+                        <span class="tl-rastreio-label">🔧 Máquina</span>
+                        <span class="tl-rastreio-val">{{ h.equipamento }}</span>
+                      </div>
+                    }
+                    @if (h.funcaoNova) {
+                      <div class="tl-rastreio-row">
+                        <span class="tl-rastreio-label">Função</span>
+                        @if (h.funcaoAnterior && h.funcaoAnterior !== h.funcaoNova) {
+                          <span class="tl-old">{{ h.funcaoAnterior }}</span>
+                          <span class="arrow">→</span>
+                        }
+                        <span class="tl-rastreio-val">{{ h.funcaoNova }}</span>
+                      </div>
+                    }
+                    @if (h.setorNovo) {
+                      <div class="tl-rastreio-row">
+                        <span class="tl-rastreio-label">Setor</span>
+                        @if (h.setorAnterior && h.setorAnterior !== h.setorNovo) {
+                          <span class="tl-old">{{ h.setorAnterior }}</span>
+                          <span class="arrow">→</span>
+                        }
+                        <span class="tl-rastreio-val">{{ h.setorNovo }}</span>
+                      </div>
+                    }
+                    @if (h.quantidadeRecebida) {
+                      <div class="tl-rastreio-row">
+                        <span class="tl-rastreio-label">Qtd recebida</span>
+                        <span class="tl-rastreio-val">{{ h.quantidadeRecebida }}</span>
+                      </div>
+                    }
+                  </div>
+                }
+
+                @if (h.observacao) {
+                  <p class="tl-obs">{{ h.observacao }}</p>
+                }
+
+                @if (h.fotoOperadorUrl) {
+                  <div class="tl-foto">
+                    <a [href]="arquivoUrl(h.fotoOperadorUrl)" target="_blank" rel="noopener">
+                      <img [src]="arquivoUrl(h.fotoOperadorUrl)" alt="Foto do operador" class="foto-operador" />
+                    </a>
+                  </div>
+                }
+
               </div>
-            }
-          </div>
-        }
-      </div>
+            </div>
+          }
+        </div>
+      }
     </div>
 
   }

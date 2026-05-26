@@ -5,6 +5,7 @@ import { HistoricoItem, OrdemServico, STATUS_LABELS } from '../models/ordem-serv
 import { OrdensService } from '../services/ordens.service';
 import { AuthService } from '../auth/auth.service';
 import { forkJoin } from 'rxjs';
+import { environment } from '../../environments/environment';
 
 @Component({
   selector: 'app-admin-detail',
@@ -50,7 +51,22 @@ export class AdminDetailComponent implements OnInit {
   }
 
   origemLabel(origem: string): string {
-    return origem === 'Tablet' ? 'Tablet (Chão de Fábrica)' : 'Administrativo';
+    return origem === 'Tablet' ? 'Chão de Fábrica' : 'Administrativo';
+  }
+
+  acaoIcone(acao: string): string {
+    if (acao.includes('Status')) return '🔄';
+    if (acao.includes('Função') || acao.includes('Setor')) return '⚙️';
+    if (acao.includes('Criado')) return '📋';
+    if (acao.includes('Atualizado')) return '✏️';
+    return '📝';
+  }
+
+  arquivoUrl(url: string | null | undefined): string {
+    if (!url) return '#';
+    if (/^https?:\/\//i.test(url)) return url;
+    const base = (environment.apiUrl || '').replace(/\/$/, '');
+    return url.startsWith('/') ? `${base}${url}` : `${base}/${url}`;
   }
 }
 
