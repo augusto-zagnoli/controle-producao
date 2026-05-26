@@ -1,10 +1,14 @@
 <section class="page">
   <header class="page-header">
     <div class="header-left">
-      <a routerLink="/admin" class="btn sm">← Voltar</a>
+      <button mat-stroked-button routerLink="/admin">
+        <mat-icon>arrow_back</mat-icon> Voltar
+      </button>
       <h1>Usuários do Sistema</h1>
     </div>
-    <button class="btn primary" (click)="abrirNovo()">+ Novo Usuário</button>
+    <button mat-flat-button color="primary" (click)="abrirNovo()">
+      <mat-icon>add</mat-icon> Novo Usuário
+    </button>
   </header>
 
   @if (mostrarForm) {
@@ -70,8 +74,12 @@
               <td><span class="chip" [class.admin]="u.perfil === 'Administrador'">{{ perfilLabels[u.perfil] }}</span></td>
               <td>{{ u.criadoEm | date:'dd/MM/yyyy' }}</td>
               <td class="actions">
-                <button class="btn sm" (click)="abrirEdicao(u)">Editar</button>
-                <button class="btn sm danger" (click)="excluir(u)">Excluir</button>
+                <button mat-icon-button matTooltip="Editar" (click)="abrirEdicao(u)">
+                  <mat-icon>edit</mat-icon>
+                </button>
+                <button mat-icon-button color="warn" matTooltip="Excluir" (click)="excluir(u)">
+                  <mat-icon>delete</mat-icon>
+                </button>
               </td>
             </tr>
           } @empty {

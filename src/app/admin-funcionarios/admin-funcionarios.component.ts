@@ -2,6 +2,9 @@ import { CommonModule } from '@angular/common';
 import { Component, OnInit, inject } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { RouterLink } from '@angular/router';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { Funcionario } from '../models/funcionario.model';
 import { Funcao, FUNCAO_LABELS, FUNCAO_LIST, Setor, SETOR_LABELS, SETOR_LIST } from '../models/ordem-servico.model';
 import { FuncionariosService } from '../services/funcionarios.service';
@@ -9,7 +12,7 @@ import { FuncionariosService } from '../services/funcionarios.service';
 @Component({
   selector: 'app-admin-funcionarios',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, RouterLink],
+  imports: [CommonModule, ReactiveFormsModule, RouterLink, MatButtonModule, MatIconModule, MatTooltipModule],
   templateUrl: './admin-funcionarios.component.html',
   styleUrl: './admin-funcionarios.component.scss'
 })

@@ -1,10 +1,14 @@
 <section class="page">
   <header class="page-header">
     <div class="header-left">
-      <a routerLink="/admin" class="btn sm">← Voltar</a>
+      <button mat-stroked-button routerLink="/admin">
+        <mat-icon>arrow_back</mat-icon> Voltar
+      </button>
       <h1>Funcionários</h1>
     </div>
-    <button class="btn primary" (click)="abrirNovo()">+ Novo Funcionário</button>
+    <button mat-flat-button color="primary" (click)="abrirNovo()">
+      <mat-icon>add</mat-icon> Novo Funcionário
+    </button>
   </header>
 
   <!-- Formulário inline -->
@@ -73,11 +77,15 @@
                 </span>
               </td>
               <td class="actions">
-                <button class="btn sm" (click)="abrirEdicao(f)">Editar</button>
-                <button class="btn sm" [class.danger]="f.ativo" (click)="alternarAtivo(f)">
-                  {{ f.ativo ? 'Desativar' : 'Ativar' }}
+                <button mat-icon-button matTooltip="Editar" (click)="abrirEdicao(f)">
+                  <mat-icon>edit</mat-icon>
                 </button>
-                <button class="btn sm danger" (click)="excluir(f)">Excluir</button>
+                <button mat-icon-button [matTooltip]="f.ativo ? 'Desativar' : 'Ativar'" [color]="f.ativo ? 'warn' : 'primary'" (click)="alternarAtivo(f)">
+                  <mat-icon>{{ f.ativo ? 'block' : 'check_circle' }}</mat-icon>
+                </button>
+                <button mat-icon-button color="warn" matTooltip="Excluir" (click)="excluir(f)">
+                  <mat-icon>delete</mat-icon>
+                </button>
               </td>
             </tr>
           } @empty {

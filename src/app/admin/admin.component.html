@@ -71,9 +71,15 @@
             <td><span class="chip" [class]="o.status">{{ statusLabel(o.status) }}</span></td>
             <td>{{ formatarData(o.dataCriacao) }}</td>
             <td class="actions">
-              <a [routerLink]="['/admin/ordem', o.id]" class="btn sm">Ver</a>
-              <a [routerLink]="['/admin/ordem', o.id, 'editar']" class="btn sm">Editar</a>
-              <button class="btn sm danger" (click)="excluir(o.id)">Excluir</button>
+              <button mat-icon-button matTooltip="Visualizar" [routerLink]="['/admin/ordem', o.id]">
+                <mat-icon>visibility</mat-icon>
+              </button>
+              <button mat-icon-button matTooltip="Editar" [routerLink]="['/admin/ordem', o.id, 'editar']">
+                <mat-icon>edit</mat-icon>
+              </button>
+              <button mat-icon-button color="warn" matTooltip="Excluir" (click)="excluir(o.id)">
+                <mat-icon>delete</mat-icon>
+              </button>
             </td>
           </tr>
         } @empty {

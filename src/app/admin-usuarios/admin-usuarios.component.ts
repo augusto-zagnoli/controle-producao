@@ -2,13 +2,16 @@ import { CommonModule } from '@angular/common';
 import { Component, OnInit, inject } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { RouterLink } from '@angular/router';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { PerfilUsuario, Usuario } from '../models/funcionario.model';
 import { UsuariosService } from '../services/usuarios.service';
 
 @Component({
   selector: 'app-admin-usuarios',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, RouterLink],
+  imports: [CommonModule, ReactiveFormsModule, RouterLink, MatButtonModule, MatIconModule, MatTooltipModule],
   templateUrl: './admin-usuarios.component.html',
   styleUrl: './admin-usuarios.component.scss'
 })

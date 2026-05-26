@@ -12,8 +12,12 @@
         <span class="chip" [class]="ordem.status">{{ statusLabel(ordem.status) }}</span>
       </div>
       <div class="header-actions">
-        <a routerLink="/admin" class="btn">← Voltar</a>
-        <a [routerLink]="['/admin/ordem', ordem.id, 'editar']" class="btn primary">Editar</a>
+        <button mat-stroked-button routerLink="/admin">
+          <mat-icon>arrow_back</mat-icon> Voltar
+        </button>
+        <a mat-flat-button color="primary" [routerLink]="['/admin/ordem', ordem.id, 'editar']">
+          <mat-icon>edit</mat-icon> Editar
+        </a>
       </div>
     </header>
 

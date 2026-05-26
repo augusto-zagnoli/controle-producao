@@ -7,10 +7,13 @@ import { AuthService } from '../auth/auth.service';
 import { forkJoin } from 'rxjs';
 import { environment } from '../../environments/environment';
 
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
+
 @Component({
   selector: 'app-admin-detail',
   standalone: true,
-  imports: [CommonModule, RouterLink],
+  imports: [CommonModule, RouterLink, MatButtonModule, MatIconModule],
   templateUrl: './admin-detail.component.html',
   styleUrl: './admin-detail.component.scss'
 })
