@@ -75,6 +75,8 @@ export class ProducaoDetailComponent implements OnInit, OnDestroy {
     this.service.obter(id).subscribe({
       next: ordem => {
         this.ordem = ordem;
+        this.funcaoEdit = ordem.funcao;
+        this.setorEdit = ordem.setor;
         this.carregando = false;
       },
       error: () => {

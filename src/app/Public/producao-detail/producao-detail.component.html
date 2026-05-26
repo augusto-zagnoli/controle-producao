@@ -31,50 +31,41 @@
       }
 
       <div class="funcao-setor-block">
-        @if (!editandoFuncaoSetor) {
-          <div class="fs-row">
-            <span><strong>Função:</strong> {{ ordem.funcao }}</span>
-            <span><strong>Setor:</strong> {{ ordem.setor }}</span>
-            <button type="button" class="btn-edit-fs" (click)="abrirEdicaoFuncaoSetor()">✏️ Alterar</button>
+        <div class="fs-edit">
+          <label class="field">
+            Função
+            <select [(ngModel)]="funcaoEdit">
+              @for (f of funcaoOptions; track f) {
+                <option [value]="f">{{ f }}</option>
+              }
+            </select>
+          </label>
+          <label class="field">
+            Setor
+            <select [(ngModel)]="setorEdit">
+              @for (s of setorOptions; track s) {
+                <option [value]="s">{{ s }}</option>
+              }
+            </select>
+          </label>
+          <label class="field">
+            Funcionário responsável <span class="req">*</span>
+            <select [(ngModel)]="funcionarioFuncaoSetorId">
+              <option [value]="0" disabled>Selecione seu nome…</option>
+              @for (f of funcionarios; track f.id) {
+                <option [value]="f.id">{{ f.nome }}</option>
+              }
+            </select>
+          </label>
+          @if (erroFuncaoSetor) {
+            <p class="erro-modal">{{ erroFuncaoSetor }}</p>
+          }
+          <div class="fs-actions">
+            <button type="button" class="btn-confirm" (click)="salvarFuncaoSetor()" [disabled]="salvandoFuncaoSetor">
+              {{ salvandoFuncaoSetor ? 'Salvando...' : 'Salvar' }}
+            </button>
           </div>
-        } @else {
-          <div class="fs-edit">
-            <label class="field">
-              Função
-              <select [(ngModel)]="funcaoEdit">
-                @for (f of funcaoOptions; track f) {
-                  <option [value]="f">{{ f }}</option>
-                }
-              </select>
-            </label>
-            <label class="field">
-              Setor
-              <select [(ngModel)]="setorEdit">
-                @for (s of setorOptions; track s) {
-                  <option [value]="s">{{ s }}</option>
-                }
-              </select>
-            </label>
-            <label class="field">
-              Funcionário responsável <span class="req">*</span>
-              <select [(ngModel)]="funcionarioFuncaoSetorId">
-                <option [value]="0" disabled>Selecione seu nome…</option>
-                @for (f of funcionarios; track f.id) {
-                  <option [value]="f.id">{{ f.nome }}</option>
-                }
-              </select>
-            </label>
-            @if (erroFuncaoSetor) {
-              <p class="erro-modal">{{ erroFuncaoSetor }}</p>
-            }
-            <div class="fs-actions">
-              <button type="button" class="btn-cancel" (click)="cancelarEdicaoFuncaoSetor()">Cancelar</button>
-              <button type="button" class="btn-confirm" (click)="salvarFuncaoSetor()" [disabled]="salvandoFuncaoSetor">
-                {{ salvandoFuncaoSetor ? 'Salvando...' : 'Salvar' }}
-              </button>
-            </div>
-          </div>
-        }
+        </div>
       </div>
     </div>
 
