@@ -2,8 +2,8 @@ import { CommonModule } from '@angular/common';
 import { Component, OnInit, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
-import { OrdemServico, STATUS_LABELS } from '../models/ordem-servico.model';
-import { OrdensService } from '../services/ordens.service';
+import { OrdemServico, STATUS_LABELS } from '../../models/ordem-servico.model';
+import { OrdensService } from '../../services/ordens.service';
 
 @Component({
   selector: 'app-producao',

@@ -3,11 +3,11 @@ import { Component, ElementRef, OnDestroy, OnInit, ViewChild, inject } from '@an
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { switchMap } from 'rxjs';
-import { OrdemServico, STATUS_LABELS, OrdemServicoStatus, Funcao, Setor, FUNCAO_LIST, SETOR_LIST } from '../models/ordem-servico.model';
-import { Funcionario } from '../models/funcionario.model';
-import { OrdensService } from '../services/ordens.service';
-import { FuncionariosService } from '../services/funcionarios.service';
-import { environment } from '../../environments/environment';
+import { OrdemServico, STATUS_LABELS, OrdemServicoStatus, Funcao, Setor, FUNCAO_LIST, SETOR_LIST } from '../../models/ordem-servico.model';
+import { Funcionario } from '../../models/funcionario.model';
+import { OrdensService } from '../../services/ordens.service';
+import { FuncionariosService } from '../../services/funcionarios.service';
+import { environment } from '../../../environments/environment';
 
 @Component({
   selector: 'app-producao-detail',

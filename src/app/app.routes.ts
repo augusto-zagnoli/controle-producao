@@ -7,8 +7,8 @@ import { AdminDetailComponent } from './admin-detail/admin-detail.component';
 import { AdminFormComponent } from './admin-form/admin-form.component';
 import { AdminFuncionariosComponent } from './admin-funcionarios/admin-funcionarios.component';
 import { AdminUsuariosComponent } from './admin-usuarios/admin-usuarios.component';
-import { ProducaoComponent } from './producao/producao.component';
-import { ProducaoDetailComponent } from './producao-detail/producao-detail.component';
+import { ProducaoComponent } from './Public/producao/producao.component';
+import { ProducaoDetailComponent } from './Public/producao-detail/producao-detail.component';
 
 export const routes: Routes = [
   { path: '', pathMatch: 'full', redirectTo: 'login' },
