@@ -87,9 +87,9 @@
       @if (ordem.imagens.length) {
         <div class="images-row">
           @for (img of ordem.imagens; track img.id) {
-            <a [href]="arquivoUrl(img.url)" target="_blank" rel="noopener">
+            <button type="button" class="thumb-btn" (click)="abrirArquivo(img.url, img.nomeArquivo, 'imagem')">
               <img [src]="arquivoUrl(img.url)" [alt]="img.nomeArquivo" class="thumb" />
-            </a>
+            </button>
           }
         </div>
       } @else {
@@ -102,7 +102,10 @@
       @if (ordem.documentos.length) {
         <div class="docs-list">
           @for (doc of ordem.documentos; track doc.id) {
-            <a [href]="arquivoUrl(doc.url)" target="_blank" rel="noopener" class="doc-link">📄 {{ doc.nomeArquivo }}</a>
+            <button type="button" class="doc-card" (click)="abrirArquivo(doc.url, doc.nomeArquivo, 'pdf')">
+              <span class="doc-icon">📄</span>
+              <span class="doc-nome">{{ doc.nomeArquivo }}</span>
+            </button>
           }
         </div>
       } @else {

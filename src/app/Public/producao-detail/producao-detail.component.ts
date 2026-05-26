@@ -9,11 +9,13 @@ import { OrdensService } from '../../services/ordens.service';
 import { FuncionariosService } from '../../services/funcionarios.service';
 import { OpcoesService } from '../../services/opcoes.service';
 import { environment } from '../../../environments/environment';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+import { FileViewerDialogComponent } from '../../shared/file-viewer-dialog/file-viewer-dialog.component';
 
 @Component({
   selector: 'app-producao-detail',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterLink],
+  imports: [CommonModule, FormsModule, RouterLink, MatDialogModule],
   templateUrl: './producao-detail.component.html',
   styleUrl: './producao-detail.component.scss'
 })
@@ -22,6 +24,7 @@ export class ProducaoDetailComponent implements OnInit, OnDestroy {
   private readonly service = inject(OrdensService);
   private readonly funcionariosService = inject(FuncionariosService);
   private readonly opcoesService = inject(OpcoesService);
+  private readonly dialog = inject(MatDialog);
 
   @ViewChild('videoEl') videoEl?: ElementRef<HTMLVideoElement>;
 
@@ -201,6 +204,16 @@ export class ProducaoDetailComponent implements OnInit, OnDestroy {
         this.erroModal = 'Erro ao alterar status. Tente novamente.';
         this.salvando = false;
       }
+    });
+  }
+
+  abrirArquivo(url: string, nome: string, tipo: 'imagem' | 'pdf'): void {
+    this.dialog.open(FileViewerDialogComponent, {
+      data: { url: this.arquivoUrl(url), nome, tipo },
+      width: '90vw',
+      maxWidth: '1100px',
+      height: '90vh',
+      panelClass: 'file-viewer-dialog'
     });
   }
 

@@ -102,9 +102,22 @@
   h3 { margin: 0 0 12px; font-size: 13px; color: #6b7280; text-transform: uppercase; font-weight: 700; }
 }
 .images-row { display: flex; gap: 10px; flex-wrap: wrap; }
-.thumb { width: 90px; height: 90px; object-fit: cover; border-radius: 8px; border: 1px solid #e5e7eb; }
-.doc-link { display: block; color: #2563eb; font-size: 14px; padding: 4px 0; text-decoration: none; &:hover { text-decoration: underline; } }
-.docs-list { display: flex; flex-direction: column; gap: 4px; }
+.thumb-btn {
+  background: none; border: none; padding: 0; cursor: pointer; border-radius: 8px;
+  transition: transform .15s, box-shadow .15s;
+  &:hover { transform: scale(1.04); box-shadow: 0 4px 12px rgba(0,0,0,.15); }
+}
+.thumb { width: 90px; height: 90px; object-fit: cover; border-radius: 8px; border: 1px solid #e5e7eb; display: block; }
+.docs-list { display: flex; flex-direction: column; gap: 8px; }
+.doc-card {
+  display: flex; align-items: center; gap: 10px;
+  background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px;
+  padding: 10px 14px; cursor: pointer; width: 100%; text-align: left;
+  transition: background .15s, box-shadow .15s;
+  &:hover { background: #eff6ff; box-shadow: 0 2px 8px rgba(37,99,235,.1); }
+}
+.doc-icon { font-size: 22px; flex-shrink: 0; }
+.doc-nome { font-size: 14px; color: #2563eb; font-weight: 500; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .empty { font-size: 13px; color: #9ca3af; font-style: italic; margin: 0; }
 
 .action-section {
