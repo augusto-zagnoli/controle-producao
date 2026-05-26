@@ -89,7 +89,7 @@
             class="chip-btn neutro"
             [class.ativo]="funcaoSelecionada === f"
             (click)="selecionarFuncao(f)">
-            {{ funcaoLabels[f] }}
+            {{ f }}
           </button>
         }
       </div>
@@ -102,7 +102,7 @@
             class="chip-btn neutro"
             [class.ativo]="setorSelecionado === s"
             (click)="selecionarSetor(s)">
-            {{ setorLabels[s] }}
+            {{ s }}
           </button>
         }
       </div>

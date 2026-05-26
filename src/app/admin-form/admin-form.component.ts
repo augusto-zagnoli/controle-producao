@@ -82,8 +82,8 @@ export class AdminFormComponent implements OnInit {
     this.funcionariosService.listar(true).subscribe({ next: lista => this.funcionarios = lista });
     this.opcoesService.listar().subscribe({
       next: lista => {
-        this.funcoes = lista.filter(o => o.tipo === 'Funcao' && o.ativo).map(o => o.nome);
-        this.setores = lista.filter(o => o.tipo === 'Setor' && o.ativo).map(o => o.nome);
+        this.funcoes = lista.filter(o => o.tipo === 'Funcao' && o.ativo && o.nome).map(o => o.nome);
+        this.setores = lista.filter(o => o.tipo === 'Setor'  && o.ativo && o.nome).map(o => o.nome);
         if (this.funcoes.length) this.funcaoSelecionada = this.funcoes[0];
         if (this.setores.length) this.setorSelecionado = this.setores[0];
       }

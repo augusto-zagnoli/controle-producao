@@ -66,8 +66,8 @@ export class ProducaoDetailComponent implements OnInit, OnDestroy {
     this.funcionariosService.listar(true).subscribe({ next: lista => { this.funcionarios = lista; } });
     this.opcoesService.listar().subscribe({
       next: lista => {
-        this.funcaoOptions = lista.filter(o => o.tipo === 'Funcao' && o.ativo).map(o => o.nome);
-        this.setorOptions  = lista.filter(o => o.tipo === 'Setor'  && o.ativo).map(o => o.nome);
+        this.funcaoOptions = lista.filter(o => o.tipo === 'Funcao' && o.ativo && o.nome).map(o => o.nome);
+        this.setorOptions  = lista.filter(o => o.tipo === 'Setor'  && o.ativo && o.nome).map(o => o.nome);
       }
     });
     const id = Number(this.route.snapshot.paramMap.get('id'));
