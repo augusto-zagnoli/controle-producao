@@ -82,12 +82,14 @@ export class OrdensService {
     id: number,
     funcao: string,
     setor: string,
-    funcionarioId: number | null
+    funcionarioId: number | null,
+    quantidadeRecebida?: number
   ): Observable<OrdemServico> {
     return this.http.post<OrdemServico>(`${this.base}/${id}/funcao-setor`, {
       funcao,
       setor,
-      funcionarioId
+      funcionarioId,
+      quantidadeRecebida: quantidadeRecebida ?? 0
     });
   }
 

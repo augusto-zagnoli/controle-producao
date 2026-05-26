@@ -59,6 +59,7 @@ export class ProducaoDetailComponent implements OnInit, OnDestroy {
   funcaoEdit: Funcao = 'Operador';
   setorEdit: Setor = 'Usinagem';
   funcionarioFuncaoSetorId = 0;
+  quantidadeRecebida = 0;
   salvandoFuncaoSetor = false;
   erroFuncaoSetor = '';
 
@@ -237,7 +238,7 @@ export class ProducaoDetailComponent implements OnInit, OnDestroy {
     }
     this.salvandoFuncaoSetor = true;
     this.erroFuncaoSetor = '';
-    this.service.alterarFuncaoSetor(this.ordem.id, this.funcaoEdit, this.setorEdit, this.funcionarioFuncaoSetorId).subscribe({
+    this.service.alterarFuncaoSetor(this.ordem.id, this.funcaoEdit, this.setorEdit, this.funcionarioFuncaoSetorId, this.quantidadeRecebida).subscribe({
       next: ordem => {
         this.ordem = ordem;
         this.editandoFuncaoSetor = false;

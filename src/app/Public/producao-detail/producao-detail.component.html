@@ -57,6 +57,10 @@
               }
             </select>
           </label>
+          <label class="field">
+            Quantidade de peças recebidas
+            <input type="number" [(ngModel)]="quantidadeRecebida" min="0" step="1" placeholder="0" class="input-qtd" />
+          </label>
           @if (erroFuncaoSetor) {
             <p class="erro-modal">{{ erroFuncaoSetor }}</p>
           }

@@ -69,12 +69,14 @@
 }
 .fs-edit { display: flex; flex-direction: column; gap: 10px; }
 .fs-edit .field { display: flex; flex-direction: column; gap: 4px; font-size: 13px; color: #374151; font-weight: 600; }
-.fs-edit select {
+.fs-edit select,
+.fs-edit .input-qtd {
   padding: 8px 10px;
   border: 1px solid #d1d5db;
   border-radius: 8px;
   font-size: 14px;
   background: #fff;
+  width: 100%;
 }
 .fs-edit .req { color: #dc2626; }
 .fs-edit .erro-modal { color: #dc2626; font-size: 13px; margin: 0; }
