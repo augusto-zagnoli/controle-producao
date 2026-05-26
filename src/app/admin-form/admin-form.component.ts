@@ -17,17 +17,20 @@ import {
 import { FuncionariosService } from '../services/funcionarios.service';
 import { OrdensService } from '../services/ordens.service';
 import { OpcoesService } from '../services/opcoes.service';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+import { FileViewerDialogComponent } from '../shared/file-viewer-dialog/file-viewer-dialog.component';
 
 @Component({
   selector: 'app-admin-form',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, RouterLink],
+  imports: [CommonModule, ReactiveFormsModule, RouterLink, MatDialogModule],
   templateUrl: './admin-form.component.html',
   styleUrl: './admin-form.component.scss'
 })
 export class AdminFormComponent implements OnInit {
   private readonly fb = inject(FormBuilder);
   private readonly service = inject(OrdensService);
+  private readonly dialog = inject(MatDialog);
   private readonly funcionariosService = inject(FuncionariosService);
   private readonly opcoesService = inject(OpcoesService);
   private readonly router = inject(Router);
@@ -201,15 +204,13 @@ export class AdminFormComponent implements OnInit {
     });
   }
 
-  abrirDocumento(dadosBase64: string, contentType: string, nomeArquivo: string): void {
-    const bytes = Uint8Array.from(atob(dadosBase64), c => c.charCodeAt(0));
-    const blob = new Blob([bytes], { type: contentType });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.target = '_blank';
-    a.rel = 'noopener';
-    a.click();
-    setTimeout(() => URL.revokeObjectURL(url), 10000);
+  abrirArquivo(dadosBase64: string, contentType: string, nome: string, tipo: 'imagem' | 'pdf'): void {
+    this.dialog.open(FileViewerDialogComponent, {
+      data: { dadosBase64, contentType, nome, tipo },
+      width: '90vw',
+      maxWidth: '1100px',
+      height: '90vh',
+      panelClass: 'file-viewer-dialog'
+    });
   }
 }

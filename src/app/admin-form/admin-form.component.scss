@@ -239,12 +239,23 @@ textarea { resize: vertical; }
   width: 90px;
 }
 
+.thumb-btn {
+  padding: 0;
+  background: none;
+  border: none;
+  cursor: pointer;
+  border-radius: 6px;
+  &:hover .thumb { opacity: 0.8; }
+}
+
 .thumb {
   width: 80px;
   height: 80px;
   object-fit: cover;
   border-radius: 6px;
   border: 1px solid #e5e7eb;
+  display: block;
+  transition: opacity 0.15s;
 }
 
 .btn-remover {
@@ -289,6 +300,11 @@ textarea { resize: vertical; }
   border-radius: 6px;
   padding: 8px 12px;
   font-size: 13px;
+
+  .btn-remover {
+    position: static;
+    flex-shrink: 0;
+  }
 }
 
 .doc-link {

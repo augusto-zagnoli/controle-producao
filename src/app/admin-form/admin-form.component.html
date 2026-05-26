@@ -159,8 +159,10 @@
         <div class="anexos-grid">
           @for (img of ordemAtual!.imagens; track img.id) {
             <div class="anexo-item">
-              <img [src]="'data:' + img.contentType + ';base64,' + img.dadosBase64" [alt]="img.nomeArquivo" class="thumb" />
-              <button type="button" class="btn-remover" (click)="removerImagemExistente(img.id)">✕</button>
+              <button type="button" class="thumb-btn" (click)="abrirArquivo(img.dadosBase64, img.contentType, img.nomeArquivo, 'imagem')">
+                <img [src]="'data:' + img.contentType + ';base64,' + img.dadosBase64" [alt]="img.nomeArquivo" class="thumb" />
+              </button>
+              <button type="button" class="btn-remover" (click)="removerImagemExistente(img.id)" title="Remover imagem">✕</button>
               <span class="anexo-nome">{{ img.nomeArquivo }}</span>
             </div>
           }
@@ -190,7 +192,7 @@
         <div class="docs-list">
           @for (doc of ordemAtual!.documentos; track doc.id) {
             <div class="doc-item">
-              <button type="button" class="doc-link" (click)="abrirDocumento(doc.dadosBase64, doc.contentType, doc.nomeArquivo)">📄 {{ doc.nomeArquivo }}</button>
+              <button type="button" class="doc-link" (click)="abrirArquivo(doc.dadosBase64, doc.contentType, doc.nomeArquivo, 'pdf')">📄 {{ doc.nomeArquivo }}</button>
               <button type="button" class="btn-remover" (click)="removerDocumentoExistente(doc.id)">✕</button>
             </div>
           }
