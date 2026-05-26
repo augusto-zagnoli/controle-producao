@@ -79,9 +79,9 @@
         <h2>Imagens da Peça</h2>
         <div class="imagens-grid">
           @for (img of ordem.imagens; track img.id) {
-            <a [href]="'data:' + img.contentType + ';base64,' + img.dadosBase64" target="_blank">
+            <button type="button" class="thumb-btn" (click)="abrirArquivo(img.dadosBase64, img.contentType, img.nomeArquivo, 'imagem')">
               <img [src]="'data:' + img.contentType + ';base64,' + img.dadosBase64" [alt]="img.nomeArquivo" class="thumb" />
-            </a>
+            </button>
           }
         </div>
       </div>
@@ -93,7 +93,7 @@
         <h2>Documentos</h2>
         <div class="docs-list">
           @for (doc of ordem.documentos; track doc.id) {
-            <button type="button" class="doc-link" (click)="abrirDocumento(doc.dadosBase64, doc.contentType, doc.nomeArquivo)">📄 {{ doc.nomeArquivo }}</button>
+            <button type="button" class="doc-link" (click)="abrirArquivo(doc.dadosBase64, doc.contentType, doc.nomeArquivo, 'pdf')">📄 {{ doc.nomeArquivo }}</button>
           }
         </div>
       </div>

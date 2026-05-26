@@ -6,20 +6,22 @@ import { OrdensService } from '../services/ordens.service';
 import { AuthService } from '../auth/auth.service';
 import { forkJoin } from 'rxjs';
 import { environment } from '../../environments/environment';
-
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
+import { FileViewerDialogComponent } from '../shared/file-viewer-dialog/file-viewer-dialog.component';
 
 @Component({
   selector: 'app-admin-detail',
   standalone: true,
-  imports: [CommonModule, RouterLink, MatButtonModule, MatIconModule],
+  imports: [CommonModule, RouterLink, MatButtonModule, MatIconModule, MatDialogModule],
   templateUrl: './admin-detail.component.html',
   styleUrl: './admin-detail.component.scss'
 })
 export class AdminDetailComponent implements OnInit {
   private readonly route = inject(ActivatedRoute);
   private readonly service = inject(OrdensService);
+  private readonly dialog = inject(MatDialog);
   readonly auth = inject(AuthService);
 
   ordem: OrdemServico | null = null;
@@ -72,16 +74,14 @@ export class AdminDetailComponent implements OnInit {
     return url.startsWith('/') ? `${base}${url}` : `${base}/${url}`;
   }
 
-  abrirDocumento(dadosBase64: string, contentType: string, nomeArquivo: string): void {
-    const bytes = Uint8Array.from(atob(dadosBase64), c => c.charCodeAt(0));
-    const blob = new Blob([bytes], { type: contentType });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.target = '_blank';
-    a.rel = 'noopener';
-    a.click();
-    setTimeout(() => URL.revokeObjectURL(url), 10000);
+  abrirArquivo(dadosBase64: string, contentType: string, nome: string, tipo: 'imagem' | 'pdf'): void {
+    this.dialog.open(FileViewerDialogComponent, {
+      data: { dadosBase64, contentType, nome, tipo },
+      width: '90vw',
+      maxWidth: '1100px',
+      height: '90vh',
+      panelClass: 'file-viewer-dialog'
+    });
   }
 }
 

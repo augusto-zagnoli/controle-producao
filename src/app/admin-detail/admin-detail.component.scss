@@ -54,12 +54,25 @@
   grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
   gap: 10px;
 }
+.thumb-btn {
+  padding: 0;
+  background: none;
+  border: none;
+  cursor: pointer;
+  border-radius: 8px;
+  display: block;
+  width: 100%;
+  &:hover .thumb { opacity: 0.8; }
+}
+
 .thumb {
   width: 100%;
   aspect-ratio: 1;
   object-fit: cover;
   border-radius: 8px;
   border: 1px solid #e5e7eb;
+  display: block;
+  transition: opacity 0.15s;
 }
 
 .docs-list {
