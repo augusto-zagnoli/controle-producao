@@ -1,9 +1,30 @@
 .login-page {
   display: flex;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
   min-height: 100vh;
   background: #f3f4f6;
+  gap: 20px;
+}
+
+.public-links {
+  display: flex;
+  gap: 10px;
+}
+
+.public-link {
+  display: inline-block;
+  padding: 9px 20px;
+  border-radius: 8px;
+  background: #fff;
+  border: 1px solid #d1d5db;
+  color: #374151;
+  font-size: 14px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: background .15s, border-color .15s;
+  &:hover { background: #f9fafb; border-color: #9ca3af; }
 }
 
 .login-card {
