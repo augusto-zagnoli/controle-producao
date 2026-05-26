@@ -71,5 +71,17 @@ export class AdminDetailComponent implements OnInit {
     const base = (environment.apiUrl || '').replace(/\/$/, '');
     return url.startsWith('/') ? `${base}${url}` : `${base}/${url}`;
   }
+
+  abrirDocumento(dadosBase64: string, contentType: string, nomeArquivo: string): void {
+    const bytes = Uint8Array.from(atob(dadosBase64), c => c.charCodeAt(0));
+    const blob = new Blob([bytes], { type: contentType });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.target = '_blank';
+    a.rel = 'noopener';
+    a.click();
+    setTimeout(() => URL.revokeObjectURL(url), 10000);
+  }
 }
 

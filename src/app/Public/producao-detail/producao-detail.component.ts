@@ -8,7 +8,6 @@ import { Funcionario } from '../../models/funcionario.model';
 import { OrdensService } from '../../services/ordens.service';
 import { FuncionariosService } from '../../services/funcionarios.service';
 import { OpcoesService } from '../../services/opcoes.service';
-import { environment } from '../../../environments/environment';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { FileViewerDialogComponent } from '../../shared/file-viewer-dialog/file-viewer-dialog.component';
 
@@ -207,9 +206,9 @@ export class ProducaoDetailComponent implements OnInit, OnDestroy {
     });
   }
 
-  abrirArquivo(url: string, nome: string, tipo: 'imagem' | 'pdf'): void {
+  abrirArquivo(dadosBase64: string, contentType: string, nome: string, tipo: 'imagem' | 'pdf'): void {
     this.dialog.open(FileViewerDialogComponent, {
-      data: { url: this.arquivoUrl(url), nome, tipo },
+      data: { dadosBase64, contentType, nome, tipo },
       width: '90vw',
       maxWidth: '1100px',
       height: '90vh',
@@ -224,13 +223,6 @@ export class ProducaoDetailComponent implements OnInit, OnDestroy {
   formatarData(iso: string): string {
     if (!iso) return '-';
     return new Date(iso).toLocaleString('pt-BR');
-  }
-
-  arquivoUrl(url: string | null | undefined): string {
-    if (!url) return '#';
-    if (/^https?:\/\//i.test(url)) return url;
-    const base = (environment.apiUrl || '').replace(/\/$/, '');
-    return url.startsWith('/') ? `${base}${url}` : `${base}/${url}`;
   }
 
   abrirEdicaoFuncaoSetor(): void {

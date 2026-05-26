@@ -56,13 +56,15 @@ export interface UsuarioResumo {
 export interface Imagem {
   id: number;
   nomeArquivo: string;
-  url: string;
+  contentType: string;
+  dadosBase64: string;
 }
 
 export interface Documento {
   id: number;
   nomeArquivo: string;
-  url: string;
+  contentType: string;
+  dadosBase64: string;
 }
 
 export interface FuncionarioResumo {
