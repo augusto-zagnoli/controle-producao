@@ -1,0 +1,51 @@
+<button 
+  class="sidebar-toggle"
+  (click)="toggleSidebar()"
+  [attr.aria-label]="sidebarOpen ? 'Fechar menu' : 'Abrir menu'"
+  *ngIf="isSmallScreen"
+>
+  {{ sidebarOpen ? '✕' : '☰' }}
+</button>
+
+@if (sidebarOpen && isSmallScreen) {
+  <div class="sidebar-overlay" (click)="closeSidebar()"></div>
+}
+
+<aside class="admin-sidebar" [class.open]="sidebarOpen || !isSmallScreen">
+  <div class="sidebar-header">
+    <h2>Menu Administrativo</h2>
+  </div>
+
+  <nav class="sidebar-menu">
+    @for (group of menuGroups; track group.label) {
+      <div class="menu-group">
+        <button 
+          class="menu-group-header"
+          (click)="toggleGroup(group)"
+          [attr.aria-expanded]="group.expanded"
+        >
+          <span class="group-icon">{{ group.icon }}</span>
+          <span class="group-label">{{ group.label }}</span>
+          <span class="expand-icon" [class.expanded]="group.expanded">▸</span>
+        </button>
+
+        @if (group.expanded) {
+          <div class="menu-items">
+            @for (item of group.items; track item.route) {
+              <a 
+                [routerLink]="item.route"
+                routerLinkActive="active"
+                [routerLinkActiveOptions]="{ exact: item.route === '/admin' }"
+                class="menu-item"
+                (click)="closeSidebar()"
+              >
+                <span class="item-icon">{{ item.icon }}</span>
+                <span class="item-label">{{ item.label }}</span>
+              </a>
+            }
+          </div>
+        }
+      </div>
+    }
+  </nav>
+</aside>
