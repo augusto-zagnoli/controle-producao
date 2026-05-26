@@ -76,7 +76,7 @@
         <select formControlName="funcionarioId">
           <option value="0">Selecione o funcionário…</option>
           @for (f of funcionarios; track f.id) {
-            <option [value]="f.id">{{ f.nome }} — {{ funcaoLabels[f.funcao] }} / {{ setorLabels[f.setor] }}</option>
+            <option [value]="f.id">{{ f.nome }} — {{ f.funcao }} / {{ f.setor }}</option>
           }
         </select>
       </div>
@@ -119,7 +119,7 @@
             [class.ativo]="isOperacaoSelecionada(op)"
             (click)="toggleOperacao(op)">
             <span class="check-icon">{{ isOperacaoSelecionada(op) ? '✓' : '+' }}</span>
-            {{ operacaoLabels[op] }}
+            {{ op }}
           </button>
         }
       </div>

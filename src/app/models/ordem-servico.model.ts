@@ -4,7 +4,7 @@ export type PerfilUsuario = 'Administrador' | 'TecnicoCnc';
 export type Prioridade = 'Baixa' | 'Media' | 'Alta' | 'Urgente';
 export type Funcao = string;
 export type Setor = string;
-export type TipoOperacao = 'Preparacao' | 'UsinagemLado1' | 'UsinagemLado2' | 'Fresa' | 'Tratamento';
+export type TipoOperacao = string;
 
 export interface OpcaoCampo {
   id: number;

@@ -13,7 +13,9 @@
       "Bash(node -e \"const a=require\\('./angular.json'\\); const b=a.projects['controle-producao'].architect.build.options; console.log\\(JSON.stringify\\({prerender:b.prerender,ssr:b.ssr},null,2\\)\\)\")",
       "Bash(node -e ' *)",
       "Bash(node -e \"const p=require\\('./package.json'\\); console.log\\(p.dependencies['@angular/material'] ?? 'NÃO INSTALADO'\\)\")",
-      "Bash(node -e \"const p=require\\('./package.json'\\); const deps={...p.dependencies,...p.devDependencies}; ['@angular/material','@angular/cdk'].forEach\\(k=>console.log\\(k,deps[k]??'missing'\\)\\)\")"
+      "Bash(node -e \"const p=require\\('./package.json'\\); const deps={...p.dependencies,...p.devDependencies}; ['@angular/material','@angular/cdk'].forEach\\(k=>console.log\\(k,deps[k]??'missing'\\)\\)\")",
+      "Bash(Get-ChildItem -Path \"c:\\\\Users\\\\Augusto Zagnoli\\\\Desktop\\\\Projects\\\\Augusto\\\\controle-producao\\\\controle-producao-Back\" -Directory)",
+      "Bash(npx tsc *)"
     ]
   }
 }

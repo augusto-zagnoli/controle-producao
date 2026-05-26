@@ -7,15 +7,11 @@ import { switchMap } from 'rxjs/operators';
 import { Funcionario } from '../models/funcionario.model';
 import {
   Funcao,
-  FUNCAO_LABELS,
-  OPERACAO_LABELS,
-  OPERACAO_LIST,
   OrdemServico,
   Prioridade,
   PRIORIDADE_LABELS,
   PRIORIDADE_LIST,
   Setor,
-  SETOR_LABELS,
   TipoOperacao
 } from '../models/ordem-servico.model';
 import { FuncionariosService } from '../services/funcionarios.service';
@@ -55,11 +51,8 @@ export class AdminFormComponent implements OnInit {
   readonly prioridades = PRIORIDADE_LIST;
   funcoes: string[] = [];
   setores: string[] = [];
-  readonly operacoes = OPERACAO_LIST;
+  operacoes: string[] = [];
   readonly prioridadeLabels = PRIORIDADE_LABELS;
-  readonly funcaoLabels = FUNCAO_LABELS;
-  readonly setorLabels = SETOR_LABELS;
-  readonly operacaoLabels = OPERACAO_LABELS;
 
   // Uploads pendentes
   imagensPendentes: File[] = [];
@@ -82,8 +75,9 @@ export class AdminFormComponent implements OnInit {
     this.funcionariosService.listar(true).subscribe({ next: lista => this.funcionarios = lista });
     this.opcoesService.listar().subscribe({
       next: lista => {
-        this.funcoes = lista.filter(o => o.tipo === 'Funcao' && o.ativo && o.nome).map(o => o.nome);
-        this.setores = lista.filter(o => o.tipo === 'Setor'  && o.ativo && o.nome).map(o => o.nome);
+        this.funcoes   = lista.filter(o => o.tipo === 'Funcao'   && o.ativo && o.nome).map(o => o.nome);
+        this.setores   = lista.filter(o => o.tipo === 'Setor'    && o.ativo && o.nome).map(o => o.nome);
+        this.operacoes = lista.filter(o => o.tipo === 'Operacao' && o.ativo && o.nome).map(o => o.nome);
         if (this.funcoes.length) this.funcaoSelecionada = this.funcoes[0];
         if (this.setores.length) this.setorSelecionado = this.setores[0];
       }
