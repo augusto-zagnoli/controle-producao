@@ -8,6 +8,7 @@ import { AdminFormComponent } from './admin-form/admin-form.component';
 import { AdminFuncionariosComponent } from './admin-funcionarios/admin-funcionarios.component';
 import { AdminUsuariosComponent } from './admin-usuarios/admin-usuarios.component';
 import { AdminSettingsComponent } from './admin-settings/admin-settings.component';
+import { AdminOpcoesComponent } from './admin-opcoes/admin-opcoes.component';
 import { AdminLayoutComponent } from './shared/admin-layout/admin-layout.component';
 import { ProducaoComponent } from './Public/producao/producao.component';
 import { ProducaoDetailComponent } from './Public/producao-detail/producao-detail.component';
@@ -26,7 +27,8 @@ export const routes: Routes = [
       { path: 'ordem/:id/editar', component: AdminFormComponent },
       { path: 'funcionarios', component: AdminFuncionariosComponent },
       { path: 'usuarios', component: AdminUsuariosComponent },
-      { path: 'configuracoes', component: AdminSettingsComponent }
+      { path: 'configuracoes', component: AdminSettingsComponent },
+      { path: 'opcoes', component: AdminOpcoesComponent }
     ]
   },
   { path: 'producao', component: ProducaoComponent },

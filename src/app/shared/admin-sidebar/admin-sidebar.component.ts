@@ -53,7 +53,8 @@ export class AdminSidebarComponent {
       label: 'Sistema',
       expanded: false,
       items: [
-        { icon: '⚙️', label: 'Configurações', route: '/admin/configuracoes' }
+        { icon: '⚙️', label: 'Configurações', route: '/admin/configuracoes' },
+        { icon: '🏷️', label: 'Funções e Setores', route: '/admin/opcoes' }
       ]
     }
   ];

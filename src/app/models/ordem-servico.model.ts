@@ -2,9 +2,17 @@ export type OrdemServicoStatus = 'Pendente' | 'EmProducao' | 'Pausada' | 'Finali
 export type PerfilUsuario = 'Administrador' | 'TecnicoCnc';
 
 export type Prioridade = 'Baixa' | 'Media' | 'Alta' | 'Urgente';
-export type Funcao = 'Programador' | 'Conferente' | 'Operador';
-export type Setor = 'Usinagem' | 'Estamparia' | 'Fresagem' | 'Solda';
+export type Funcao = string;
+export type Setor = string;
 export type TipoOperacao = 'Preparacao' | 'UsinagemLado1' | 'UsinagemLado2' | 'Fresa' | 'Tratamento';
+
+export interface OpcaoCampo {
+  id: number;
+  tipo: string;
+  nome: string;
+  ordem: number;
+  ativo: boolean;
+}
 
 export const STATUS_LABELS: Record<OrdemServicoStatus, string> = {
   Pendente: 'Pendente',
@@ -19,11 +27,11 @@ export const PRIORIDADE_LABELS: Record<Prioridade, string> = {
   Baixa: 'Baixa', Media: 'Média', Alta: 'Alta', Urgente: 'Urgente'
 };
 
-export const FUNCAO_LABELS: Record<Funcao, string> = {
+export const FUNCAO_LABELS: Record<string, string> = {
   Programador: 'Programador', Conferente: 'Conferente', Operador: 'Operador'
 };
 
-export const SETOR_LABELS: Record<Setor, string> = {
+export const SETOR_LABELS: Record<string, string> = {
   Usinagem: 'Usinagem', Estamparia: 'Estamparia', Fresagem: 'Fresagem', Solda: 'Solda'
 };
 

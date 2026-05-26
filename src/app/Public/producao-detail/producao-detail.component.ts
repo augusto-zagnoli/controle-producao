@@ -3,10 +3,11 @@ import { Component, ElementRef, OnDestroy, OnInit, ViewChild, inject } from '@an
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { switchMap } from 'rxjs';
-import { OrdemServico, STATUS_LABELS, OrdemServicoStatus, Funcao, Setor, FUNCAO_LIST, SETOR_LIST } from '../../models/ordem-servico.model';
+import { OrdemServico, STATUS_LABELS, OrdemServicoStatus, Funcao, Setor } from '../../models/ordem-servico.model';
 import { Funcionario } from '../../models/funcionario.model';
 import { OrdensService } from '../../services/ordens.service';
 import { FuncionariosService } from '../../services/funcionarios.service';
+import { OpcoesService } from '../../services/opcoes.service';
 import { environment } from '../../../environments/environment';
 
 @Component({
@@ -20,6 +21,7 @@ export class ProducaoDetailComponent implements OnInit, OnDestroy {
   private readonly route = inject(ActivatedRoute);
   private readonly service = inject(OrdensService);
   private readonly funcionariosService = inject(FuncionariosService);
+  private readonly opcoesService = inject(OpcoesService);
 
   @ViewChild('videoEl') videoEl?: ElementRef<HTMLVideoElement>;
 
@@ -49,8 +51,8 @@ export class ProducaoDetailComponent implements OnInit, OnDestroy {
     { value: 'Finalizada', label: 'Finalizada' },
   ];
 
-  readonly funcaoOptions = FUNCAO_LIST;
-  readonly setorOptions = SETOR_LIST;
+  funcaoOptions: string[] = [];
+  setorOptions: string[] = [];
 
   // Edição função/setor
   editandoFuncaoSetor = false;
@@ -61,8 +63,12 @@ export class ProducaoDetailComponent implements OnInit, OnDestroy {
   erroFuncaoSetor = '';
 
   ngOnInit(): void {
-    this.funcionariosService.listar(true).subscribe({
-      next: lista => { this.funcionarios = lista; }
+    this.funcionariosService.listar(true).subscribe({ next: lista => { this.funcionarios = lista; } });
+    this.opcoesService.listar().subscribe({
+      next: lista => {
+        this.funcaoOptions = lista.filter(o => o.tipo === 'Funcao' && o.ativo).map(o => o.nome);
+        this.setorOptions  = lista.filter(o => o.tipo === 'Setor'  && o.ativo).map(o => o.nome);
+      }
     });
     const id = Number(this.route.snapshot.paramMap.get('id'));
     this.carregando = true;

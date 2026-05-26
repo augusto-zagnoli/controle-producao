@@ -8,7 +8,6 @@ import { Funcionario } from '../models/funcionario.model';
 import {
   Funcao,
   FUNCAO_LABELS,
-  FUNCAO_LIST,
   OPERACAO_LABELS,
   OPERACAO_LIST,
   OrdemServico,
@@ -17,11 +16,11 @@ import {
   PRIORIDADE_LIST,
   Setor,
   SETOR_LABELS,
-  SETOR_LIST,
   TipoOperacao
 } from '../models/ordem-servico.model';
 import { FuncionariosService } from '../services/funcionarios.service';
 import { OrdensService } from '../services/ordens.service';
+import { OpcoesService } from '../services/opcoes.service';
 
 @Component({
   selector: 'app-admin-form',
@@ -34,6 +33,7 @@ export class AdminFormComponent implements OnInit {
   private readonly fb = inject(FormBuilder);
   private readonly service = inject(OrdensService);
   private readonly funcionariosService = inject(FuncionariosService);
+  private readonly opcoesService = inject(OpcoesService);
   private readonly router = inject(Router);
   private readonly route = inject(ActivatedRoute);
 
@@ -53,8 +53,8 @@ export class AdminFormComponent implements OnInit {
 
   // Listas para templates
   readonly prioridades = PRIORIDADE_LIST;
-  readonly funcoes = FUNCAO_LIST;
-  readonly setores = SETOR_LIST;
+  funcoes: string[] = [];
+  setores: string[] = [];
   readonly operacoes = OPERACAO_LIST;
   readonly prioridadeLabels = PRIORIDADE_LABELS;
   readonly funcaoLabels = FUNCAO_LABELS;
@@ -79,8 +79,14 @@ export class AdminFormComponent implements OnInit {
   });
 
   ngOnInit(): void {
-    this.funcionariosService.listar(true).subscribe({
-      next: lista => this.funcionarios = lista
+    this.funcionariosService.listar(true).subscribe({ next: lista => this.funcionarios = lista });
+    this.opcoesService.listar().subscribe({
+      next: lista => {
+        this.funcoes = lista.filter(o => o.tipo === 'Funcao' && o.ativo).map(o => o.nome);
+        this.setores = lista.filter(o => o.tipo === 'Setor' && o.ativo).map(o => o.nome);
+        if (this.funcoes.length) this.funcaoSelecionada = this.funcoes[0];
+        if (this.setores.length) this.setorSelecionado = this.setores[0];
+      }
     });
 
     const idParam = this.route.snapshot.paramMap.get('id');
