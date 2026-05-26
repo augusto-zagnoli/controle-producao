@@ -47,6 +47,14 @@ export class AdminSidebarComponent {
         { icon: '👷', label: 'Funcionários', route: '/admin/funcionarios' },
         { icon: '👤', label: 'Usuários', route: '/admin/usuarios' }
       ]
+    },
+    {
+      icon: '🔧',
+      label: 'Sistema',
+      expanded: false,
+      items: [
+        { icon: '⚙️', label: 'Configurações', route: '/admin/configuracoes' }
+      ]
     }
   ];
 

@@ -1,0 +1,71 @@
+<section class="page">
+  <header class="page-header">
+    <h1>⚙️ Configurações do Sistema</h1>
+  </header>
+
+  @if (carregando) {
+    <p class="info">Carregando configurações...</p>
+  } @else if (erro) {
+    <p class="erro">{{ erro }}</p>
+  } @else {
+    <div class="settings-container">
+      <div class="settings-card">
+        <h2>Logo da Empresa</h2>
+        
+        <div class="logo-section">
+          @if (logoPreview) {
+            <div class="logo-preview">
+              <img [src]="logoPreview" alt="Logo preview">
+            </div>
+          } @else {
+            <div class="logo-empty">
+              <span>📸 Nenhuma logo configurada</span>
+            </div>
+          }
+          
+          <div class="logo-actions">
+            <button class="btn primary" (click)="abrirSeletor()">
+              {{ logoPreview ? '🔄 Alterar' : '📤 Enviar' }} Logo
+            </button>
+            @if (logoPreview) {
+              <button class="btn secondary" (click)="removerLogo()">
+                ✕ Remover
+              </button>
+            }
+          </div>
+        </div>
+
+        <input 
+          #fileInput 
+          type="file" 
+          accept="image/*" 
+          (change)="onFileSelected($event)" 
+          hidden
+        >
+      </div>
+
+      <div class="settings-card">
+        <h2>Nome da Empresa</h2>
+        
+        <input 
+          [(ngModel)]="nomeEmpresa"
+          type="text"
+          placeholder="Digite o nome da empresa"
+          class="input-field"
+        >
+      </div>
+
+      @if (sucesso) {
+        <p class="sucesso">✓ {{ sucesso }}</p>
+      }
+
+      <button 
+        class="btn primary btn-large"
+        (click)="salvar()"
+        [disabled]="salvando"
+      >
+        {{ salvando ? 'Salvando...' : '💾 Salvar Configurações' }}
+      </button>
+    </div>
+  }
+</section>
