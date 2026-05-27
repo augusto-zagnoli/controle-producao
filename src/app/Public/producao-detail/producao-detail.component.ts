@@ -38,6 +38,7 @@ export class ProducaoDetailComponent implements OnInit, OnDestroy {
   salvando = false;
   erroStatus = '';
 
+  aguardandoFoto = false;
   cameraAtiva = false;
   iniciandoCamera = false;
   private stream: MediaStream | null = null;
@@ -87,6 +88,34 @@ export class ProducaoDetailComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
+    this.pararCamera();
+  }
+
+  salvarTudo(): void {
+    if (!this.ordem) return;
+
+    this.erroFuncaoSetor = '';
+    this.erroStatus = '';
+
+    if (!this.funcionarioFuncaoSetorId) {
+      this.erroFuncaoSetor = 'Selecione o funcionário responsável.';
+      return;
+    }
+    if (!this.funcionarioSelecionadoId) {
+      this.erroStatus = 'Selecione o funcionário que está realizando a ação.';
+      return;
+    }
+
+    this.fotoOperador = null;
+    this.fotoPreview = null;
+    this.aguardandoFoto = true;
+    setTimeout(() => this.iniciarCamera(), 0);
+  }
+
+  cancelarCamera(): void {
+    this.aguardandoFoto = false;
+    this.fotoOperador = null;
+    this.fotoPreview = null;
     this.pararCamera();
   }
 
@@ -152,26 +181,11 @@ export class ProducaoDetailComponent implements OnInit, OnDestroy {
     this.iniciarCamera();
   }
 
-  salvarTudo(): void {
-    if (!this.ordem) return;
-
-    this.erroFuncaoSetor = '';
-    this.erroStatus = '';
-
-    if (!this.funcionarioFuncaoSetorId) {
-      this.erroFuncaoSetor = 'Selecione o funcionário responsável.';
-      return;
-    }
-    if (!this.funcionarioSelecionadoId) {
-      this.erroStatus = 'Selecione o funcionário que está realizando a ação.';
-      return;
-    }
-    if (!this.fotoOperador) {
-      this.erroStatus = 'A foto do operador é obrigatória.';
-      return;
-    }
+  executarSave(): void {
+    if (!this.ordem || !this.fotoOperador) return;
 
     this.salvando = true;
+    this.erroStatus = '';
 
     this.service.alterarFuncaoSetor(
       this.ordem.id,
@@ -196,7 +210,9 @@ export class ProducaoDetailComponent implements OnInit, OnDestroy {
       next: ordem => {
         this.ordem = ordem;
         this.salvando = false;
-        this.pararCamera();
+        this.aguardandoFoto = false;
+        this.fotoOperador = null;
+        this.fotoPreview = null;
       },
       error: () => {
         this.erroStatus = 'Erro ao salvar. Tente novamente.';

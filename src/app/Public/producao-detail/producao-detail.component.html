@@ -128,28 +128,9 @@
           Observação
           <textarea [(ngModel)]="observacao" rows="3" placeholder="Opcional"></textarea>
         </label>
-
-        <div class="foto-field">
-          <p class="foto-label">📷 Foto do Operador <span class="req">*</span></p>
-
-          @if (cameraAtiva) {
-            <div class="camera-wrap">
-              <video #videoEl class="camera-video" autoplay playsinline muted></video>
-            </div>
-            <button type="button" class="btn-foto" (click)="capturarFoto()">📸 Capturar Foto</button>
-          } @else if (fotoPreview) {
-            <img [src]="fotoPreview" alt="Prévia da foto" class="foto-preview" />
-            <button type="button" class="btn-foto" (click)="refazerFoto()">🔄 Refazer Foto</button>
-          } @else {
-            <button type="button" class="btn-foto" (click)="iniciarCamera()" [disabled]="iniciandoCamera">
-              {{ iniciandoCamera ? 'Iniciando câmera...' : '📷 Abrir Câmera' }}
-            </button>
-          }
-
-          @if (erroStatus) {
-            <p class="erro-modal">{{ erroStatus }}</p>
-          }
-        </div>
+        @if (erroStatus) {
+          <p class="erro-modal">{{ erroStatus }}</p>
+        }
       </div>
     </div>
 
@@ -161,6 +142,44 @@
 
   } @else {
     <p class="info">Ordem não encontrada.</p>
+  }
+
+  <!-- Overlay de câmera ativado ao clicar em Salvar -->
+  @if (aguardandoFoto) {
+    <div class="camera-overlay">
+      <div class="camera-modal">
+        <div class="camera-modal-header">
+          <h3>Foto do Operador</h3>
+          <button class="btn-close" (click)="cancelarCamera()" [disabled]="salvando">✕</button>
+        </div>
+        <div class="camera-modal-body">
+          @if (cameraAtiva) {
+            <div class="camera-wrap">
+              <video #videoEl class="camera-video" autoplay playsinline muted></video>
+            </div>
+            <button type="button" class="btn-foto" (click)="capturarFoto()">📸 Capturar Foto</button>
+          } @else if (fotoPreview) {
+            <img [src]="fotoPreview" alt="Prévia da foto" class="foto-preview" />
+            <button type="button" class="btn-foto btn-refazer" (click)="refazerFoto()" [disabled]="salvando">
+              🔄 Refazer Foto
+            </button>
+          } @else {
+            <p class="info-camera">Iniciando câmera...</p>
+          }
+          @if (erroStatus) {
+            <p class="erro-modal">{{ erroStatus }}</p>
+          }
+        </div>
+        <div class="camera-modal-footer">
+          <button class="btn-cancel" (click)="cancelarCamera()" [disabled]="salvando">Cancelar</button>
+          @if (fotoPreview) {
+            <button class="btn-confirm" (click)="executarSave()" [disabled]="salvando">
+              {{ salvando ? 'Salvando...' : 'Confirmar e Salvar' }}
+            </button>
+          }
+        </div>
+      </div>
+    </div>
   }
 
 </section>
