@@ -81,9 +81,10 @@ export class ProducaoDetailComponent implements OnInit, OnDestroy {
         this.form.patchValue({
           setor:                  ordem.setor,
           equipamento:            ordem.equipamento ?? '',
-          funcionarioResponsavel: ordem.funcionarioId || 0,
+          funcionarioResponsavel: ordem.funcionarioId    || 0,
+          quantidadeRecebida:     ordem.quantidadeRecebida || 0,
           novoStatus:             ordem.status,
-          funcionarioAcao:        ordem.funcionarioId || 0,
+          funcionarioAcao:        ordem.funcionarioAcaoId || 0,
         });
         this.carregando = false;
       },
@@ -203,6 +204,14 @@ export class ProducaoDetailComponent implements OnInit, OnDestroy {
     ).subscribe({
       next: ordem => {
         this.ordem = ordem;
+        this.form.patchValue({
+          setor:                  ordem.setor,
+          equipamento:            ordem.equipamento ?? '',
+          funcionarioResponsavel: ordem.funcionarioId    || 0,
+          quantidadeRecebida:     ordem.quantidadeRecebida || 0,
+          novoStatus:             ordem.status,
+          funcionarioAcao:        ordem.funcionarioAcaoId || 0,
+        });
         this.salvando = false;
         this.aguardandoFoto = false;
         this.fotoOperador = null;
