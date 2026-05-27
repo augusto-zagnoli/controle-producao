@@ -95,6 +95,29 @@ export class OrdensService {
     });
   }
 
+  salvarTablet(
+    id: number,
+    setor: string,
+    equipamento: string | null,
+    funcionarioResponsavelId: number,
+    quantidadeRecebida: number,
+    funcionarioAcaoId: number,
+    novoStatus: string,
+    observacao: string | null,
+    fotoOperador: File
+  ): Observable<void> {
+    const form = new FormData();
+    form.append('setor', setor);
+    if (equipamento) form.append('equipamento', equipamento);
+    form.append('funcionarioResponsavelId', String(funcionarioResponsavelId));
+    form.append('quantidadeRecebida', String(quantidadeRecebida));
+    form.append('funcionarioAcaoId', String(funcionarioAcaoId));
+    form.append('novoStatus', novoStatus);
+    if (observacao) form.append('observacao', observacao);
+    form.append('fotoOperador', fotoOperador);
+    return this.http.post<void>(`${this.base}/${id}/salvar-tablet`, form);
+  }
+
   // Histórico
   historico(id: number): Observable<HistoricoItem[]> {
     return this.http.get<HistoricoItem[]>(`${this.base}/${id}/historico`);

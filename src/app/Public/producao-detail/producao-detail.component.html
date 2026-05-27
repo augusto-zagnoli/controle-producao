@@ -1,4 +1,4 @@
-<section class="page tablet">
+<section class="page tablet" [formGroup]="form">
 
   <div class="tab-header">
     <a routerLink="/producao" class="btn-back">← Voltar</a>
@@ -38,7 +38,7 @@
           </label>
           <label class="field">
             Setor
-            <select [(ngModel)]="setorEdit">
+            <select formControlName="setor">
               @for (s of setorOptions; track s) {
                 <option [value]="s">{{ s }}</option>
               }
@@ -46,7 +46,7 @@
           </label>
           <label class="field">
             Equipamento
-            <select [(ngModel)]="equipamentoEdit">
+            <select formControlName="equipamento">
               <option value="">— Nenhum —</option>
               @for (e of equipamentoOptions; track e) {
                 <option [value]="e">{{ e }}</option>
@@ -55,20 +55,20 @@
           </label>
           <label class="field">
             Funcionário responsável <span class="req">*</span>
-            <select [(ngModel)]="funcionarioFuncaoSetorId">
+            <select formControlName="funcionarioResponsavel" [class.input-invalid]="fc.funcionarioResponsavel.invalid && fc.funcionarioResponsavel.touched">
               <option [value]="0" disabled>Selecione seu nome…</option>
               @for (f of funcionarios; track f.id) {
                 <option [value]="f.id">{{ f.nome }}</option>
               }
             </select>
+            @if (fc.funcionarioResponsavel.invalid && fc.funcionarioResponsavel.touched) {
+              <span class="erro-campo">Selecione o funcionário responsável.</span>
+            }
           </label>
           <label class="field">
             Quantidade de peças recebidas
-            <input type="number" [(ngModel)]="quantidadeRecebida" min="0" step="1" placeholder="0" class="input-qtd" />
+            <input type="number" formControlName="quantidadeRecebida" min="0" step="1" placeholder="0" class="input-qtd" />
           </label>
-          @if (erroFuncaoSetor) {
-            <p class="erro-modal">{{ erroFuncaoSetor }}</p>
-          }
         </div>
       </div>
     </div>
@@ -109,16 +109,19 @@
       <div class="status-fields">
         <label class="field">
           Funcionário que está realizando a ação <span class="req">*</span>
-          <select [(ngModel)]="funcionarioSelecionadoId">
+          <select formControlName="funcionarioAcao" [class.input-invalid]="fc.funcionarioAcao.invalid && fc.funcionarioAcao.touched">
             <option [value]="0" disabled>Selecione seu nome…</option>
             @for (f of funcionarios; track f.id) {
               <option [value]="f.id">{{ f.nome }}</option>
             }
           </select>
+          @if (fc.funcionarioAcao.invalid && fc.funcionarioAcao.touched) {
+            <span class="erro-campo">Selecione o funcionário que está realizando a ação.</span>
+          }
         </label>
         <label class="field">
           Novo Status <span class="req">*</span>
-          <select [(ngModel)]="novoStatus">
+          <select formControlName="novoStatus">
             @for (opt of statusOptions; track opt.value) {
               <option [value]="opt.value">{{ opt.label }}</option>
             }
@@ -126,15 +129,15 @@
         </label>
         <label class="field">
           Observação
-          <textarea [(ngModel)]="observacao" rows="3" placeholder="Opcional"></textarea>
+          <textarea formControlName="observacao" rows="3" placeholder="Opcional"></textarea>
         </label>
-        @if (erroStatus) {
-          <p class="erro-modal">{{ erroStatus }}</p>
-        }
       </div>
     </div>
 
     <div class="save-section">
+      @if (erroSalvar) {
+        <p class="erro-modal">{{ erroSalvar }}</p>
+      }
       <button class="btn-salvar-tudo" (click)="salvarTudo()" [disabled]="salvando">
         {{ salvando ? 'Salvando...' : 'Salvar' }}
       </button>
@@ -166,8 +169,8 @@
           } @else {
             <p class="info-camera">Iniciando câmera...</p>
           }
-          @if (erroStatus) {
-            <p class="erro-modal">{{ erroStatus }}</p>
+          @if (erroSalvar) {
+            <p class="erro-modal">{{ erroSalvar }}</p>
           }
         </div>
         <div class="camera-modal-footer">

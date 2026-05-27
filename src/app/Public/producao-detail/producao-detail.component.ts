@@ -1,9 +1,9 @@
 import { CommonModule } from '@angular/common';
 import { Component, ElementRef, OnDestroy, OnInit, ViewChild, inject } from '@angular/core';
-import { FormsModule } from '@angular/forms';
+import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, RouterLink } from '@angular/router';
-import { switchMap } from 'rxjs';
-import { OrdemServico, STATUS_LABELS, OrdemServicoStatus, Setor } from '../../models/ordem-servico.model';
+import { switchMap } from 'rxjs/operators';
+import { OrdemServico, STATUS_LABELS, OrdemServicoStatus } from '../../models/ordem-servico.model';
 import { Funcionario } from '../../models/funcionario.model';
 import { OrdensService } from '../../services/ordens.service';
 import { FuncionariosService } from '../../services/funcionarios.service';
@@ -14,7 +14,7 @@ import { FileViewerDialogComponent } from '../../shared/file-viewer-dialog/file-
 @Component({
   selector: 'app-producao-detail',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterLink, MatDialogModule],
+  imports: [CommonModule, ReactiveFormsModule, RouterLink, MatDialogModule],
   templateUrl: './producao-detail.component.html',
   styleUrl: './producao-detail.component.scss'
 })
@@ -24,43 +24,46 @@ export class ProducaoDetailComponent implements OnInit, OnDestroy {
   private readonly funcionariosService = inject(FuncionariosService);
   private readonly opcoesService = inject(OpcoesService);
   private readonly dialog = inject(MatDialog);
+  private readonly fb = inject(FormBuilder);
 
   @ViewChild('videoEl') videoEl?: ElementRef<HTMLVideoElement>;
 
   ordem: OrdemServico | null = null;
   carregando = true;
   erro = '';
-
-  novoStatus: OrdemServicoStatus = 'EmProducao';
-  observacao = '';
-  fotoOperador: File | null = null;
-  fotoPreview: string | null = null;
   salvando = false;
-  erroStatus = '';
+  erroSalvar = '';
 
   aguardandoFoto = false;
   cameraAtiva = false;
   iniciandoCamera = false;
   private stream: MediaStream | null = null;
 
+  fotoOperador: File | null = null;
+  fotoPreview: string | null = null;
+
   funcionarios: Funcionario[] = [];
-  funcionarioSelecionadoId: number = 0;
-
-  readonly statusOptions: { value: OrdemServicoStatus; label: string }[] = [
-    { value: 'Pendente', label: 'Pendente' },
-    { value: 'EmProducao', label: 'Em Producao' },
-    { value: 'Pausada', label: 'Pausada' },
-    { value: 'Finalizada', label: 'Finalizada' },
-  ];
-
   setorOptions: string[] = [];
   equipamentoOptions: string[] = [];
 
-  setorEdit: Setor = 'Usinagem';
-  funcionarioFuncaoSetorId = 0;
-  equipamentoEdit: string = '';
-  quantidadeRecebida = 0;
-  erroFuncaoSetor = '';
+  readonly statusOptions: { value: OrdemServicoStatus; label: string }[] = [
+    { value: 'Pendente',    label: 'Pendente'     },
+    { value: 'EmProducao',  label: 'Em Produção'  },
+    { value: 'Pausada',     label: 'Pausada'      },
+    { value: 'Finalizada',  label: 'Finalizada'   },
+  ];
+
+  readonly form = this.fb.nonNullable.group({
+    setor:                   ['Usinagem'],
+    equipamento:             [''],
+    funcionarioResponsavel:  [0, Validators.min(1)],
+    quantidadeRecebida:      [0, Validators.min(0)],
+    funcionarioAcao:         [0, Validators.min(1)],
+    novoStatus:              ['EmProducao' as OrdemServicoStatus],
+    observacao:              [''],
+  });
+
+  get fc() { return this.form.controls; }
 
   ngOnInit(): void {
     this.funcionariosService.listar(true).subscribe({ next: lista => { this.funcionarios = lista; } });
@@ -75,9 +78,13 @@ export class ProducaoDetailComponent implements OnInit, OnDestroy {
     this.service.obter(id).subscribe({
       next: ordem => {
         this.ordem = ordem;
-        this.novoStatus = ordem.status;
-        this.setorEdit      = ordem.setor;
-        this.equipamentoEdit = ordem.equipamento ?? '';
+        this.form.patchValue({
+          setor:                  ordem.setor,
+          equipamento:            ordem.equipamento ?? '',
+          funcionarioResponsavel: ordem.funcionarioId || 0,
+          novoStatus:             ordem.status,
+          funcionarioAcao:        ordem.funcionarioId || 0,
+        });
         this.carregando = false;
       },
       error: () => {
@@ -93,21 +100,12 @@ export class ProducaoDetailComponent implements OnInit, OnDestroy {
 
   salvarTudo(): void {
     if (!this.ordem) return;
-
-    this.erroFuncaoSetor = '';
-    this.erroStatus = '';
-
-    if (!this.funcionarioFuncaoSetorId) {
-      this.erroFuncaoSetor = 'Selecione o funcionário responsável.';
-      return;
-    }
-    if (!this.funcionarioSelecionadoId) {
-      this.erroStatus = 'Selecione o funcionário que está realizando a ação.';
-      return;
-    }
+    this.form.markAllAsTouched();
+    if (this.form.invalid) return;
 
     this.fotoOperador = null;
     this.fotoPreview = null;
+    this.erroSalvar = '';
     this.aguardandoFoto = true;
     setTimeout(() => this.iniciarCamera(), 0);
   }
@@ -122,11 +120,11 @@ export class ProducaoDetailComponent implements OnInit, OnDestroy {
   async iniciarCamera(): Promise<void> {
     if (this.cameraAtiva || this.iniciandoCamera) return;
     if (!navigator.mediaDevices?.getUserMedia) {
-      this.erroStatus = 'Câmera não disponível neste dispositivo/navegador.';
+      this.erroSalvar = 'Câmera não disponível neste dispositivo/navegador.';
       return;
     }
     this.iniciandoCamera = true;
-    this.erroStatus = '';
+    this.erroSalvar = '';
     try {
       this.stream = await navigator.mediaDevices.getUserMedia({
         video: { facingMode: 'environment', width: { ideal: 1280 }, height: { ideal: 720 } },
@@ -140,7 +138,7 @@ export class ProducaoDetailComponent implements OnInit, OnDestroy {
         }
       }, 0);
     } catch {
-      this.erroStatus = 'Não foi possível acessar a câmera. Verifique as permissões.';
+      this.erroSalvar = 'Não foi possível acessar a câmera. Verifique as permissões.';
       this.cameraAtiva = false;
     } finally {
       this.iniciandoCamera = false;
@@ -184,28 +182,24 @@ export class ProducaoDetailComponent implements OnInit, OnDestroy {
   executarSave(): void {
     if (!this.ordem || !this.fotoOperador) return;
 
+    const v = this.form.getRawValue();
     this.salvando = true;
-    this.erroStatus = '';
+    this.erroSalvar = '';
 
-    this.service.alterarFuncaoSetor(
-      this.ordem.id,
-      this.ordem.funcao,
-      this.setorEdit,
-      this.funcionarioFuncaoSetorId,
-      this.quantidadeRecebida,
-      this.equipamentoEdit || null
+    const ordemId = this.ordem.id;
+
+    this.service.salvarTablet(
+      ordemId,
+      v.setor,
+      v.equipamento || null,
+      v.funcionarioResponsavel,
+      v.quantidadeRecebida,
+      v.funcionarioAcao,
+      v.novoStatus,
+      v.observacao || null,
+      this.fotoOperador!
     ).pipe(
-      switchMap(ordem => {
-        this.ordem = ordem;
-        return this.service.alterarStatus(
-          this.ordem!.id,
-          this.novoStatus,
-          this.observacao,
-          this.fotoOperador!,
-          this.funcionarioSelecionadoId
-        );
-      }),
-      switchMap(() => this.service.obter(this.ordem!.id))
+      switchMap(() => this.service.obter(ordemId))
     ).subscribe({
       next: ordem => {
         this.ordem = ordem;
@@ -215,7 +209,7 @@ export class ProducaoDetailComponent implements OnInit, OnDestroy {
         this.fotoPreview = null;
       },
       error: () => {
-        this.erroStatus = 'Erro ao salvar. Tente novamente.';
+        this.erroSalvar = 'Erro ao salvar. Tente novamente.';
         this.salvando = false;
       }
     });
