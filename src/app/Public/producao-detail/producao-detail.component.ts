@@ -53,13 +53,11 @@ export class ProducaoDetailComponent implements OnInit, OnDestroy {
     { value: 'Finalizada', label: 'Finalizada' },
   ];
 
-  funcaoOptions: string[] = [];
   setorOptions: string[] = [];
   equipamentoOptions: string[] = [];
 
   // Edição função/setor
   editandoFuncaoSetor = false;
-  funcaoEdit: Funcao = 'Operador';
   setorEdit: Setor = 'Usinagem';
   funcionarioFuncaoSetorId = 0;
   equipamentoEdit: string = '';
@@ -71,7 +69,6 @@ export class ProducaoDetailComponent implements OnInit, OnDestroy {
     this.funcionariosService.listar(true).subscribe({ next: lista => { this.funcionarios = lista; } });
     this.opcoesService.listar().subscribe({
       next: lista => {
-        this.funcaoOptions      = lista.filter(o => o.tipo === 'Funcao'      && o.ativo && o.nome).map(o => o.nome);
         this.setorOptions       = lista.filter(o => o.tipo === 'Setor'       && o.ativo && o.nome).map(o => o.nome);
         this.equipamentoOptions = lista.filter(o => o.tipo === 'Equipamento' && o.ativo && o.nome).map(o => o.nome);
       }
@@ -81,7 +78,6 @@ export class ProducaoDetailComponent implements OnInit, OnDestroy {
     this.service.obter(id).subscribe({
       next: ordem => {
         this.ordem = ordem;
-        this.funcaoEdit     = ordem.funcao;
         this.setorEdit      = ordem.setor;
         this.equipamentoEdit = ordem.equipamento ?? '';
         this.carregando = false;
@@ -227,7 +223,6 @@ export class ProducaoDetailComponent implements OnInit, OnDestroy {
 
   abrirEdicaoFuncaoSetor(): void {
     if (!this.ordem) return;
-    this.funcaoEdit = this.ordem.funcao;
     this.setorEdit = this.ordem.setor;
     this.funcionarioFuncaoSetorId = 0;
     this.erroFuncaoSetor = '';
@@ -247,7 +242,7 @@ export class ProducaoDetailComponent implements OnInit, OnDestroy {
     }
     this.salvandoFuncaoSetor = true;
     this.erroFuncaoSetor = '';
-    this.service.alterarFuncaoSetor(this.ordem.id, this.funcaoEdit, this.setorEdit, this.funcionarioFuncaoSetorId, this.quantidadeRecebida, this.equipamentoEdit || null).subscribe({
+    this.service.alterarFuncaoSetor(this.ordem.id, this.ordem.funcao, this.setorEdit, this.funcionarioFuncaoSetorId, this.quantidadeRecebida, this.equipamentoEdit || null).subscribe({
       next: ordem => {
         this.ordem = ordem;
         this.editandoFuncaoSetor = false;

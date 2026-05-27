@@ -34,11 +34,7 @@
         <div class="fs-edit">
           <label class="field">
             Função
-            <select [(ngModel)]="funcaoEdit">
-              @for (f of funcaoOptions; track f) {
-                <option [value]="f">{{ f }}</option>
-              }
-            </select>
+            <input type="text" [value]="ordem.funcao || '—'" readonly class="input-readonly" />
           </label>
           <label class="field">
             Setor
