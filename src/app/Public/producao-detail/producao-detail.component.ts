@@ -1,9 +1,9 @@
-﻿import { CommonModule } from '@angular/common';
+import { CommonModule } from '@angular/common';
 import { Component, ElementRef, OnDestroy, OnInit, ViewChild, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { switchMap } from 'rxjs';
-import { OrdemServico, STATUS_LABELS, OrdemServicoStatus, Funcao, Setor } from '../../models/ordem-servico.model';
+import { OrdemServico, STATUS_LABELS, OrdemServicoStatus, Setor } from '../../models/ordem-servico.model';
 import { Funcionario } from '../../models/funcionario.model';
 import { OrdensService } from '../../services/ordens.service';
 import { FuncionariosService } from '../../services/funcionarios.service';
@@ -31,13 +31,12 @@ export class ProducaoDetailComponent implements OnInit, OnDestroy {
   carregando = true;
   erro = '';
 
-  modalAberto = false;
   novoStatus: OrdemServicoStatus = 'EmProducao';
   observacao = '';
   fotoOperador: File | null = null;
   fotoPreview: string | null = null;
   salvando = false;
-  erroModal = '';
+  erroStatus = '';
 
   cameraAtiva = false;
   iniciandoCamera = false;
@@ -56,13 +55,10 @@ export class ProducaoDetailComponent implements OnInit, OnDestroy {
   setorOptions: string[] = [];
   equipamentoOptions: string[] = [];
 
-  // Edição função/setor
-  editandoFuncaoSetor = false;
   setorEdit: Setor = 'Usinagem';
   funcionarioFuncaoSetorId = 0;
   equipamentoEdit: string = '';
   quantidadeRecebida = 0;
-  salvandoFuncaoSetor = false;
   erroFuncaoSetor = '';
 
   ngOnInit(): void {
@@ -78,6 +74,7 @@ export class ProducaoDetailComponent implements OnInit, OnDestroy {
     this.service.obter(id).subscribe({
       next: ordem => {
         this.ordem = ordem;
+        this.novoStatus = ordem.status;
         this.setorEdit      = ordem.setor;
         this.equipamentoEdit = ordem.equipamento ?? '';
         this.carregando = false;
@@ -89,23 +86,6 @@ export class ProducaoDetailComponent implements OnInit, OnDestroy {
     });
   }
 
-  abrirModal(): void {
-    if (!this.ordem) return;
-    this.novoStatus = this.ordem.status;
-    this.observacao = '';
-    this.fotoOperador = null;
-    this.fotoPreview = null;
-    this.erroModal = '';
-    this.funcionarioSelecionadoId = 0;
-    this.modalAberto = true;
-    setTimeout(() => this.iniciarCamera(), 0);
-  }
-
-  fecharModal(): void {
-    this.modalAberto = false;
-    this.pararCamera();
-  }
-
   ngOnDestroy(): void {
     this.pararCamera();
   }
@@ -113,18 +93,17 @@ export class ProducaoDetailComponent implements OnInit, OnDestroy {
   async iniciarCamera(): Promise<void> {
     if (this.cameraAtiva || this.iniciandoCamera) return;
     if (!navigator.mediaDevices?.getUserMedia) {
-      this.erroModal = 'Câmera não disponível neste dispositivo/navegador.';
+      this.erroStatus = 'Câmera não disponível neste dispositivo/navegador.';
       return;
     }
     this.iniciandoCamera = true;
-    this.erroModal = '';
+    this.erroStatus = '';
     try {
       this.stream = await navigator.mediaDevices.getUserMedia({
         video: { facingMode: 'environment', width: { ideal: 1280 }, height: { ideal: 720 } },
         audio: false
       });
       this.cameraAtiva = true;
-      // aguarda o @if renderizar o <video>
       setTimeout(() => {
         if (this.videoEl?.nativeElement && this.stream) {
           this.videoEl.nativeElement.srcObject = this.stream;
@@ -132,7 +111,7 @@ export class ProducaoDetailComponent implements OnInit, OnDestroy {
         }
       }, 0);
     } catch {
-      this.erroModal = 'Não foi possível acessar a câmera. Verifique as permissões.';
+      this.erroStatus = 'Não foi possível acessar a câmera. Verifique as permissões.';
       this.cameraAtiva = false;
     } finally {
       this.iniciandoCamera = false;
@@ -173,30 +152,54 @@ export class ProducaoDetailComponent implements OnInit, OnDestroy {
     this.iniciarCamera();
   }
 
-  confirmarStatus(): void {
+  salvarTudo(): void {
+    if (!this.ordem) return;
+
+    this.erroFuncaoSetor = '';
+    this.erroStatus = '';
+
+    if (!this.funcionarioFuncaoSetorId) {
+      this.erroFuncaoSetor = 'Selecione o funcionário responsável.';
+      return;
+    }
     if (!this.funcionarioSelecionadoId) {
-      this.erroModal = 'Selecione o funcionario responsavel.';
+      this.erroStatus = 'Selecione o funcionário que está realizando a ação.';
       return;
     }
     if (!this.fotoOperador) {
-      this.erroModal = 'A foto do operador e obrigatoria.';
+      this.erroStatus = 'A foto do operador é obrigatória.';
       return;
     }
-    if (!this.ordem) return;
-    this.salvando = true;
-    this.erroModal = '';
 
-    this.service.alterarStatus(this.ordem.id, this.novoStatus, this.observacao, this.fotoOperador, this.funcionarioSelecionadoId).pipe(
+    this.salvando = true;
+
+    this.service.alterarFuncaoSetor(
+      this.ordem.id,
+      this.ordem.funcao,
+      this.setorEdit,
+      this.funcionarioFuncaoSetorId,
+      this.quantidadeRecebida,
+      this.equipamentoEdit || null
+    ).pipe(
+      switchMap(ordem => {
+        this.ordem = ordem;
+        return this.service.alterarStatus(
+          this.ordem!.id,
+          this.novoStatus,
+          this.observacao,
+          this.fotoOperador!,
+          this.funcionarioSelecionadoId
+        );
+      }),
       switchMap(() => this.service.obter(this.ordem!.id))
     ).subscribe({
       next: ordem => {
         this.ordem = ordem;
-        this.modalAberto = false;
         this.salvando = false;
         this.pararCamera();
       },
       error: () => {
-        this.erroModal = 'Erro ao alterar status. Tente novamente.';
+        this.erroStatus = 'Erro ao salvar. Tente novamente.';
         this.salvando = false;
       }
     });
@@ -219,39 +222,5 @@ export class ProducaoDetailComponent implements OnInit, OnDestroy {
   formatarData(iso: string): string {
     if (!iso) return '-';
     return new Date(iso).toLocaleString('pt-BR');
-  }
-
-  abrirEdicaoFuncaoSetor(): void {
-    if (!this.ordem) return;
-    this.setorEdit = this.ordem.setor;
-    this.funcionarioFuncaoSetorId = 0;
-    this.erroFuncaoSetor = '';
-    this.editandoFuncaoSetor = true;
-  }
-
-  cancelarEdicaoFuncaoSetor(): void {
-    this.editandoFuncaoSetor = false;
-    this.erroFuncaoSetor = '';
-  }
-
-  salvarFuncaoSetor(): void {
-    if (!this.ordem) return;
-    if (!this.funcionarioFuncaoSetorId) {
-      this.erroFuncaoSetor = 'Selecione o funcionário responsável pela alteração.';
-      return;
-    }
-    this.salvandoFuncaoSetor = true;
-    this.erroFuncaoSetor = '';
-    this.service.alterarFuncaoSetor(this.ordem.id, this.ordem.funcao, this.setorEdit, this.funcionarioFuncaoSetorId, this.quantidadeRecebida, this.equipamentoEdit || null).subscribe({
-      next: ordem => {
-        this.ordem = ordem;
-        this.editandoFuncaoSetor = false;
-        this.salvandoFuncaoSetor = false;
-      },
-      error: () => {
-        this.erroFuncaoSetor = 'Erro ao salvar. Tente novamente.';
-        this.salvandoFuncaoSetor = false;
-      }
-    });
   }
 }

@@ -126,6 +126,33 @@
 .doc-nome { font-size: 14px; color: #2563eb; font-weight: 500; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .empty { font-size: 13px; color: #9ca3af; font-style: italic; margin: 0; }
 
+.status-section {
+  background: #fff;
+  margin: 0 16px 16px;
+  border-radius: 12px;
+  padding: 16px;
+  border: 1px solid #e5e7eb;
+  h3 { margin: 0 0 14px; font-size: 13px; color: #6b7280; text-transform: uppercase; font-weight: 700; }
+  .status-fields { display: flex; flex-direction: column; gap: 14px; }
+}
+
+.save-section {
+  margin: 0 16px 24px;
+}
+.btn-salvar-tudo {
+  width: 100%;
+  padding: 16px;
+  font-size: 18px;
+  font-weight: 700;
+  background: #16a34a;
+  color: #fff;
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  &:disabled { opacity: 0.6; cursor: not-allowed; }
+  &:active { background: #15803d; }
+}
+
 .action-section {
   margin: 0 16px 16px;
 }
