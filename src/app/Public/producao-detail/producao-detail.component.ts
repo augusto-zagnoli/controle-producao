@@ -85,6 +85,7 @@ export class ProducaoDetailComponent implements OnInit, OnDestroy {
           quantidadeRecebida:     ordem.quantidadeRecebida || 0,
           novoStatus:             ordem.status,
           funcionarioAcao:        ordem.funcionarioAcaoId || 0,
+          observacao:             ordem.observacoes ?? '',
         });
         this.carregando = false;
       },
@@ -211,6 +212,7 @@ export class ProducaoDetailComponent implements OnInit, OnDestroy {
           quantidadeRecebida:     ordem.quantidadeRecebida || 0,
           novoStatus:             ordem.status,
           funcionarioAcao:        ordem.funcionarioAcaoId || 0,
+          observacao:             ordem.observacoes ?? '',
         });
         this.salvando = false;
         this.aguardandoFoto = false;
