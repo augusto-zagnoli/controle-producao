@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { OrdemServico, STATUS_LABELS } from '../../models/ordem-servico.model';
 import { OrdensService } from '../../services/ordens.service';
 
@@ -14,6 +14,7 @@ import { OrdensService } from '../../services/ordens.service';
 })
 export class ProducaoComponent implements OnInit {
   private readonly service = inject(OrdensService);
+  private readonly router = inject(Router);
 
   busca = '';
   status = '';
@@ -43,6 +44,10 @@ export class ProducaoComponent implements OnInit {
 
   statusLabel(s: string): string {
     return (STATUS_LABELS as Record<string, string>)[s] ?? s;
+  }
+
+  goToLogin(): void {
+    this.router.navigate(['/login']);
   }
 
   formatarData(iso: string): string {

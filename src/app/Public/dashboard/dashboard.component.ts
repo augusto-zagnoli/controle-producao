@@ -1,5 +1,6 @@
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { Component, OnDestroy, OnInit, PLATFORM_ID, inject } from '@angular/core';
+import { Router } from '@angular/router';
 import { OrdemServico, STATUS_LABELS } from '../../models/ordem-servico.model';
 import { OrdensService } from '../../services/ordens.service';
 import { SettingsService, Settings } from '../../services/settings.service';
@@ -21,6 +22,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
   private readonly service = inject(OrdensService);
   private readonly settingsService = inject(SettingsService);
   private readonly platformId = inject(PLATFORM_ID);
+  private readonly router = inject(Router);
 
   ordens: OrdemServico[] = [];
   settings: Settings | null = null;
@@ -51,6 +53,10 @@ export class DashboardComponent implements OnInit, OnDestroy {
     return Array.from(map.entries())
       .map(([nome, ordens]) => ({ nome, ordens }))
       .sort((a, b) => a.nome.localeCompare(b.nome));
+  }
+
+  goToLogin(): void {
+    this.router.navigate(['/login']);
   }
 
   ngOnInit(): void {
