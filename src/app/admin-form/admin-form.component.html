@@ -69,17 +69,6 @@
 
     <!-- ── Seção Responsável e Função ───────────────────────── -->
     <div class="card">
-      <div class="card-titulo">Responsável</div>
-
-      <div class="field">
-        <label>Funcionário Responsável</label>
-        <select formControlName="funcionarioId">
-          <option value="0">Selecione o funcionário…</option>
-          @for (f of funcionarios; track f.id) {
-            <option [value]="f.id">{{ f.nome }} — {{ f.funcao }} / {{ f.setor }}</option>
-          }
-        </select>
-      </div>
 
       <div class="sub-titulo">Função da Ordem</div>
       <div class="chip-group">
