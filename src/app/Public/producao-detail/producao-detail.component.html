@@ -54,15 +54,6 @@
             </select>
           </label>
           <label class="field">
-            Operação
-            <select formControlName="operacao">
-              <option value="">— Nenhuma —</option>
-              @for (o of operacaoOptions; track o) {
-                <option [value]="o">{{ o }}</option>
-              }
-            </select>
-          </label>
-          <label class="field">
             Funcionário responsável <span class="req">*</span>
             <select formControlName="funcionarioResponsavel" [class.input-invalid]="fc.funcionarioResponsavel.invalid && fc.funcionarioResponsavel.touched">
               <option [value]="0" disabled>Selecione seu nome…</option>
@@ -136,6 +127,15 @@
             }
           </select>
         </label>
+                  <label class="field">
+            Operação
+            <select formControlName="operacao">
+              <option value="">— Nenhuma —</option>
+              @for (o of operacaoOptions; track o) {
+                <option [value]="o">{{ o }}</option>
+              }
+            </select>
+          </label>
         <label class="field">
           Observação
           <textarea formControlName="observacao" rows="3" placeholder="Opcional"></textarea>
