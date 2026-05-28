@@ -156,6 +156,20 @@ export interface HistoricoItem {
   quantidadeRecebida: number | null;
 }
 
+export interface MaquinaStats {
+  maquina: string;
+  quantidade: number;
+  valor: number;
+}
+
+export interface DashboardAdm {
+  pecasProduzirasMes: number;
+  valorTotalProduzido: number;
+  valorEmProducao: number;
+  pecasPorMaquina: MaquinaStats[];
+  valorPorMaquina: MaquinaStats[];
+}
+
 export interface UsuarioLogado {
   id: number;
   nome: string;

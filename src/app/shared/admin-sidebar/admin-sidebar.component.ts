@@ -36,7 +36,8 @@ export class AdminSidebarComponent {
       expanded: true,
       items: [
         { icon: '📝', label: 'Listar', route: '/admin' },
-        { icon: '➕', label: 'Nova OP', route: '/admin/nova' }
+        { icon: '➕', label: 'Nova OP', route: '/admin/nova' },
+        { icon: '📊', label: 'Dashboard Adm', route: '/admin/dashboard-adm' }
       ]
     },
     {

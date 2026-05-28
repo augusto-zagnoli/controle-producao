@@ -3,6 +3,7 @@ import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
 import { environment } from '../../environments/environment';
 import {
+  DashboardAdm,
   Documento,
   HistoricoItem,
   Imagem,
@@ -118,6 +119,11 @@ export class OrdensService {
     if (observacao) form.append('observacao', observacao);
     form.append('fotoOperador', fotoOperador);
     return this.http.post<void>(`${this.base}/${id}/salvar-tablet`, form);
+  }
+
+  // Dashboard Administrativo
+  dashboardAdm(): Observable<DashboardAdm> {
+    return this.http.get<DashboardAdm>(`${this.base}/dashboard-adm`);
   }
 
   // Histórico

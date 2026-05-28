@@ -1,0 +1,103 @@
+<div class="dash-page">
+
+  <div class="dash-header">
+    <h1>Dashboard Administrativo</h1>
+    <span class="periodo">{{ mesAtual | titlecase }}</span>
+  </div>
+
+  @if (carregando) {
+    <p class="info">Carregando...</p>
+  } @else if (erro) {
+    <p class="erro">{{ erro }}</p>
+  } @else if (dados) {
+
+    <!-- KPIs principais -->
+    <div class="kpi-grid">
+      <div class="kpi-card azul">
+        <span class="kpi-label">Peças Produzidas no Mês</span>
+        <span class="kpi-valor">{{ dados.pecasProduzirasMes | number:'1.0-0':'pt-BR' }}</span>
+        <span class="kpi-sub">unidades finalizadas</span>
+      </div>
+
+      <div class="kpi-card verde">
+        <span class="kpi-label">Valor Total Produzido</span>
+        <span class="kpi-valor">{{ dados.valorTotalProduzido | currency:'BRL':'symbol':'1.2-2':'pt-BR' }}</span>
+        <span class="kpi-sub">ordens finalizadas no mês</span>
+      </div>
+
+      <div class="kpi-card amarelo">
+        <span class="kpi-label">Valor em Produção</span>
+        <span class="kpi-valor">{{ dados.valorEmProducao | currency:'BRL':'symbol':'1.2-2':'pt-BR' }}</span>
+        <span class="kpi-sub">ordens em andamento</span>
+      </div>
+    </div>
+
+    <!-- Tabelas por máquina -->
+    <div class="tabelas-grid">
+
+      <!-- Peças por máquina -->
+      <div class="table-card">
+        <h2>Peças por Máquina <span class="mes-tag">{{ mesAtual | titlecase }}</span></h2>
+        @if (dados.pecasPorMaquina.length) {
+          <table>
+            <thead>
+              <tr>
+                <th>Máquina</th>
+                <th class="num">Qtd. Peças</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (m of dados.pecasPorMaquina; track m.maquina) {
+                <tr>
+                  <td>{{ m.maquina }}</td>
+                  <td class="num">{{ m.quantidade | number:'1.0-2':'pt-BR' }}</td>
+                </tr>
+              }
+            </tbody>
+            <tfoot>
+              <tr class="total-row">
+                <td>Total</td>
+                <td class="num">{{ totalPecasMaquinas(dados.pecasPorMaquina) | number:'1.0-2':'pt-BR' }}</td>
+              </tr>
+            </tfoot>
+          </table>
+        } @else {
+          <p class="empty">Nenhuma ordem finalizada este mês.</p>
+        }
+      </div>
+
+      <!-- Valor por máquina -->
+      <div class="table-card">
+        <h2>Valor Produzido por Máquina <span class="mes-tag">{{ mesAtual | titlecase }}</span></h2>
+        @if (dados.valorPorMaquina.length) {
+          <table>
+            <thead>
+              <tr>
+                <th>Máquina</th>
+                <th class="num">Valor</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (m of dados.valorPorMaquina; track m.maquina) {
+                <tr>
+                  <td>{{ m.maquina }}</td>
+                  <td class="num">{{ m.valor | currency:'BRL':'symbol':'1.2-2':'pt-BR' }}</td>
+                </tr>
+              }
+            </tbody>
+            <tfoot>
+              <tr class="total-row">
+                <td>Total</td>
+                <td class="num">{{ totalValorMaquinas(dados.valorPorMaquina) | currency:'BRL':'symbol':'1.2-2':'pt-BR' }}</td>
+              </tr>
+            </tfoot>
+          </table>
+        } @else {
+          <p class="empty">Sem ordens com valor cadastrado finalizadas este mês.</p>
+        }
+      </div>
+
+    </div>
+  }
+
+</div>

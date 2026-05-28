@@ -1,0 +1,137 @@
+.dash-page {
+  padding: 24px;
+}
+
+.dash-header {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  margin-bottom: 24px;
+
+  h1 { margin: 0; font-size: 22px; }
+}
+
+.periodo {
+  font-size: 14px;
+  color: #6b7280;
+}
+
+.info { color: #6b7280; padding: 12px 0; }
+.erro { color: #dc2626; padding: 12px 0; }
+
+/* KPI cards */
+.kpi-grid {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 28px;
+  flex-wrap: wrap;
+}
+
+.kpi-card {
+  flex: 1;
+  min-width: 180px;
+  border-radius: 12px;
+  padding: 20px 24px;
+  color: #fff;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+
+  &.azul   { background: #2563eb; }
+  &.verde  { background: #16a34a; }
+  &.amarelo { background: #d97706; }
+}
+
+.kpi-label {
+  font-size: 13px;
+  opacity: .85;
+  font-weight: 500;
+}
+
+.kpi-valor {
+  font-size: 30px;
+  font-weight: 700;
+  letter-spacing: -.5px;
+}
+
+.kpi-sub {
+  font-size: 12px;
+  opacity: .75;
+}
+
+/* Tables grid */
+.tabelas-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 20px;
+}
+
+.table-card {
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  overflow: hidden;
+
+  h2 {
+    margin: 0;
+    padding: 16px 18px;
+    font-size: 15px;
+    font-weight: 600;
+    border-bottom: 1px solid #e5e7eb;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+}
+
+.mes-tag {
+  font-size: 12px;
+  font-weight: 400;
+  color: #6b7280;
+  background: #f3f4f6;
+  border-radius: 999px;
+  padding: 2px 8px;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th {
+  background: #f9fafb;
+  text-align: left;
+  padding: 10px 14px;
+  font-size: 12px;
+  text-transform: uppercase;
+  color: #6b7280;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+td {
+  padding: 10px 14px;
+  border-bottom: 1px solid #f3f4f6;
+  font-size: 14px;
+}
+
+tr:last-child td { border-bottom: none; }
+
+.num {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+tfoot .total-row td {
+  font-weight: 700;
+  background: #f9fafb;
+  border-top: 1px solid #e5e7eb;
+  border-bottom: none;
+}
+
+.empty {
+  padding: 24px;
+  text-align: center;
+  color: #9ca3af;
+  font-size: 14px;
+}

@@ -13,6 +13,7 @@ import { AdminSetoresComponent } from './admin-setores/admin-setores.component';
 import { AdminEquipamentosComponent } from './admin-equipamentos/admin-equipamentos.component';
 import { AdminOperacoesComponent } from './admin-operacoes/admin-operacoes.component';
 import { AdminUnidadesComponent } from './admin-unidades/admin-unidades.component';
+import { AdminDashboardAdmComponent } from './admin-dashboard-adm/admin-dashboard-adm.component';
 import { AdminLayoutComponent } from './shared/admin-layout/admin-layout.component';
 import { ProducaoComponent } from './Public/producao/producao.component';
 import { ProducaoDetailComponent } from './Public/producao-detail/producao-detail.component';
@@ -37,7 +38,8 @@ export const routes: Routes = [
       { path: 'setores', component: AdminSetoresComponent },
       { path: 'equipamentos', component: AdminEquipamentosComponent },
       { path: 'operacoes', component: AdminOperacoesComponent },
-      { path: 'unidades', component: AdminUnidadesComponent }
+      { path: 'unidades', component: AdminUnidadesComponent },
+      { path: 'dashboard-adm', component: AdminDashboardAdmComponent }
     ]
   },
   { path: 'producao', component: ProducaoComponent },
