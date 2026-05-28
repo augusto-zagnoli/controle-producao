@@ -69,6 +69,7 @@ export class AdminFormComponent implements OnInit {
     descricao: [''],
     quantidade: [1, [Validators.required, Validators.min(0.001)]],
     unidade: [''],
+    valorPorUnidade: [null as number | null],
     funcionarioId: [0],
     dataInicio: [''],
     prazoPrevisto: ['', Validators.required],
@@ -104,6 +105,7 @@ export class AdminFormComponent implements OnInit {
             descricao: o.descricao ?? '',
             quantidade: o.quantidade,
             unidade: o.unidade ?? '',
+            valorPorUnidade: o.valorPorUnidade ?? null,
             funcionarioId: o.funcionarioId,
             dataInicio: o.dataInicio ? o.dataInicio.substring(0, 10) : '',
             prazoPrevisto: o.prazoPrevisto ? o.prazoPrevisto.substring(0, 10) : '',
@@ -163,7 +165,7 @@ export class AdminFormComponent implements OnInit {
     this.salvando = true;
     this.erro = '';
 
-    const { nomeProduto, descricao, quantidade, unidade, funcionarioId, dataInicio, prazoPrevisto, observacoes } =
+    const { nomeProduto, descricao, quantidade, unidade, valorPorUnidade, funcionarioId, dataInicio, prazoPrevisto, observacoes } =
       this.form.getRawValue();
 
     const dto = {
@@ -171,6 +173,7 @@ export class AdminFormComponent implements OnInit {
       descricao: descricao || null,
       quantidade,
       unidade: unidade || null,
+      valorPorUnidade: valorPorUnidade ?? null,
       prioridade: this.prioridadeSelecionada,
       funcionarioId: Number(funcionarioId),
       funcao: this.funcaoSelecionada,

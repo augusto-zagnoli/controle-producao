@@ -102,6 +102,8 @@ export interface OrdemServico {
   // Datas
   dataInicio: string | null;
   prazoPrevisto: string;
+  // Financeiro (admin only)
+  valorPorUnidade: number | null;
   // Geral
   observacoes: string | null;
   status: OrdemServicoStatus;
