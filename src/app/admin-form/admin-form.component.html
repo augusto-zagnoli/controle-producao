@@ -42,7 +42,12 @@
         </div>
         <div class="field">
           <label>Unidade</label>
-          <input formControlName="unidade" placeholder="un, kg, mm…" maxlength="20" />
+          <select formControlName="unidade">
+            <option value="">— Nenhuma —</option>
+            @for (u of unidades; track u) {
+              <option [value]="u">{{ u }}</option>
+            }
+          </select>
         </div>
       </div>
     </div>

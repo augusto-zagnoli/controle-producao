@@ -55,6 +55,7 @@ export class AdminFormComponent implements OnInit {
   funcoes: string[] = [];
   setores: string[] = [];
   operacoes: string[] = [];
+  unidades: string[] = [];
   readonly prioridadeLabels = PRIORIDADE_LABELS;
 
   // Uploads pendentes
@@ -81,6 +82,7 @@ export class AdminFormComponent implements OnInit {
         this.funcoes   = lista.filter(o => o.tipo === 'Funcao'   && o.ativo && o.nome).map(o => o.nome);
         this.setores   = lista.filter(o => o.tipo === 'Setor'    && o.ativo && o.nome).map(o => o.nome);
         this.operacoes = lista.filter(o => o.tipo === 'Operacao' && o.ativo && o.nome).map(o => o.nome);
+        this.unidades  = lista.filter(o => o.tipo === 'Unidade'  && o.ativo && o.nome).map(o => o.nome);
         if (this.funcoes.length) this.funcaoSelecionada = this.funcoes[0];
         if (this.setores.length) this.setorSelecionado = this.setores[0];
       }
