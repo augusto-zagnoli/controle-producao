@@ -99,6 +99,7 @@ export class OrdensService {
     id: number,
     setor: string,
     equipamento: string | null,
+    operacaoAtual: string | null,
     funcionarioResponsavelId: number,
     quantidadeRecebida: number,
     funcionarioAcaoId: number,
@@ -109,6 +110,7 @@ export class OrdensService {
     const form = new FormData();
     form.append('setor', setor);
     if (equipamento) form.append('equipamento', equipamento);
+    if (operacaoAtual) form.append('operacaoAtual', operacaoAtual);
     form.append('funcionarioResponsavelId', String(funcionarioResponsavelId));
     form.append('quantidadeRecebida', String(quantidadeRecebida));
     form.append('funcionarioAcaoId', String(funcionarioAcaoId));

@@ -45,6 +45,7 @@ export class ProducaoDetailComponent implements OnInit, OnDestroy {
   funcionarios: Funcionario[] = [];
   setorOptions: string[] = [];
   equipamentoOptions: string[] = [];
+  operacaoOptions: string[] = [];
 
   readonly statusOptions: { value: OrdemServicoStatus; label: string }[] = [
     { value: 'Pendente',    label: 'Pendente'     },
@@ -56,6 +57,7 @@ export class ProducaoDetailComponent implements OnInit, OnDestroy {
   readonly form = this.fb.nonNullable.group({
     setor:                   ['Usinagem'],
     equipamento:             [''],
+    operacao:                [''],
     funcionarioResponsavel:  [0, Validators.min(1)],
     quantidadeRecebida:      [0, Validators.min(0)],
     funcionarioAcao:         [0, Validators.min(1)],
@@ -71,6 +73,7 @@ export class ProducaoDetailComponent implements OnInit, OnDestroy {
       next: lista => {
         this.setorOptions       = lista.filter(o => o.tipo === 'Setor'       && o.ativo && o.nome).map(o => o.nome);
         this.equipamentoOptions = lista.filter(o => o.tipo === 'Equipamento' && o.ativo && o.nome).map(o => o.nome);
+        this.operacaoOptions    = lista.filter(o => o.tipo === 'Operacao'    && o.ativo && o.nome).map(o => o.nome);
       }
     });
     const id = Number(this.route.snapshot.paramMap.get('id'));
@@ -81,6 +84,7 @@ export class ProducaoDetailComponent implements OnInit, OnDestroy {
         this.form.patchValue({
           setor:                  ordem.setor,
           equipamento:            ordem.equipamento ?? '',
+          operacao:               ordem.operacaoAtual ?? '',
           funcionarioResponsavel: ordem.funcionarioId    || 0,
           quantidadeRecebida:     ordem.quantidadeRecebida || 0,
           novoStatus:             ordem.status,
@@ -194,6 +198,7 @@ export class ProducaoDetailComponent implements OnInit, OnDestroy {
       ordemId,
       v.setor,
       v.equipamento || null,
+      v.operacao || null,
       v.funcionarioResponsavel,
       v.quantidadeRecebida,
       v.funcionarioAcao,
@@ -208,6 +213,7 @@ export class ProducaoDetailComponent implements OnInit, OnDestroy {
         this.form.patchValue({
           setor:                  ordem.setor,
           equipamento:            ordem.equipamento ?? '',
+          operacao:               ordem.operacaoAtual ?? '',
           funcionarioResponsavel: ordem.funcionarioId    || 0,
           quantidadeRecebida:     ordem.quantidadeRecebida || 0,
           novoStatus:             ordem.status,

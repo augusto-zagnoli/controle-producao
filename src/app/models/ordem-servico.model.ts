@@ -96,6 +96,7 @@ export interface OrdemServico {
   funcao: Funcao;
   setor: Setor;
   equipamento: string | null;
+  operacaoAtual: string | null;
   quantidadeRecebida: number;
   // Operações
   operacoes: OperacaoItem[];
