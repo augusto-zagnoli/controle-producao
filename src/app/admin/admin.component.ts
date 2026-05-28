@@ -51,7 +51,7 @@ export class AdminComponent implements OnInit {
   }
 
   excluir(id: number): void {
-    if (!confirm('Excluir esta Ordem de Serviço?')) return;
+    if (!confirm('Excluir esta Ordem de Produção?')) return;
     this.service.excluir(id).subscribe({
       next: () => this.carregar(),
       error: () => alert('Erro ao excluir.')

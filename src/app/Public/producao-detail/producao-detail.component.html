@@ -4,7 +4,7 @@
     <a routerLink="/producao" class="btn-back">← Voltar</a>
     <div class="header-info">
       @if (ordem) {
-        <span class="op-num">OS #{{ ordem.codigo }}</span>
+        <span class="op-num">OP #{{ ordem.codigo }}</span>
         <span class="chip" [class]="ordem.status">{{ statusLabel(ordem.status) }}</span>
       }
     </div>
@@ -105,7 +105,7 @@
     </div>
 
     <div class="status-section">
-      <h3>Alterar Status da OS</h3>
+      <h3>Alterar Status da OP</h3>
       <div class="status-fields">
         <label class="field">
           Funcionário que está realizando a ação <span class="req">*</span>

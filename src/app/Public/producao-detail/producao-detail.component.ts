@@ -90,7 +90,7 @@ export class ProducaoDetailComponent implements OnInit, OnDestroy {
         this.carregando = false;
       },
       error: () => {
-        this.erro = 'Erro ao carregar a ordem de servico.';
+        this.erro = 'Erro ao carregar a ordem de produção.';
         this.carregando = false;
       }
     });

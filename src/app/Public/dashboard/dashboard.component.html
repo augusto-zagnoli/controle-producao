@@ -49,7 +49,7 @@
             <div class="maquina-header">
               <span class="maquina-icone">🔧</span>
               <span class="maquina-nome">{{ m.nome === '—' ? 'Sem máquina' : m.nome }}</span>
-              <span class="maquina-qtd">{{ m.ordens.length }} OS</span>
+              <span class="maquina-qtd">{{ m.ordens.length }} OP</span>
             </div>
             <div class="maquina-ordens">
               @for (o of m.ordens; track o.id) {
@@ -68,7 +68,7 @@
     </section>
   }
 
-  <!-- Board de OS -->
+  <!-- Board de OP -->
   <section class="section board">
 
     <!-- Em Produção -->
@@ -80,12 +80,12 @@
       </div>
       <div class="col-cards">
         @if (!emProducao.length) {
-          <p class="col-empty">Nenhuma OS em produção</p>
+          <p class="col-empty">Nenhuma OP em produção</p>
         }
         @for (o of emProducao; track o.id) {
           <div class="os-card em-producao-card">
             <div class="os-card-top">
-              <span class="os-num">OS #{{ o.codigo }}</span>
+              <span class="os-num">OP #{{ o.codigo }}</span>
               <span class="prioridade" [class]="o.prioridade.toLowerCase()">{{ o.prioridade }}</span>
             </div>
             <div class="os-card-produto">{{ o.nomeProduto }}</div>
@@ -116,12 +116,12 @@
       </div>
       <div class="col-cards">
         @if (!pendentes.length) {
-          <p class="col-empty">Nenhuma OS pendente</p>
+          <p class="col-empty">Nenhuma OP pendente</p>
         }
         @for (o of pendentes; track o.id) {
           <div class="os-card pendente-card">
             <div class="os-card-top">
-              <span class="os-num">OS #{{ o.codigo }}</span>
+              <span class="os-num">OP #{{ o.codigo }}</span>
               <span class="prioridade" [class]="o.prioridade.toLowerCase()">{{ o.prioridade }}</span>
             </div>
             <div class="os-card-produto">{{ o.nomeProduto }}</div>
@@ -148,12 +148,12 @@
       </div>
       <div class="col-cards">
         @if (!pausadas.length) {
-          <p class="col-empty">Nenhuma OS pausada</p>
+          <p class="col-empty">Nenhuma OP pausada</p>
         }
         @for (o of pausadas; track o.id) {
           <div class="os-card pausada-card">
             <div class="os-card-top">
-              <span class="os-num">OS #{{ o.codigo }}</span>
+              <span class="os-num">OP #{{ o.codigo }}</span>
               <span class="prioridade" [class]="o.prioridade.toLowerCase()">{{ o.prioridade }}</span>
             </div>
             <div class="os-card-produto">{{ o.nomeProduto }}</div>

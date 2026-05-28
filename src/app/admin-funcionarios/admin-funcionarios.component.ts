@@ -96,7 +96,7 @@ export class AdminFuncionariosComponent implements OnInit {
     if (!confirm(`Excluir o funcionário "${f.nome}"?`)) return;
     this.service.excluir(f.id).subscribe({
       next: () => this.carregar(),
-      error: () => alert('Erro ao excluir. O funcionário pode estar vinculado a ordens de serviço.')
+      error: () => alert('Erro ao excluir. O funcionário pode estar vinculado a ordens de produção.')
     });
   }
 }

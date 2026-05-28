@@ -32,11 +32,11 @@ export class AdminSidebarComponent {
   menuGroups: MenuItemGroup[] = [
     {
       icon: '📋',
-      label: 'Ordens de Serviço',
+      label: 'Ordens de Produção',
       expanded: true,
       items: [
         { icon: '📝', label: 'Listar', route: '/admin' },
-        { icon: '➕', label: 'Nova OS', route: '/admin/nova' }
+        { icon: '➕', label: 'Nova OP', route: '/admin/nova' }
       ]
     },
     {

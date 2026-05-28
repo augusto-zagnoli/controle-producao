@@ -7,7 +7,7 @@
 
     <header class="page-header">
       <div class="header-left">
-        <span class="op-num">OS #{{ ordem.codigo }}</span>
+        <span class="op-num">OP #{{ ordem.codigo }}</span>
         <h1>{{ ordem.nomeProduto }}</h1>
         <span class="chip" [class]="ordem.status">{{ statusLabel(ordem.status) }}</span>
       </div>
@@ -101,7 +101,7 @@
 
     <!-- Rastreio / Histórico -->
     <div class="section-card">
-      <h2>Rastreio da OS</h2>
+      <h2>Rastreio da OP</h2>
       @if (!historico.length) {
         <p class="empty">Nenhum registro no histórico.</p>
       } @else {
