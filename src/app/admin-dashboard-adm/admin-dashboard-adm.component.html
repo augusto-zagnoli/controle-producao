@@ -15,7 +15,7 @@
     <div class="range-picker" [formGroup]="range">
       <mat-form-field appearance="outline" class="picker-field">
         <mat-label>Período</mat-label>
-        <mat-date-range-input [rangePicker]="picker" [min]="null">
+        <mat-date-range-input [rangePicker]="picker">
           <input matStartDate formControlName="inicio" placeholder="Início" />
           <input matEndDate formControlName="fim" placeholder="Fim" />
         </mat-date-range-input>
@@ -37,16 +37,31 @@
 
     <!-- KPIs principais -->
     <div class="kpi-grid">
+
       <div class="kpi-card azul">
         <span class="kpi-label">Peças Produzidas no Período</span>
         <span class="kpi-valor">{{ dados.pecasProduzirasMes | number:'1.0-0':'pt-BR' }}</span>
         <span class="kpi-sub">unidades finalizadas</span>
+        @if (variacaoPecas !== null) {
+          <span class="kpi-variacao" [class.positivo]="variacaoPecas >= 0" [class.negativo]="variacaoPecas < 0">
+            {{ variacaoPecas >= 0 ? '▲' : '▼' }}
+            {{ (variacaoPecas < 0 ? -variacaoPecas : variacaoPecas) | number:'1.1-1':'pt-BR' }}%
+            vs período anterior
+          </span>
+        }
       </div>
 
       <div class="kpi-card verde">
         <span class="kpi-label">Valor Total Produzido</span>
         <span class="kpi-valor">{{ dados.valorTotalProduzido | currency:'BRL':'symbol':'1.2-2':'pt-BR' }}</span>
         <span class="kpi-sub">ordens finalizadas no período</span>
+        @if (variacaoValor !== null) {
+          <span class="kpi-variacao" [class.positivo]="variacaoValor >= 0" [class.negativo]="variacaoValor < 0">
+            {{ variacaoValor >= 0 ? '▲' : '▼' }}
+            {{ (variacaoValor < 0 ? -variacaoValor : variacaoValor) | number:'1.1-1':'pt-BR' }}%
+            vs período anterior
+          </span>
+        }
       </div>
 
       <div class="kpi-card amarelo">
@@ -54,6 +69,7 @@
         <span class="kpi-valor">{{ dados.valorEmProducao | currency:'BRL':'symbol':'1.2-2':'pt-BR' }}</span>
         <span class="kpi-sub">ordens em andamento agora</span>
       </div>
+
     </div>
 
     <!-- Tabelas por máquina -->
@@ -62,24 +78,14 @@
       <div class="table-card">
         <h2>
           Peças por Máquina
-          @if (periodoLabel) {
-            <span class="mes-tag">{{ periodoLabel | titlecase }}</span>
-          }
+          @if (periodoLabel) { <span class="mes-tag">{{ periodoLabel | titlecase }}</span> }
         </h2>
         @if (dados.pecasPorMaquina.length) {
           <table>
-            <thead>
-              <tr>
-                <th>Máquina</th>
-                <th class="num">Qtd. Peças</th>
-              </tr>
-            </thead>
+            <thead><tr><th>Máquina</th><th class="num">Qtd. Peças</th></tr></thead>
             <tbody>
               @for (m of dados.pecasPorMaquina; track m.maquina) {
-                <tr>
-                  <td>{{ m.maquina }}</td>
-                  <td class="num">{{ m.quantidade | number:'1.0-2':'pt-BR' }}</td>
-                </tr>
+                <tr><td>{{ m.maquina }}</td><td class="num">{{ m.quantidade | number:'1.0-2':'pt-BR' }}</td></tr>
               }
             </tbody>
             <tfoot>
@@ -97,24 +103,14 @@
       <div class="table-card">
         <h2>
           Valor Produzido por Máquina
-          @if (periodoLabel) {
-            <span class="mes-tag">{{ periodoLabel | titlecase }}</span>
-          }
+          @if (periodoLabel) { <span class="mes-tag">{{ periodoLabel | titlecase }}</span> }
         </h2>
         @if (dados.valorPorMaquina.length) {
           <table>
-            <thead>
-              <tr>
-                <th>Máquina</th>
-                <th class="num">Valor</th>
-              </tr>
-            </thead>
+            <thead><tr><th>Máquina</th><th class="num">Valor</th></tr></thead>
             <tbody>
               @for (m of dados.valorPorMaquina; track m.maquina) {
-                <tr>
-                  <td>{{ m.maquina }}</td>
-                  <td class="num">{{ m.valor | currency:'BRL':'symbol':'1.2-2':'pt-BR' }}</td>
-                </tr>
+                <tr><td>{{ m.maquina }}</td><td class="num">{{ m.valor | currency:'BRL':'symbol':'1.2-2':'pt-BR' }}</td></tr>
               }
             </tbody>
             <tfoot>
@@ -131,5 +127,38 @@
 
     </div>
   }
+
+  <!-- Gráficos históricos (últimos 6 meses) -->
+  <div class="graficos-section">
+    <h2 class="graficos-titulo">Evolução dos Últimos 6 Meses</h2>
+
+    @if (carregandoHistorico) {
+      <p class="info">Carregando gráficos...</p>
+    } @else {
+      <div class="graficos-grid">
+
+        <div class="grafico-card">
+          <div class="grafico-header">
+            <span class="grafico-titulo">Peças Produzidas por Mês</span>
+            <span class="grafico-badge azul">Barras</span>
+          </div>
+          <div class="grafico-wrap">
+            <canvas #chartPecasEl></canvas>
+          </div>
+        </div>
+
+        <div class="grafico-card">
+          <div class="grafico-header">
+            <span class="grafico-titulo">Valor Produzido por Mês (R$)</span>
+            <span class="grafico-badge verde">Linha</span>
+          </div>
+          <div class="grafico-wrap">
+            <canvas #chartValorEl></canvas>
+          </div>
+        </div>
+
+      </div>
+    }
+  </div>
 
 </div>

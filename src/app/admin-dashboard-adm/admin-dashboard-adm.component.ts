@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, inject } from '@angular/core';
+import { Component, OnInit, OnDestroy, AfterViewInit, ViewChild, ElementRef, inject } from '@angular/core';
 import { CommonModule, CurrencyPipe, DecimalPipe } from '@angular/common';
 import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { MatDatepickerModule } from '@angular/material/datepicker';
@@ -7,8 +7,24 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { Subject } from 'rxjs';
 import { filter, takeUntil, distinctUntilChanged } from 'rxjs/operators';
-import { DashboardAdm, MaquinaStats } from '../models/ordem-servico.model';
+import {
+  Chart,
+  BarController, BarElement,
+  LineController, LineElement, PointElement,
+  CategoryScale, LinearScale,
+  Tooltip, Legend,
+  Filler
+} from 'chart.js';
+import { DashboardAdm, HistoricoMensalItem, MaquinaStats } from '../models/ordem-servico.model';
 import { OrdensService } from '../services/ordens.service';
+
+Chart.register(
+  BarController, BarElement,
+  LineController, LineElement, PointElement,
+  CategoryScale, LinearScale,
+  Tooltip, Legend,
+  Filler
+);
 
 @Component({
   selector: 'app-admin-dashboard-adm',
@@ -21,14 +37,24 @@ import { OrdensService } from '../services/ordens.service';
   templateUrl: './admin-dashboard-adm.component.html',
   styleUrl: './admin-dashboard-adm.component.scss',
 })
-export class AdminDashboardAdmComponent implements OnInit, OnDestroy {
+export class AdminDashboardAdmComponent implements OnInit, AfterViewInit, OnDestroy {
   private readonly service = inject(OrdensService);
   private readonly fb = inject(FormBuilder);
   private readonly destroy$ = new Subject<void>();
 
+  @ViewChild('chartPecasEl') chartPecasEl!: ElementRef<HTMLCanvasElement>;
+  @ViewChild('chartValorEl') chartValorEl!: ElementRef<HTMLCanvasElement>;
+
   dados: DashboardAdm | null = null;
   carregando = true;
   erro = '';
+
+  historico: HistoricoMensalItem[] = [];
+  carregandoHistorico = true;
+
+  private chartPecas: Chart | null = null;
+  private chartValor: Chart | null = null;
+  private viewReady = false;
 
   private readonly hoje = new Date();
 
@@ -47,14 +73,22 @@ export class AdminDashboardAdmComponent implements OnInit, OnDestroy {
     const ultimoDia = fim.getDate() === new Date(fim.getFullYear(), fim.getMonth() + 1, 0).getDate();
     if (mesmoMes && diaUm && ultimoDia)
       return ini.toLocaleString('pt-BR', { month: 'long', year: 'numeric' });
-    if (ini.getTime() === fim.getTime())
-      return fmt(ini);
+    if (ini.getTime() === fim.getTime()) return fmt(ini);
     return `${fmt(ini)} — ${fmt(fim)}`;
+  }
+
+  get variacaoPecas(): number | null {
+    if (!this.dados || this.dados.pecasPeriodoAnterior === 0) return null;
+    return ((this.dados.pecasProduzirasMes - this.dados.pecasPeriodoAnterior) / this.dados.pecasPeriodoAnterior) * 100;
+  }
+
+  get variacaoValor(): number | null {
+    if (!this.dados || this.dados.valorPeriodoAnterior === 0) return null;
+    return ((this.dados.valorTotalProduzido - this.dados.valorPeriodoAnterior) / this.dados.valorPeriodoAnterior) * 100;
   }
 
   ngOnInit(): void {
     this.carregar();
-
     this.range.valueChanges.pipe(
       filter(v => !!v.inicio && !!v.fim && v.fim >= v.inicio),
       distinctUntilChanged((a, b) =>
@@ -65,7 +99,21 @@ export class AdminDashboardAdmComponent implements OnInit, OnDestroy {
     ).subscribe(() => this.carregar());
   }
 
+  ngAfterViewInit(): void {
+    this.viewReady = true;
+    this.service.dashboardHistoricoMensal(6).pipe(takeUntil(this.destroy$)).subscribe({
+      next: h => {
+        this.historico = h;
+        this.carregandoHistorico = false;
+        this.renderCharts();
+      },
+      error: () => { this.carregandoHistorico = false; }
+    });
+  }
+
   ngOnDestroy(): void {
+    this.chartPecas?.destroy();
+    this.chartValor?.destroy();
     this.destroy$.next();
     this.destroy$.complete();
   }
@@ -99,6 +147,93 @@ export class AdminDashboardAdmComponent implements OnInit, OnDestroy {
     this.service.dashboardAdm(this.toISO(inicio), this.toISO(fim)).subscribe({
       next: d => { this.dados = d; this.carregando = false; },
       error: () => { this.erro = 'Erro ao carregar dados.'; this.carregando = false; },
+    });
+  }
+
+  private renderCharts(): void {
+    if (!this.viewReady || !this.historico.length) return;
+
+    const labels = this.historico.map(h => h.label);
+    const pecas  = this.historico.map(h => h.pecasProduzidas);
+    const valores = this.historico.map(h => h.valorProduzido);
+
+    // Gráfico de peças
+    this.chartPecas?.destroy();
+    this.chartPecas = new Chart(this.chartPecasEl.nativeElement, {
+      type: 'bar',
+      data: {
+        labels,
+        datasets: [{
+          label: 'Peças Produzidas',
+          data: pecas,
+          backgroundColor: 'rgba(37,99,235,0.75)',
+          borderColor: '#2563eb',
+          borderWidth: 1,
+          borderRadius: 6,
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            callbacks: {
+              label: ctx => ` ${Number(ctx.raw).toLocaleString('pt-BR')} peças`
+            }
+          }
+        },
+        scales: {
+          y: {
+            beginAtZero: true,
+            ticks: { precision: 0 },
+            grid: { color: '#f3f4f6' }
+          },
+          x: { grid: { display: false } }
+        }
+      }
+    });
+
+    // Gráfico de valor
+    this.chartValor?.destroy();
+    this.chartValor = new Chart(this.chartValorEl.nativeElement, {
+      type: 'line',
+      data: {
+        labels,
+        datasets: [{
+          label: 'Valor Produzido',
+          data: valores,
+          borderColor: '#16a34a',
+          backgroundColor: 'rgba(22,163,74,0.1)',
+          borderWidth: 2,
+          pointBackgroundColor: '#16a34a',
+          pointRadius: 4,
+          tension: 0.35,
+          fill: true,
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            callbacks: {
+              label: ctx => ` R$ ${Number(ctx.raw).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`
+            }
+          }
+        },
+        scales: {
+          y: {
+            beginAtZero: true,
+            ticks: {
+              callback: v => `R$ ${Number(v).toLocaleString('pt-BR', { minimumFractionDigits: 0 })}`
+            },
+            grid: { color: '#f3f4f6' }
+          },
+          x: { grid: { display: false } }
+        }
+      }
     });
   }
 

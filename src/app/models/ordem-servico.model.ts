@@ -168,6 +168,16 @@ export interface DashboardAdm {
   valorEmProducao: number;
   pecasPorMaquina: MaquinaStats[];
   valorPorMaquina: MaquinaStats[];
+  pecasPeriodoAnterior: number;
+  valorPeriodoAnterior: number;
+}
+
+export interface HistoricoMensalItem {
+  ano: number;
+  mes: number;
+  label: string;
+  pecasProduzidas: number;
+  valorProduzido: number;
 }
 
 export interface UsuarioLogado {

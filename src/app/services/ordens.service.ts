@@ -6,6 +6,7 @@ import {
   DashboardAdm,
   Documento,
   HistoricoItem,
+  HistoricoMensalItem,
   Imagem,
   OrdemServico,
   OrdemServicoCreate,
@@ -127,6 +128,11 @@ export class OrdensService {
     if (dataInicio) params = params.set('dataInicio', dataInicio);
     if (dataFim)    params = params.set('dataFim', dataFim);
     return this.http.get<DashboardAdm>(`${this.base}/dashboard-adm`, { params });
+  }
+
+  dashboardHistoricoMensal(meses = 6): Observable<HistoricoMensalItem[]> {
+    const params = new HttpParams().set('meses', String(meses));
+    return this.http.get<HistoricoMensalItem[]>(`${this.base}/dashboard-adm/historico-mensal`, { params });
   }
 
   // Histórico
