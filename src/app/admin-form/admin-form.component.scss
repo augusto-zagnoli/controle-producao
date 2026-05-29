@@ -34,16 +34,6 @@
   &:hover { background: #f3f4f6; }
 }
 
-.alerta-erro {
-  background: #fef2f2;
-  border: 1px solid #fca5a5;
-  color: #b91c1c;
-  border-radius: 8px;
-  padding: 12px 16px;
-  margin-bottom: 16px;
-  font-size: 14px;
-}
-
 // ── Form scroll ────────────────────────────────────────────────────────────
 .form-scroll {
   display: flex;
@@ -93,6 +83,15 @@
 }
 
 .req { color: #dc2626; }
+
+.opcional {
+  font-size: 11px;
+  font-weight: 400;
+  color: #9ca3af;
+  text-transform: none;
+  letter-spacing: 0;
+  margin-left: 4px;
+}
 
 .field-erro {
   color: #dc2626;

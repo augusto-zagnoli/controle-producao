@@ -9,10 +9,6 @@
     </button>
   </header>
 
-  @if (erro) {
-    <div class="alerta-erro">{{ erro }}</div>
-  }
-
   <form [formGroup]="form" (ngSubmit)="salvar()" class="form-scroll">
 
     <!-- ── Seção Produto ──────────────────────────────────────── -->
@@ -152,7 +148,7 @@
 
     <!-- ── Seção Imagens ─────────────────────────────────────── -->
     <div class="card">
-      <div class="card-titulo">Imagens da Peça</div>
+      <div class="card-titulo">Imagens da Peça <span class="opcional">(opcional)</span></div>
 
       @if (ordemAtual?.imagens?.length) {
         <div class="anexos-grid">

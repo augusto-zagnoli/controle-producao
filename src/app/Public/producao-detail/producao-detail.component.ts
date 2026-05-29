@@ -9,6 +9,7 @@ import { OrdensService } from '../../services/ordens.service';
 import { FuncionariosService } from '../../services/funcionarios.service';
 import { OpcoesService } from '../../services/opcoes.service';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+import { ToastService } from '../../shared/toast/toast.service';
 import { FileViewerDialogComponent } from '../../shared/file-viewer-dialog/file-viewer-dialog.component';
 
 @Component({
@@ -24,6 +25,7 @@ export class ProducaoDetailComponent implements OnInit, OnDestroy {
   private readonly funcionariosService = inject(FuncionariosService);
   private readonly opcoesService = inject(OpcoesService);
   private readonly dialog = inject(MatDialog);
+  private readonly toast = inject(ToastService);
   private readonly fb = inject(FormBuilder);
 
   @ViewChild('videoEl') videoEl?: ElementRef<HTMLVideoElement>;
@@ -224,10 +226,11 @@ export class ProducaoDetailComponent implements OnInit, OnDestroy {
         this.aguardandoFoto = false;
         this.fotoOperador = null;
         this.fotoPreview = null;
+        this.toast.success('Salvo com sucesso!');
       },
       error: () => {
-        this.erroSalvar = 'Erro ao salvar. Tente novamente.';
         this.salvando = false;
+        this.toast.error('Erro ao salvar. Tente novamente.');
       }
     });
   }

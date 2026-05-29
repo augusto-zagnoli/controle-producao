@@ -18,6 +18,7 @@ import { FuncionariosService } from '../services/funcionarios.service';
 import { OrdensService } from '../services/ordens.service';
 import { OpcoesService } from '../services/opcoes.service';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+import { ToastService } from '../shared/toast/toast.service';
 import { FileViewerDialogComponent } from '../shared/file-viewer-dialog/file-viewer-dialog.component';
 
 @Component({
@@ -31,6 +32,7 @@ export class AdminFormComponent implements OnInit {
   private readonly fb = inject(FormBuilder);
   private readonly service = inject(OrdensService);
   private readonly dialog = inject(MatDialog);
+  private readonly toast = inject(ToastService);
   private readonly funcionariosService = inject(FuncionariosService);
   private readonly opcoesService = inject(OpcoesService);
   private readonly router = inject(Router);
@@ -40,7 +42,6 @@ export class AdminFormComponent implements OnInit {
   ordemId: number | null = null;
   ordemAtual: OrdemServico | null = null;
   salvando = false;
-  erro = '';
 
   funcionarios: Funcionario[] = [];
 
@@ -112,7 +113,7 @@ export class AdminFormComponent implements OnInit {
             observacoes: o.observacoes ?? ''
           });
         },
-        error: () => (this.erro = 'Erro ao carregar ordem.')
+        error: () => this.toast.error('Erro ao carregar ordem.')
       });
     }
   }
@@ -163,7 +164,6 @@ export class AdminFormComponent implements OnInit {
   salvar(): void {
     if (this.form.invalid) { this.form.markAllAsTouched(); return; }
     this.salvando = true;
-    this.erro = '';
 
     const { nomeProduto, descricao, quantidade, unidade, valorPorUnidade, funcionarioId, dataInicio, prazoPrevisto, observacoes } =
       this.form.getRawValue();
@@ -200,11 +200,12 @@ export class AdminFormComponent implements OnInit {
     ).subscribe({
       next: (ordem) => {
         this.salvando = false;
+        this.toast.success(this.edicao ? 'Ordem atualizada com sucesso!' : 'Ordem criada com sucesso!');
         void this.router.navigate(['/admin/ordem', ordem.id]);
       },
       error: () => {
         this.salvando = false;
-        this.erro = 'Erro ao salvar. Verifique os dados e tente novamente.';
+        this.toast.error('Erro ao salvar. Verifique os dados e tente novamente.');
       }
     });
   }
