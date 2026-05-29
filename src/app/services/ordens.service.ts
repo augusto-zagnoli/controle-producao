@@ -1,4 +1,4 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
 import { environment } from '../../environments/environment';
@@ -122,8 +122,11 @@ export class OrdensService {
   }
 
   // Dashboard Administrativo
-  dashboardAdm(): Observable<DashboardAdm> {
-    return this.http.get<DashboardAdm>(`${this.base}/dashboard-adm`);
+  dashboardAdm(dataInicio?: string, dataFim?: string): Observable<DashboardAdm> {
+    let params = new HttpParams();
+    if (dataInicio) params = params.set('dataInicio', dataInicio);
+    if (dataFim)    params = params.set('dataFim', dataFim);
+    return this.http.get<DashboardAdm>(`${this.base}/dashboard-adm`, { params });
   }
 
   // Histórico

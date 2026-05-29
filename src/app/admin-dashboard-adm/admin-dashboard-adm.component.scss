@@ -3,17 +3,64 @@
 }
 
 .dash-header {
-  display: flex;
-  align-items: baseline;
-  gap: 12px;
-  margin-bottom: 24px;
-
+  margin-bottom: 16px;
   h1 { margin: 0; font-size: 22px; }
 }
 
-.periodo {
-  font-size: 14px;
+// ── Filtro de período ───────────────────────────────────────────────────────
+.filtro-card {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 14px 20px;
+  margin-bottom: 24px;
+}
+
+.presets {
+  display: flex;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.preset-btn {
+  padding: 7px 14px;
+  border-radius: 20px;
+  border: 1px solid #d1d5db;
+  background: #f9fafb;
+  color: #374151;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s;
+
+  &:hover {
+    background: #2563eb;
+    color: #fff;
+    border-color: #2563eb;
+  }
+}
+
+.range-picker {
+  flex: 1;
+  min-width: 240px;
+
+  .picker-field {
+    width: 100%;
+
+    // Remove bottom margin that Material adds
+    ::ng-deep .mat-mdc-form-field-subscript-wrapper { display: none; }
+  }
+}
+
+.periodo-label {
+  font-size: 13px;
+  font-weight: 600;
   color: #6b7280;
+  white-space: nowrap;
 }
 
 .info { color: #6b7280; padding: 12px 0; }

@@ -2,7 +2,31 @@
 
   <div class="dash-header">
     <h1>Dashboard Administrativo</h1>
-    <span class="periodo">{{ mesAtual | titlecase }}</span>
+  </div>
+
+  <!-- Filtro de período -->
+  <div class="filtro-card">
+    <div class="presets">
+      <button class="preset-btn" (click)="selecionarHoje()">Hoje</button>
+      <button class="preset-btn" (click)="selecionarSemana()">Esta semana</button>
+      <button class="preset-btn" (click)="selecionarMes()">Mês atual</button>
+    </div>
+
+    <div class="range-picker" [formGroup]="range">
+      <mat-form-field appearance="outline" class="picker-field">
+        <mat-label>Período</mat-label>
+        <mat-date-range-input [rangePicker]="picker" [min]="null">
+          <input matStartDate formControlName="inicio" placeholder="Início" />
+          <input matEndDate formControlName="fim" placeholder="Fim" />
+        </mat-date-range-input>
+        <mat-datepicker-toggle matIconSuffix [for]="picker" />
+        <mat-date-range-picker #picker />
+      </mat-form-field>
+    </div>
+
+    @if (periodoLabel) {
+      <span class="periodo-label">{{ periodoLabel | titlecase }}</span>
+    }
   </div>
 
   @if (carregando) {
@@ -14,7 +38,7 @@
     <!-- KPIs principais -->
     <div class="kpi-grid">
       <div class="kpi-card azul">
-        <span class="kpi-label">Peças Produzidas no Mês</span>
+        <span class="kpi-label">Peças Produzidas no Período</span>
         <span class="kpi-valor">{{ dados.pecasProduzirasMes | number:'1.0-0':'pt-BR' }}</span>
         <span class="kpi-sub">unidades finalizadas</span>
       </div>
@@ -22,22 +46,26 @@
       <div class="kpi-card verde">
         <span class="kpi-label">Valor Total Produzido</span>
         <span class="kpi-valor">{{ dados.valorTotalProduzido | currency:'BRL':'symbol':'1.2-2':'pt-BR' }}</span>
-        <span class="kpi-sub">ordens finalizadas no mês</span>
+        <span class="kpi-sub">ordens finalizadas no período</span>
       </div>
 
       <div class="kpi-card amarelo">
         <span class="kpi-label">Valor em Produção</span>
         <span class="kpi-valor">{{ dados.valorEmProducao | currency:'BRL':'symbol':'1.2-2':'pt-BR' }}</span>
-        <span class="kpi-sub">ordens em andamento</span>
+        <span class="kpi-sub">ordens em andamento agora</span>
       </div>
     </div>
 
     <!-- Tabelas por máquina -->
     <div class="tabelas-grid">
 
-      <!-- Peças por máquina -->
       <div class="table-card">
-        <h2>Peças por Máquina <span class="mes-tag">{{ mesAtual | titlecase }}</span></h2>
+        <h2>
+          Peças por Máquina
+          @if (periodoLabel) {
+            <span class="mes-tag">{{ periodoLabel | titlecase }}</span>
+          }
+        </h2>
         @if (dados.pecasPorMaquina.length) {
           <table>
             <thead>
@@ -62,13 +90,17 @@
             </tfoot>
           </table>
         } @else {
-          <p class="empty">Nenhuma ordem finalizada este mês.</p>
+          <p class="empty">Nenhuma ordem finalizada neste período.</p>
         }
       </div>
 
-      <!-- Valor por máquina -->
       <div class="table-card">
-        <h2>Valor Produzido por Máquina <span class="mes-tag">{{ mesAtual | titlecase }}</span></h2>
+        <h2>
+          Valor Produzido por Máquina
+          @if (periodoLabel) {
+            <span class="mes-tag">{{ periodoLabel | titlecase }}</span>
+          }
+        </h2>
         @if (dados.valorPorMaquina.length) {
           <table>
             <thead>
@@ -93,7 +125,7 @@
             </tfoot>
           </table>
         } @else {
-          <p class="empty">Sem ordens com valor cadastrado finalizadas este mês.</p>
+          <p class="empty">Sem ordens com valor cadastrado finalizadas neste período.</p>
         }
       </div>
 
