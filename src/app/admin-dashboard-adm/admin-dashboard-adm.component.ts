@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, AfterViewInit, ViewChild, ElementRef, inject } from '@angular/core';
+import { Component, OnInit, OnDestroy, AfterViewInit, ViewChild, ElementRef, ChangeDetectorRef, inject } from '@angular/core';
 import { CommonModule, CurrencyPipe, DecimalPipe } from '@angular/common';
 import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { MatDatepickerModule } from '@angular/material/datepicker';
@@ -40,6 +40,7 @@ Chart.register(
 export class AdminDashboardAdmComponent implements OnInit, AfterViewInit, OnDestroy {
   private readonly service = inject(OrdensService);
   private readonly fb = inject(FormBuilder);
+  private readonly cdr = inject(ChangeDetectorRef);
   private readonly destroy$ = new Subject<void>();
 
   @ViewChild('chartPecasEl') chartPecasEl!: ElementRef<HTMLCanvasElement>;
@@ -105,6 +106,7 @@ export class AdminDashboardAdmComponent implements OnInit, AfterViewInit, OnDest
       next: h => {
         this.historico = h;
         this.carregandoHistorico = false;
+        this.cdr.detectChanges(); // garante que os <canvas> do @else estejam no DOM
         this.renderCharts();
       },
       error: () => { this.carregandoHistorico = false; }
