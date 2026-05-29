@@ -548,6 +548,18 @@ textarea { resize: vertical; }
   font-size: 16px;
   cursor: pointer;
 }
+.btn-sem-foto {
+  flex: 1;
+  padding: 14px;
+  border: 1px solid #d1d5db;
+  border-radius: 10px;
+  background: #f3f4f6;
+  color: #374151;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  &:disabled { opacity: .6; cursor: not-allowed; }
+}
 .btn-confirm {
   flex: 2;
   padding: 14px;

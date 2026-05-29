@@ -188,7 +188,7 @@ export class ProducaoDetailComponent implements OnInit, OnDestroy {
   }
 
   executarSave(): void {
-    if (!this.ordem || !this.fotoOperador) return;
+    if (!this.ordem) return;
 
     const v = this.form.getRawValue();
     this.salvando = true;
@@ -206,7 +206,7 @@ export class ProducaoDetailComponent implements OnInit, OnDestroy {
       v.funcionarioAcao,
       v.novoStatus,
       v.observacao || null,
-      this.fotoOperador!
+      this.fotoOperador
     ).pipe(
       switchMap(() => this.service.obter(ordemId))
     ).subscribe({

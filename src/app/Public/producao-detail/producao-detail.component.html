@@ -184,6 +184,9 @@
         </div>
         <div class="camera-modal-footer">
           <button class="btn-cancel" (click)="cancelarCamera()" [disabled]="salvando">Cancelar</button>
+          <button class="btn-sem-foto" (click)="executarSave()" [disabled]="salvando">
+            {{ salvando ? 'Salvando...' : 'Salvar sem foto' }}
+          </button>
           @if (fotoPreview) {
             <button class="btn-confirm" (click)="executarSave()" [disabled]="salvando">
               {{ salvando ? 'Salvando...' : 'Confirmar e Salvar' }}

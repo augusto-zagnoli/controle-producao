@@ -106,7 +106,7 @@ export class OrdensService {
     funcionarioAcaoId: number,
     novoStatus: string,
     observacao: string | null,
-    fotoOperador: File
+    fotoOperador: File | null
   ): Observable<void> {
     const form = new FormData();
     form.append('setor', setor);
@@ -117,7 +117,7 @@ export class OrdensService {
     form.append('funcionarioAcaoId', String(funcionarioAcaoId));
     form.append('novoStatus', novoStatus);
     if (observacao) form.append('observacao', observacao);
-    form.append('fotoOperador', fotoOperador);
+    if (fotoOperador) form.append('fotoOperador', fotoOperador);
     return this.http.post<void>(`${this.base}/${id}/salvar-tablet`, form);
   }
 
