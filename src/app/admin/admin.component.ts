@@ -1,27 +1,34 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, ViewChild, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { MatTableModule } from '@angular/material/table';
+import { MatTableModule, MatTableDataSource } from '@angular/material/table';
+import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
 import { OrdemServico, OrdemServicoStatus, STATUS_LABELS } from '../models/ordem-servico.model';
 import { OrdensService } from '../services/ordens.service';
 
 @Component({
   selector: 'app-admin',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterLink, MatButtonModule, MatIconModule, MatTooltipModule, MatTableModule],
+  imports: [CommonModule, FormsModule, RouterLink, MatButtonModule, MatIconModule, MatTooltipModule, MatTableModule, MatPaginatorModule],
   templateUrl: './admin.component.html',
   styleUrl: './admin.component.scss'
 })
 export class AdminComponent implements OnInit {
   private readonly service = inject(OrdensService);
 
+  @ViewChild(MatPaginator)
+  set paginator(mp: MatPaginator) {
+    if (mp) this.dataSource.paginator = mp;
+  }
+
   busca = '';
   filtroStatus = '';
   ordens: OrdemServico[] = [];
+  dataSource = new MatTableDataSource<OrdemServico>([]);
   carregando = false;
   erro = '';
 
@@ -44,7 +51,12 @@ export class AdminComponent implements OnInit {
     this.carregando = true;
     this.erro = '';
     this.service.listar(this.busca || undefined, this.filtroStatus || undefined).subscribe({
-      next: (ordens) => { this.ordens = ordens; this.carregando = false; },
+      next: (ordens) => {
+        this.ordens = ordens;
+        this.dataSource.data = ordens;
+        if (this.dataSource.paginator) this.dataSource.paginator.firstPage();
+        this.carregando = false;
+      },
       error: () => { this.erro = 'Erro ao carregar ordens.'; this.carregando = false; }
     });
   }

@@ -98,6 +98,11 @@ table {
 }
 .mat-mdc-row:last-child .mat-mdc-cell { border-bottom: none; }
 .mat-mdc-row:hover .mat-mdc-cell { background: #f9fafb; }
+
+mat-paginator {
+  background: #f9fafb;
+  border-top: 1px solid #e5e7eb;
+}
 .op-num { font-weight: 700; font-size: 16px; }
 .peca   { font-weight: 600; }
 .valor  { text-align: right; white-space: nowrap; font-variant-numeric: tabular-nums; }

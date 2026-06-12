@@ -47,7 +47,7 @@
 
   <!-- Tabela -->
   <div class="table-wrapper">
-    <table mat-table [dataSource]="ordens" class="mat-elevation-z0">
+    <table mat-table [dataSource]="dataSource" class="mat-elevation-z0">
 
       <ng-container matColumnDef="codigo">
         <th mat-header-cell *matHeaderCellDef>Cód.</th>
@@ -119,6 +119,13 @@
         <td class="mat-cell empty" [attr.colspan]="colunas.length">Nenhuma ordem encontrada.</td>
       </tr>
     </table>
+
+    <mat-paginator
+      [pageSizeOptions]="[10, 25, 50, 100]"
+      [pageSize]="25"
+      showFirstLastButtons
+      aria-label="Selecionar página de ordens">
+    </mat-paginator>
   </div>
 
   } <!-- end if carregando -->
