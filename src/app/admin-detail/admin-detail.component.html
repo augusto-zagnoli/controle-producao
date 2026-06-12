@@ -176,6 +176,12 @@
                         <span class="tl-rastreio-val">{{ h.quantidadeRecebida }}</span>
                       </div>
                     }
+                    @if (h.quantidadePerdida) {
+                      <div class="tl-rastreio-row">
+                        <span class="tl-rastreio-label">Qtd perdida</span>
+                        <span class="tl-rastreio-val">{{ h.quantidadePerdida }}</span>
+                      </div>
+                    }
                   </div>
                 }
 

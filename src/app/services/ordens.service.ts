@@ -86,14 +86,16 @@ export class OrdensService {
     setor: string,
     funcionarioId: number | null,
     quantidadeRecebida?: number,
-    equipamento?: string | null
+    equipamento?: string | null,
+    quantidadePerdida?: number
   ): Observable<OrdemServico> {
     return this.http.post<OrdemServico>(`${this.base}/${id}/funcao-setor`, {
       funcao,
       setor,
       equipamento: equipamento ?? null,
       funcionarioId,
-      quantidadeRecebida: quantidadeRecebida ?? 0
+      quantidadeRecebida: quantidadeRecebida ?? 0,
+      quantidadePerdida: quantidadePerdida ?? 0
     });
   }
 
@@ -104,6 +106,7 @@ export class OrdensService {
     operacaoAtual: string | null,
     funcionarioResponsavelId: number,
     quantidadeRecebida: number,
+    quantidadePerdida: number,
     funcionarioAcaoId: number,
     novoStatus: string,
     observacao: string | null,
@@ -115,6 +118,7 @@ export class OrdensService {
     if (operacaoAtual) form.append('operacaoAtual', operacaoAtual);
     form.append('funcionarioResponsavelId', String(funcionarioResponsavelId));
     form.append('quantidadeRecebida', String(quantidadeRecebida));
+    form.append('quantidadePerdida', String(quantidadePerdida));
     form.append('funcionarioAcaoId', String(funcionarioAcaoId));
     form.append('novoStatus', novoStatus);
     if (observacao) form.append('observacao', observacao);

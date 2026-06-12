@@ -98,6 +98,7 @@ export interface OrdemServico {
   equipamento: string | null;
   operacaoAtual: string | null;
   quantidadeRecebida: number;
+  quantidadePerdida: number;
   // Operações
   operacoes: OperacaoItem[];
   // Datas
@@ -154,6 +155,7 @@ export interface HistoricoItem {
   funcaoNova: string | null;
   setorNovo: string | null;
   quantidadeRecebida: number | null;
+  quantidadePerdida: number | null;
 }
 
 export interface MaquinaStats {
