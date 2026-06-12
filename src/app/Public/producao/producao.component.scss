@@ -26,7 +26,7 @@
 .info, .erro { padding: 20px; color: #6b7280; }
 .erro { color: #dc2626; }
 
-.cards { display: grid; gap: 12px; padding: 16px 20px; }
+.cards { display: grid; gap: 12px; padding: 16px 20px; max-height: 400px; overflow-y: auto; }
 
 .card {
   display: flex;
