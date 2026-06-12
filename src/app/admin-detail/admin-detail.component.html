@@ -27,6 +27,9 @@
       <div class="info-grid">
         <div class="info-item"><span>Nome do Produto</span><strong>{{ ordem.nomeProduto }}</strong></div>
         <div class="info-item"><span>Quantidade</span><strong>{{ ordem.quantidade }}{{ ordem.unidade ? ' ' + ordem.unidade : '' }}</strong></div>
+        @if (ordem.numeroOrdemCompra) {
+          <div class="info-item"><span>Número da Ordem de Compra</span><strong>{{ ordem.numeroOrdemCompra }}</strong></div>
+        }
         @if (ordem.descricao) {
           <div class="info-item full"><span>Descrição</span><strong>{{ ordem.descricao }}</strong></div>
         }

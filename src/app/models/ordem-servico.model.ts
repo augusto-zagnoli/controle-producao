@@ -87,6 +87,7 @@ export interface OrdemServico {
   descricao: string | null;
   quantidade: number;
   unidade: string | null;
+  numeroOrdemCompra: string | null;
   // Prioridade
   prioridade: Prioridade;
   // Responsável
@@ -122,6 +123,7 @@ export interface OrdemServicoCreate {
   descricao: string | null;
   quantidade: number;
   unidade: string | null;
+  numeroOrdemCompra: string | null;
   prioridade: Prioridade;
   funcionarioId: number;
   funcao: Funcao;
