@@ -5,13 +5,14 @@ import { RouterLink } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatTableModule } from '@angular/material/table';
 import { OrdemServico, OrdemServicoStatus, STATUS_LABELS } from '../models/ordem-servico.model';
 import { OrdensService } from '../services/ordens.service';
 
 @Component({
   selector: 'app-admin',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterLink, MatButtonModule, MatIconModule, MatTooltipModule],
+  imports: [CommonModule, FormsModule, RouterLink, MatButtonModule, MatIconModule, MatTooltipModule, MatTableModule],
   templateUrl: './admin.component.html',
   styleUrl: './admin.component.scss'
 })
@@ -32,6 +33,8 @@ export class AdminComponent implements OnInit {
     { valor: 'Pausada', label: 'Pausada' },
     { valor: 'Finalizada', label: 'Finalizada' }
   ];
+
+  readonly colunas = ['codigo', 'produto', 'valorUnitario', 'valorTotal', 'responsavel', 'prioridade', 'prazo', 'status', 'criadoEm', 'acoes'];
 
   ngOnInit(): void {
     this.carregar();
