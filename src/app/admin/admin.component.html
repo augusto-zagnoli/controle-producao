@@ -47,6 +47,7 @@
 
   <!-- Tabela -->
   <div class="table-wrapper">
+    <div class="table-scroll">
     <table mat-table [dataSource]="dataSource" class="mat-elevation-z0">
 
       <ng-container matColumnDef="codigo">
@@ -113,12 +114,13 @@
         </td>
       </ng-container>
 
-      <tr mat-header-row *matHeaderRowDef="colunas"></tr>
+      <tr mat-header-row *matHeaderRowDef="colunas; sticky: true"></tr>
       <tr mat-row *matRowDef="let row; columns: colunas;"></tr>
       <tr class="mat-row" *matNoDataRow>
         <td class="mat-cell empty" [attr.colspan]="colunas.length">Nenhuma ordem encontrada.</td>
       </tr>
     </table>
+    </div>
 
     <mat-paginator
       [pageSizeOptions]="[10, 25, 50, 100]"
