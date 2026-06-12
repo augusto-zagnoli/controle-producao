@@ -59,7 +59,8 @@ export class AdminSidebarComponent {
         { icon: '🏢', label: 'Setores', route: '/admin/setores' },
         { icon: '🔧', label: 'Operações', route: '/admin/operacoes' },
         { icon: '🔩', label: 'Equipamentos', route: '/admin/equipamentos' },
-        { icon: '📏', label: 'Unidades', route: '/admin/unidades' }
+        { icon: '📏', label: 'Unidades', route: '/admin/unidades' },
+        { icon: '⚪', label: 'Pastilhas', route: '/admin/pastilhas' }
       ]
     }
   ];

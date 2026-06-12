@@ -2,12 +2,15 @@ import { CommonModule } from '@angular/common';
 import { Component, ElementRef, OnDestroy, OnInit, ViewChild, inject } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, RouterLink } from '@angular/router';
+import { of } from 'rxjs';
 import { switchMap } from 'rxjs/operators';
 import { OrdemServico, STATUS_LABELS, OrdemServicoStatus } from '../../models/ordem-servico.model';
 import { Funcionario } from '../../models/funcionario.model';
+import { Pastilha } from '../../models/pastilha.model';
 import { OrdensService } from '../../services/ordens.service';
 import { FuncionariosService } from '../../services/funcionarios.service';
 import { OpcoesService } from '../../services/opcoes.service';
+import { PastilhasService } from '../../services/pastilhas.service';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { ToastService } from '../../shared/toast/toast.service';
 import { FileViewerDialogComponent } from '../../shared/file-viewer-dialog/file-viewer-dialog.component';
@@ -24,6 +27,7 @@ export class ProducaoDetailComponent implements OnInit, OnDestroy {
   private readonly service = inject(OrdensService);
   private readonly funcionariosService = inject(FuncionariosService);
   private readonly opcoesService = inject(OpcoesService);
+  private readonly pastilhasService = inject(PastilhasService);
   private readonly dialog = inject(MatDialog);
   private readonly toast = inject(ToastService);
   private readonly fb = inject(FormBuilder);
@@ -66,9 +70,13 @@ export class ProducaoDetailComponent implements OnInit, OnDestroy {
     funcionarioAcao:         [0, Validators.min(1)],
     novoStatus:              ['EmProducao' as OrdemServicoStatus],
     observacao:              [''],
+    pastilhaUtilizadaId:     [0],
   });
 
   get fc() { return this.form.controls; }
+
+  // Pastilha em Uso
+  pastilhasDisponiveis: Pastilha[] = [];
 
   ngOnInit(): void {
     this.funcionariosService.listar(true).subscribe({ next: lista => { this.funcionarios = lista; } });
@@ -78,6 +86,9 @@ export class ProducaoDetailComponent implements OnInit, OnDestroy {
         this.equipamentoOptions = lista.filter(o => o.tipo === 'Equipamento' && o.ativo && o.nome).map(o => o.nome);
         this.operacaoOptions    = lista.filter(o => o.tipo === 'Operacao'    && o.ativo && o.nome).map(o => o.nome);
       }
+    });
+    this.pastilhasService.listarDisponiveis().subscribe({
+      next: lista => { this.pastilhasDisponiveis = lista; }
     });
     const id = Number(this.route.snapshot.paramMap.get('id'));
     this.carregando = true;
@@ -112,6 +123,15 @@ export class ProducaoDetailComponent implements OnInit, OnDestroy {
     if (!this.ordem) return;
     this.form.markAllAsTouched();
     if (this.form.invalid) return;
+
+    const v = this.form.getRawValue();
+    if (Number(v.pastilhaUtilizadaId) > 0) {
+      const quantidadeAnterior = this.ordem.quantidadeRecebida || 0;
+      if (v.quantidadeRecebida - quantidadeAnterior <= 0) {
+        this.erroSalvar = `Para registrar o desgaste da pastilha selecionada, informe uma "Quantidade de peças recebidas" maior que a anterior (${quantidadeAnterior}).`;
+        return;
+      }
+    }
 
     this.fotoOperador = null;
     this.fotoPreview = null;
@@ -197,6 +217,8 @@ export class ProducaoDetailComponent implements OnInit, OnDestroy {
     this.erroSalvar = '';
 
     const ordemId = this.ordem.id;
+    const quantidadeAnterior = this.ordem.quantidadeRecebida || 0;
+    const deltaProducao = v.quantidadeRecebida - quantidadeAnterior;
 
     this.service.salvarTablet(
       ordemId,
@@ -211,6 +233,7 @@ export class ProducaoDetailComponent implements OnInit, OnDestroy {
       v.observacao || null,
       this.fotoOperador
     ).pipe(
+      switchMap(() => this.registrarPastilhaUtilizada(ordemId, v.funcionarioResponsavel, Number(v.pastilhaUtilizadaId), deltaProducao)),
       switchMap(() => this.service.obter(ordemId))
     ).subscribe({
       next: ordem => {
@@ -231,11 +254,28 @@ export class ProducaoDetailComponent implements OnInit, OnDestroy {
         this.fotoOperador = null;
         this.fotoPreview = null;
         this.toast.success('Salvo com sucesso!');
+
+        // Atualiza a lista de pastilhas disponíveis: o desgaste recém-registrado
+        // pode ter esgotado uma pastilha, removendo-a das opções seguintes.
+        this.pastilhasService.listarDisponiveis().subscribe({
+          next: lista => { this.pastilhasDisponiveis = lista; }
+        });
       },
       error: () => {
         this.salvando = false;
         this.toast.error('Erro ao salvar. Tente novamente.');
       }
+    });
+  }
+
+  private registrarPastilhaUtilizada(ordemId: number, funcionarioId: number, pastilhaId: number, quantidadeProduzida: number) {
+    if (!pastilhaId || quantidadeProduzida <= 0) return of(null);
+    return this.pastilhasService.registrarUso({
+      pastilhaId,
+      ordemServicoId: ordemId,
+      funcionarioId: funcionarioId || null,
+      quantidadeProduzida,
+      observacao: null,
     });
   }
 
