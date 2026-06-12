@@ -41,7 +41,7 @@ export class AdminComponent implements OnInit {
     { valor: 'Finalizada', label: 'Finalizada' }
   ];
 
-  readonly colunas = ['codigo', 'produto', 'valorUnitario', 'valorTotal', 'responsavel', 'prioridade', 'prazo', 'status', 'criadoEm', 'acoes'];
+  readonly colunas = ['codigo', 'produto', 'ordemCompra', 'valorUnitario', 'valorTotal', 'responsavel', 'prioridade', 'prazo', 'status', 'criadoEm', 'acoes'];
 
   ngOnInit(): void {
     this.carregar();

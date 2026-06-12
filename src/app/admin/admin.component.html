@@ -28,7 +28,7 @@
     <input
       [(ngModel)]="busca"
       (input)="carregar()"
-      placeholder="Buscar por código, peça ou material…"
+      placeholder="Buscar por código, peça, material ou nº da ordem de compra…"
       class="search-input"
     />
     <select [(ngModel)]="filtroStatus" (change)="carregar()" class="select-status">
@@ -58,6 +58,11 @@
       <ng-container matColumnDef="produto">
         <th mat-header-cell *matHeaderCellDef>Produto</th>
         <td mat-cell *matCellDef="let o" class="peca">{{ o.nomeProduto }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="ordemCompra">
+        <th mat-header-cell *matHeaderCellDef>Nº O.C.</th>
+        <td mat-cell *matCellDef="let o">{{ o.numeroOrdemCompra || '—' }}</td>
       </ng-container>
 
       <ng-container matColumnDef="valorUnitario">
