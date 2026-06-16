@@ -2,7 +2,9 @@ import { CommonModule } from '@angular/common';
 import { Component, OnInit, inject } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { HistoricoItem, OrdemServico, STATUS_LABELS } from '../models/ordem-servico.model';
+import { UsoPastilha } from '../models/pastilha.model';
 import { OrdensService } from '../services/ordens.service';
+import { PastilhasService } from '../services/pastilhas.service';
 import { AuthService } from '../auth/auth.service';
 import { forkJoin } from 'rxjs';
 import { environment } from '../../environments/environment';
@@ -21,11 +23,13 @@ import { FileViewerDialogComponent } from '../shared/file-viewer-dialog/file-vie
 export class AdminDetailComponent implements OnInit {
   private readonly route = inject(ActivatedRoute);
   private readonly service = inject(OrdensService);
+  private readonly pastilhasService = inject(PastilhasService);
   private readonly dialog = inject(MatDialog);
   readonly auth = inject(AuthService);
 
   ordem: OrdemServico | null = null;
   historico: HistoricoItem[] = [];
+  usosPastilha: UsoPastilha[] = [];
   carregando = true;
   erro = '';
 
@@ -35,11 +39,13 @@ export class AdminDetailComponent implements OnInit {
     const id = Number(this.route.snapshot.paramMap.get('id'));
     forkJoin({
       ordem: this.service.obter(id),
-      historico: this.service.historico(id)
+      historico: this.service.historico(id),
+      usosPastilha: this.pastilhasService.listarUsosPorOrdem(id)
     }).subscribe({
-      next: ({ ordem, historico }) => {
+      next: ({ ordem, historico, usosPastilha }) => {
         this.ordem = ordem;
         this.historico = historico;
+        this.usosPastilha = usosPastilha;
         this.carregando = false;
       },
       error: () => { this.erro = 'Erro ao carregar ordem.'; this.carregando = false; }

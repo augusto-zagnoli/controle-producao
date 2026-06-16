@@ -75,7 +75,9 @@ export class AdminFormComponent implements OnInit {
     funcionarioId: [0],
     dataInicio: [''],
     prazoPrevisto: ['', Validators.required],
-    observacoes: ['']
+    observacoes: [''],
+    dataCriacaoManual: [''],
+    dataExecucao: ['']
   });
 
   ngOnInit(): void {
@@ -112,7 +114,9 @@ export class AdminFormComponent implements OnInit {
             funcionarioId: o.funcionarioId,
             dataInicio: o.dataInicio ? o.dataInicio.substring(0, 10) : '',
             prazoPrevisto: o.prazoPrevisto ? o.prazoPrevisto.substring(0, 10) : '',
-            observacoes: o.observacoes ?? ''
+            observacoes: o.observacoes ?? '',
+            dataCriacaoManual: o.dataCriacao ? o.dataCriacao.substring(0, 10) : '',
+            dataExecucao: o.dataAtualizacao ? o.dataAtualizacao.substring(0, 10) : ''
           });
         },
         error: () => this.toast.error('Erro ao carregar ordem.')
@@ -167,7 +171,7 @@ export class AdminFormComponent implements OnInit {
     if (this.form.invalid) { this.form.markAllAsTouched(); return; }
     this.salvando = true;
 
-    const { nomeProduto, descricao, quantidade, unidade, numeroOrdemCompra, valorPorUnidade, funcionarioId, dataInicio, prazoPrevisto, observacoes } =
+    const { nomeProduto, descricao, quantidade, unidade, numeroOrdemCompra, valorPorUnidade, funcionarioId, dataInicio, prazoPrevisto, observacoes, dataCriacaoManual, dataExecucao } =
       this.form.getRawValue();
 
     const dto = {
@@ -184,7 +188,9 @@ export class AdminFormComponent implements OnInit {
       operacoes: Array.from(this.operacoesSelecionadas),
       dataInicio: dataInicio || null,
       prazoPrevisto,
-      observacoes: observacoes || null
+      observacoes: observacoes || null,
+      dataCriacaoManual: dataCriacaoManual || null,
+      dataExecucao: dataExecucao || null
     };
 
     const salvarDados$ = this.edicao && this.ordemId

@@ -45,4 +45,8 @@ export class PastilhasService {
   registrarUso(dto: RegistrarUsoPastilha): Observable<UsoPastilha> {
     return this.http.post<UsoPastilha>(`${this.base}/registrar-uso`, dto);
   }
+
+  listarUsosPorOrdem(ordemServicoId: number): Observable<UsoPastilha[]> {
+    return this.http.get<UsoPastilha[]>(`${this.base}/usos/ordem/${ordemServicoId}`);
+  }
 }

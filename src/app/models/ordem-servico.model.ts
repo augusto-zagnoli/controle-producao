@@ -132,6 +132,8 @@ export interface OrdemServicoCreate {
   dataInicio: string | null;
   prazoPrevisto: string;
   observacoes: string | null;
+  dataCriacaoManual: string | null;
+  dataExecucao: string | null;
 }
 
 export interface OrdemServicoUpdate extends OrdemServicoCreate {}

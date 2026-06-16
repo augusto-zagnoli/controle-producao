@@ -102,6 +102,41 @@
       </div>
     }
 
+    <!-- Histórico de Pastilhas Utilizadas -->
+    <div class="section-card">
+      <h2>Histórico de Pastilhas Utilizadas</h2>
+      @if (!usosPastilha.length) {
+        <p class="empty">Nenhuma pastilha registrada para esta ordem.</p>
+      } @else {
+        <div class="table-wrapper">
+          <table>
+            <thead>
+              <tr>
+                <th>Pastilha</th>
+                <th>Operação</th>
+                <th>Quantidade Produzida</th>
+                <th>Data/Hora</th>
+                <th>Funcionário</th>
+                <th>Observação</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (uso of usosPastilha; track uso.id) {
+                <tr>
+                  <td>{{ uso.pastilhaCodigo }}{{ uso.pastilha.descricao ? ' — ' + uso.pastilha.descricao : '' }}</td>
+                  <td>{{ uso.operacaoTipo ?? '—' }}</td>
+                  <td>{{ uso.quantidadeProduzida }}</td>
+                  <td>{{ formatarData(uso.dataHora) }}</td>
+                  <td>{{ uso.funcionarioNome ?? '—' }}</td>
+                  <td>{{ uso.observacao ?? '—' }}</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      }
+    </div>
+
     <!-- Rastreio / Histórico -->
     <div class="section-card">
       <h2>Rastreio da OP</h2>
