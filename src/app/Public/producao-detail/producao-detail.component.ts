@@ -68,6 +68,7 @@ export class ProducaoDetailComponent implements OnInit, OnDestroy {
     quantidadeRecebida:      [0, Validators.min(0)],
     quantidadePerdida:       [0, Validators.min(0)],
     funcionarioAcao:         [0, Validators.min(1)],
+    funcionarioConferente:   [0],
     novoStatus:              ['EmProducao' as OrdemServicoStatus],
     observacao:              [''],
     pastilhaUtilizadaId:     [0],
@@ -231,7 +232,8 @@ export class ProducaoDetailComponent implements OnInit, OnDestroy {
       v.funcionarioAcao,
       v.novoStatus,
       v.observacao || null,
-      this.fotoOperador
+      this.fotoOperador,
+      Number(v.funcionarioConferente) > 0 ? Number(v.funcionarioConferente) : null
     ).pipe(
       switchMap(() => this.registrarPastilhaUtilizada(ordemId, v.funcionarioResponsavel, Number(v.pastilhaUtilizadaId), deltaProducao)),
       switchMap(() => this.service.obter(ordemId))

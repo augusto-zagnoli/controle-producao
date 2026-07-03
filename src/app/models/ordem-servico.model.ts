@@ -160,6 +160,7 @@ export interface HistoricoItem {
   setorNovo: string | null;
   quantidadeRecebida: number | null;
   quantidadePerdida: number | null;
+  nomeConferente: string | null;
 }
 
 export interface MaquinaStats {

@@ -133,6 +133,15 @@
           }
         </label>
         <label class="field">
+          Conferente da peça
+          <select formControlName="funcionarioConferente">
+            <option [value]="0">— Nenhum —</option>
+            @for (f of funcionarios; track f.id) {
+              <option [value]="f.id">{{ f.nome }}</option>
+            }
+          </select>
+        </label>
+        <label class="field">
           Novo Status <span class="req">*</span>
           <select formControlName="novoStatus">
             @for (opt of statusOptions; track opt.value) {

@@ -164,6 +164,9 @@
                   @if (!h.nomeFuncionario && h.nomeUsuario) {
                     <span class="tl-usuario">{{ h.nomeUsuario }}</span>
                   }
+                  @if (h.nomeConferente) {
+                    <span class="tl-funcionario">🔍 Conferente: {{ h.nomeConferente }}</span>
+                  }
                 </div>
 
                 <!-- Mudança de status -->
