@@ -63,6 +63,15 @@ export class AdminDetailComponent implements OnInit {
     return (STATUS_MAQUINA_LABELS as Record<string, string>)[s] ?? s;
   }
 
+  voltarParaProducao(): void {
+    if (!this.ordem) return;
+    if (!confirm('Voltar esta Ordem de Produção para "Pendente"? Ela voltará a aparecer na tela de produção.')) return;
+    this.service.alterarStatus(this.ordem.id, 'Pendente', null, null, null).subscribe({
+      next: () => { if (this.ordem) this.ordem.status = 'Pendente'; },
+      error: () => alert('Erro ao voltar a ordem para produção.')
+    });
+  }
+
   formatarData(iso: string): string {
     if (!iso) return '—';
     return new Date(iso).toLocaleString('pt-BR');

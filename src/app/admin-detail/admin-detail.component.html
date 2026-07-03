@@ -15,6 +15,11 @@
         <button mat-stroked-button routerLink="/admin">
           <mat-icon>arrow_back</mat-icon> Voltar
         </button>
+        @if (ordem.status === 'Finalizada') {
+          <button mat-stroked-button (click)="voltarParaProducao()">
+            <mat-icon>undo</mat-icon> Voltar para Produção
+          </button>
+        }
         <a mat-flat-button color="primary" [routerLink]="['/admin/ordem', ordem.id, 'editar']">
           <mat-icon>edit</mat-icon> Editar
         </a>

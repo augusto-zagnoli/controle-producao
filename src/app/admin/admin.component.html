@@ -113,6 +113,11 @@
           <button mat-icon-button matTooltip="Editar" [routerLink]="['/admin/ordem', o.id, 'editar']">
             <mat-icon>edit</mat-icon>
           </button>
+          @if (o.status === 'Finalizada') {
+            <button mat-icon-button matTooltip="Voltar para Produção" (click)="voltarParaProducao(o.id)">
+              <mat-icon>undo</mat-icon>
+            </button>
+          }
           <button mat-icon-button color="warn" matTooltip="Excluir" (click)="excluir(o.id)">
             <mat-icon>delete</mat-icon>
           </button>

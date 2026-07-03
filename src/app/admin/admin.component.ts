@@ -73,6 +73,14 @@ export class AdminComponent implements OnInit {
     });
   }
 
+  voltarParaProducao(id: number): void {
+    if (!confirm('Voltar esta Ordem de Produção para "Pendente"? Ela voltará a aparecer na tela de produção.')) return;
+    this.service.alterarStatus(id, 'Pendente', null, null, null).subscribe({
+      next: () => this.carregar(),
+      error: () => alert('Erro ao voltar a ordem para produção.')
+    });
+  }
+
   formatarData(iso: string): string {
     if (!iso) return '—';
     return new Date(iso).toLocaleDateString('pt-BR');
