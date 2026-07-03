@@ -86,6 +86,20 @@
       </div>
     </div>
 
+    @if (maquinas.length) {
+      <div class="files-section">
+        <h3>Máquinas desta OP</h3>
+        <div class="docs-list">
+          @for (m of maquinas; track m.id) {
+            <div class="doc-card maquina-item">
+              <span>{{ m.operacao || 'Sem operação' }} — 🔧 {{ m.equipamento }}</span>
+              <span class="chip" [class]="m.status">{{ statusMaquinaLabel(m.status) }}</span>
+            </div>
+          }
+        </div>
+      </div>
+    }
+
     <div class="files-section">
       <h3>Imagens da Peça</h3>
       @if (ordem.imagens.length) {

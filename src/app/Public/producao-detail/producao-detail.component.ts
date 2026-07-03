@@ -4,7 +4,7 @@ import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { of } from 'rxjs';
 import { switchMap } from 'rxjs/operators';
-import { OrdemServico, STATUS_LABELS, OrdemServicoStatus } from '../../models/ordem-servico.model';
+import { OrdemServico, OrdemServicoMaquina, STATUS_LABELS, STATUS_MAQUINA_LABELS, OrdemServicoStatus } from '../../models/ordem-servico.model';
 import { Funcionario } from '../../models/funcionario.model';
 import { Pastilha } from '../../models/pastilha.model';
 import { OrdensService } from '../../services/ordens.service';
@@ -52,6 +52,7 @@ export class ProducaoDetailComponent implements OnInit, OnDestroy {
   setorOptions: string[] = [];
   equipamentoOptions: string[] = [];
   operacaoOptions: string[] = [];
+  maquinas: OrdemServicoMaquina[] = [];
 
   readonly statusOptions: { value: OrdemServicoStatus; label: string }[] = [
     { value: 'Pendente',    label: 'Pendente'     },
@@ -108,12 +109,23 @@ export class ProducaoDetailComponent implements OnInit, OnDestroy {
           observacao:             ordem.observacoes ?? '',
         });
         this.carregando = false;
+        this.carregarMaquinas(id);
       },
       error: () => {
         this.erro = 'Erro ao carregar a ordem de produção.';
         this.carregando = false;
       }
     });
+  }
+
+  private carregarMaquinas(ordemId: number): void {
+    this.service.maquinas(ordemId).subscribe({
+      next: lista => { this.maquinas = lista; }
+    });
+  }
+
+  statusMaquinaLabel(s: string): string {
+    return (STATUS_MAQUINA_LABELS as Record<string, string>)[s] ?? s;
   }
 
   ngOnDestroy(): void {
@@ -262,6 +274,7 @@ export class ProducaoDetailComponent implements OnInit, OnDestroy {
         this.pastilhasService.listarDisponiveis().subscribe({
           next: lista => { this.pastilhasDisponiveis = lista; }
         });
+        this.carregarMaquinas(ordemId);
       },
       error: () => {
         this.salvando = false;

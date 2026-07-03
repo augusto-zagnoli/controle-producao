@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit, inject } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
-import { HistoricoItem, OrdemServico, STATUS_LABELS } from '../models/ordem-servico.model';
+import { HistoricoItem, OrdemServico, OrdemServicoMaquina, STATUS_LABELS, STATUS_MAQUINA_LABELS } from '../models/ordem-servico.model';
 import { UsoPastilha } from '../models/pastilha.model';
 import { OrdensService } from '../services/ordens.service';
 import { PastilhasService } from '../services/pastilhas.service';
@@ -30,6 +30,7 @@ export class AdminDetailComponent implements OnInit {
   ordem: OrdemServico | null = null;
   historico: HistoricoItem[] = [];
   usosPastilha: UsoPastilha[] = [];
+  maquinas: OrdemServicoMaquina[] = [];
   carregando = true;
   erro = '';
 
@@ -40,12 +41,14 @@ export class AdminDetailComponent implements OnInit {
     forkJoin({
       ordem: this.service.obter(id),
       historico: this.service.historico(id),
-      usosPastilha: this.pastilhasService.listarUsosPorOrdem(id)
+      usosPastilha: this.pastilhasService.listarUsosPorOrdem(id),
+      maquinas: this.service.maquinas(id)
     }).subscribe({
-      next: ({ ordem, historico, usosPastilha }) => {
+      next: ({ ordem, historico, usosPastilha, maquinas }) => {
         this.ordem = ordem;
         this.historico = historico;
         this.usosPastilha = usosPastilha;
+        this.maquinas = maquinas;
         this.carregando = false;
       },
       error: () => { this.erro = 'Erro ao carregar ordem.'; this.carregando = false; }
@@ -54,6 +57,10 @@ export class AdminDetailComponent implements OnInit {
 
   statusLabel(s: string): string {
     return STATUS_LABELS[s as keyof typeof STATUS_LABELS] ?? s;
+  }
+
+  statusMaquinaLabel(s: string): string {
+    return (STATUS_MAQUINA_LABELS as Record<string, string>)[s] ?? s;
   }
 
   formatarData(iso: string): string {

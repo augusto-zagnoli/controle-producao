@@ -47,6 +47,9 @@
   &.EmProducao { background: #dbeafe; color: #1e40af; }
   &.Pausada { background: #ede9fe; color: #5b21b6; }
   &.Finalizada { background: #d1fae5; color: #065f46; }
+  &.EmUso { background: #dbeafe; color: #1e40af; }
+  &.Concluida { background: #d1fae5; color: #065f46; }
+  &.Parada { background: #ede9fe; color: #5b21b6; }
 }
 
 .imagens-grid {

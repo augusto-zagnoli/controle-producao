@@ -49,15 +49,18 @@
             <div class="maquina-header">
               <span class="maquina-icone">🔧</span>
               <span class="maquina-nome">{{ m.nome === '—' ? 'Sem máquina' : m.nome }}</span>
-              <span class="maquina-qtd">{{ m.ordens.length }} OP</span>
+              <span class="maquina-qtd">{{ m.itens.length }} OP</span>
             </div>
             <div class="maquina-ordens">
-              @for (o of m.ordens; track o.id) {
+              @for (item of m.itens; track item.ordemServicoId + '-' + item.operacao) {
                 <div class="maquina-os">
-                  <span class="os-code">#{{ o.codigo }}</span>
-                  <span class="os-produto">{{ o.nomeProduto }}</span>
-                  @if (o.funcionario) {
-                    <span class="os-op">👷 {{ o.funcionario.nome }}</span>
+                  <span class="os-code">#{{ item.ordemServicoCodigo }}</span>
+                  <span class="os-produto">{{ item.ordemServicoNomeProduto }}</span>
+                  @if (item.operacao) {
+                    <span class="os-op">{{ item.operacao }}</span>
+                  }
+                  @if (item.funcionarioNome) {
+                    <span class="os-op">👷 {{ item.funcionarioNome }}</span>
                   }
                 </div>
               }

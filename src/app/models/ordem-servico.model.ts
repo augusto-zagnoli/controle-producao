@@ -169,6 +169,35 @@ export interface MaquinaStats {
   valor: number;
 }
 
+export type StatusMaquinaOS = 'EmUso' | 'Concluida' | 'Parada';
+
+export const STATUS_MAQUINA_LABELS: Record<StatusMaquinaOS, string> = {
+  EmUso: 'Em uso',
+  Concluida: 'Concluída',
+  Parada: 'Parada'
+};
+
+export interface OrdemServicoMaquina {
+  id: number;
+  ordemServicoId: number;
+  operacao: string | null;
+  equipamento: string;
+  status: StatusMaquinaOS;
+  dataInicio: string;
+  dataFim: string | null;
+  funcionarioNome: string | null;
+}
+
+export interface MaquinaEmUso {
+  ordemServicoId: number;
+  ordemServicoCodigo: number;
+  ordemServicoNomeProduto: string;
+  operacao: string | null;
+  equipamento: string;
+  dataInicio: string;
+  funcionarioNome: string | null;
+}
+
 export interface DashboardAdm {
   pecasProduzirasMes: number;
   valorTotalProduzido: number;

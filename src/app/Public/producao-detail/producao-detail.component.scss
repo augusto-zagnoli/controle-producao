@@ -22,6 +22,9 @@
   &.EmProducao { background: #dbeafe; color: #1e40af; }
   &.Pausada { background: #ede9fe; color: #5b21b6; }
   &.Finalizada { background: #d1fae5; color: #065f46; }
+  &.EmUso { background: #dbeafe; color: #1e40af; }
+  &.Concluida { background: #d1fae5; color: #065f46; }
+  &.Parada { background: #ede9fe; color: #5b21b6; }
 }
 
 .info, .erro { padding: 20px; color: #6b7280; }
@@ -124,6 +127,8 @@
   transition: background .15s, box-shadow .15s;
   &:hover { background: #eff6ff; box-shadow: 0 2px 8px rgba(37,99,235,.1); }
 }
+.maquina-item { justify-content: space-between; cursor: default; }
+.maquina-item:hover { background: #f9fafb; box-shadow: none; }
 .doc-icon { font-size: 22px; flex-shrink: 0; }
 .doc-nome { font-size: 14px; color: #2563eb; font-weight: 500; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .empty { font-size: 13px; color: #9ca3af; font-style: italic; margin: 0; }

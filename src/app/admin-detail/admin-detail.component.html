@@ -68,6 +68,37 @@
       </div>
     }
 
+    <!-- Máquinas em Uso -->
+    @if (maquinas.length) {
+      <div class="section-card">
+        <h2>Máquinas em Uso</h2>
+        <div class="table-wrapper">
+          <table>
+            <thead>
+              <tr>
+                <th>Operação</th>
+                <th>Máquina</th>
+                <th>Status</th>
+                <th>Início</th>
+                <th>Fim</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (m of maquinas; track m.id) {
+                <tr>
+                  <td>{{ m.operacao ?? '—' }}</td>
+                  <td>{{ m.equipamento }}</td>
+                  <td><span class="chip" [class]="m.status">{{ statusMaquinaLabel(m.status) }}</span></td>
+                  <td>{{ formatarData(m.dataInicio) }}</td>
+                  <td>{{ m.dataFim ? formatarData(m.dataFim) : '—' }}</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      </div>
+    }
+
     <!-- Observações -->
     @if (ordem.observacoes) {
       <div class="section-card">

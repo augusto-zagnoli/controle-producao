@@ -1,14 +1,14 @@
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { Component, OnDestroy, OnInit, PLATFORM_ID, inject } from '@angular/core';
 import { Router } from '@angular/router';
-import { OrdemServico, STATUS_LABELS } from '../../models/ordem-servico.model';
+import { MaquinaEmUso, OrdemServico, STATUS_LABELS } from '../../models/ordem-servico.model';
 import { OrdensService } from '../../services/ordens.service';
 import { SettingsService, Settings } from '../../services/settings.service';
 import { environment } from '../../../environments/environment';
 
 interface MaquinaCard {
   nome: string;
-  ordens: OrdemServico[];
+  itens: MaquinaEmUso[];
 }
 
 @Component({
@@ -25,6 +25,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
   private readonly router = inject(Router);
 
   ordens: OrdemServico[] = [];
+  maquinasEmUso: MaquinaEmUso[] = [];
   settings: Settings | null = null;
   carregando = true;
   horaAtual = '';
@@ -44,14 +45,14 @@ export class DashboardComponent implements OnInit, OnDestroy {
   }
 
   get maquinas(): MaquinaCard[] {
-    const map = new Map<string, OrdemServico[]>();
-    for (const o of this.emProducao) {
-      const key = o.equipamento?.trim() || '—';
+    const map = new Map<string, MaquinaEmUso[]>();
+    for (const item of this.maquinasEmUso) {
+      const key = item.equipamento?.trim() || '—';
       if (!map.has(key)) map.set(key, []);
-      map.get(key)!.push(o);
+      map.get(key)!.push(item);
     }
     return Array.from(map.entries())
-      .map(([nome, ordens]) => ({ nome, ordens }))
+      .map(([nome, itens]) => ({ nome, itens }))
       .sort((a, b) => a.nome.localeCompare(b.nome));
   }
 
@@ -87,6 +88,9 @@ export class DashboardComponent implements OnInit, OnDestroy {
         this.carregando = false;
       },
       error: () => { this.carregando = false; }
+    });
+    this.service.maquinasEmUso().subscribe({
+      next: lista => { this.maquinasEmUso = lista; }
     });
   }
 

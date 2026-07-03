@@ -8,8 +8,10 @@ import {
   HistoricoItem,
   HistoricoMensalItem,
   Imagem,
+  MaquinaEmUso,
   OrdemServico,
   OrdemServicoCreate,
+  OrdemServicoMaquina,
   OrdemServicoUpdate
 } from '../models/ordem-servico.model';
 
@@ -144,5 +146,14 @@ export class OrdensService {
   // Histórico
   historico(id: number): Observable<HistoricoItem[]> {
     return this.http.get<HistoricoItem[]>(`${this.base}/${id}/historico`);
+  }
+
+  // Máquinas
+  maquinas(id: number): Observable<OrdemServicoMaquina[]> {
+    return this.http.get<OrdemServicoMaquina[]>(`${this.base}/${id}/maquinas`);
+  }
+
+  maquinasEmUso(): Observable<MaquinaEmUso[]> {
+    return this.http.get<MaquinaEmUso[]>(`${this.base}/maquinas-em-uso`);
   }
 }
