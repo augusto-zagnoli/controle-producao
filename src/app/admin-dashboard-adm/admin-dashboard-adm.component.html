@@ -129,7 +129,10 @@
 
     <!-- Pizzas de Valor em Produção -->
     <div class="graficos-section">
-      <h2 class="graficos-titulo">Valor em Produção — Distribuição</h2>
+      <h2 class="graficos-titulo">
+        Valor em Produção — Distribuição
+        @if (periodoLabel) { <span class="mes-tag">{{ periodoLabel | titlecase }}</span> }
+      </h2>
 
       <div class="graficos-grid pizzas">
 
@@ -177,7 +180,7 @@
 
         <div class="grafico-card">
           <div class="grafico-header">
-            <span class="grafico-titulo">Por Status (todas as ordens)</span>
+            <span class="grafico-titulo">Por Status</span>
             <span class="grafico-badge amarelo">Pizza</span>
           </div>
           @if (dados.valorPorStatus.length) {
