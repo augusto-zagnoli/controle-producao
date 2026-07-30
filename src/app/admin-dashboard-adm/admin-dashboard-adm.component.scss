@@ -212,13 +212,16 @@ tfoot .total-row td {
   padding: 2px 10px;
   border-radius: 999px;
   color: #fff;
-  &.azul  { background: #2563eb; }
-  &.verde { background: #16a34a; }
+  &.azul    { background: #2563eb; }
+  &.verde   { background: #16a34a; }
+  &.amarelo { background: #d97706; }
 }
 
 .grafico-wrap {
   position: relative;
   height: 220px;
+
+  &.pizza { height: 280px; }
 }
 
 // ── Utilitários ──────────────────────────────────────────────────────────────

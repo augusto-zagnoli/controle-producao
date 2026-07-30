@@ -11,20 +11,39 @@ import {
   Chart,
   BarController, BarElement,
   LineController, LineElement, PointElement,
+  PieController, ArcElement,
   CategoryScale, LinearScale,
   Tooltip, Legend,
   Filler
 } from 'chart.js';
-import { DashboardAdm, HistoricoMensalItem, MaquinaStats } from '../models/ordem-servico.model';
+import { DashboardAdm, HistoricoMensalItem, MaquinaStats, STATUS_LABELS } from '../models/ordem-servico.model';
 import { OrdensService } from '../services/ordens.service';
 
 Chart.register(
   BarController, BarElement,
   LineController, LineElement, PointElement,
+  PieController, ArcElement,
   CategoryScale, LinearScale,
   Tooltip, Legend,
   Filler
 );
+
+// Ordem categórica fixa — nunca ciclar nem gerar cores novas (ver skill dataviz)
+const PALETA_CATEGORICA = [
+  '#2a78d6', // blue
+  '#008300', // green
+  '#e87ba4', // magenta
+  '#eda100', // yellow
+  '#1baf7a', // aqua
+  '#eb6834', // orange
+  '#4a3aa7', // violet
+  '#e34948', // red
+];
+
+interface FatiaPizza {
+  label: string;
+  valor: number;
+}
 
 @Component({
   selector: 'app-admin-dashboard-adm',
@@ -45,6 +64,10 @@ export class AdminDashboardAdmComponent implements OnInit, AfterViewInit, OnDest
 
   @ViewChild('chartPecasEl') chartPecasEl!: ElementRef<HTMLCanvasElement>;
   @ViewChild('chartValorEl') chartValorEl!: ElementRef<HTMLCanvasElement>;
+  @ViewChild('chartValorMaquinaEl') chartValorMaquinaEl?: ElementRef<HTMLCanvasElement>;
+  @ViewChild('chartValorSetorEl') chartValorSetorEl?: ElementRef<HTMLCanvasElement>;
+  @ViewChild('chartValorOrdemEl') chartValorOrdemEl?: ElementRef<HTMLCanvasElement>;
+  @ViewChild('chartValorStatusEl') chartValorStatusEl?: ElementRef<HTMLCanvasElement>;
 
   dados: DashboardAdm | null = null;
   carregando = true;
@@ -55,6 +78,10 @@ export class AdminDashboardAdmComponent implements OnInit, AfterViewInit, OnDest
 
   private chartPecas: Chart | null = null;
   private chartValor: Chart | null = null;
+  private chartValorMaquina: Chart | null = null;
+  private chartValorSetor: Chart | null = null;
+  private chartValorOrdem: Chart | null = null;
+  private chartValorStatus: Chart | null = null;
   private viewReady = false;
 
   private readonly hoje = new Date();
@@ -116,6 +143,10 @@ export class AdminDashboardAdmComponent implements OnInit, AfterViewInit, OnDest
   ngOnDestroy(): void {
     this.chartPecas?.destroy();
     this.chartValor?.destroy();
+    this.chartValorMaquina?.destroy();
+    this.chartValorSetor?.destroy();
+    this.chartValorOrdem?.destroy();
+    this.chartValorStatus?.destroy();
     this.destroy$.next();
     this.destroy$.complete();
   }
@@ -147,7 +178,12 @@ export class AdminDashboardAdmComponent implements OnInit, AfterViewInit, OnDest
     this.carregando = true;
     this.erro = '';
     this.service.dashboardAdm(this.toISO(inicio), this.toISO(fim)).subscribe({
-      next: d => { this.dados = d; this.carregando = false; },
+      next: d => {
+        this.dados = d;
+        this.carregando = false;
+        this.cdr.detectChanges(); // garante que os <canvas> das pizzas estejam no DOM
+        this.renderPieCharts();
+      },
       error: () => { this.erro = 'Erro ao carregar dados.'; this.carregando = false; },
     });
   }
@@ -234,6 +270,81 @@ export class AdminDashboardAdmComponent implements OnInit, AfterViewInit, OnDest
             grid: { color: '#f3f4f6' }
           },
           x: { grid: { display: false } }
+        }
+      }
+    });
+  }
+
+  private renderPieCharts(): void {
+    if (!this.dados) return;
+
+    this.chartValorMaquina = this.criarPie(
+      this.chartValorMaquina, this.chartValorMaquinaEl,
+      this.dados.valorEmProducaoPorMaquina.map(m => ({ label: m.maquina, valor: m.valor }))
+    );
+    this.chartValorSetor = this.criarPie(
+      this.chartValorSetor, this.chartValorSetorEl,
+      this.dados.valorEmProducaoPorSetor.map(s => ({ label: s.setor, valor: s.valor }))
+    );
+    this.chartValorOrdem = this.criarPie(
+      this.chartValorOrdem, this.chartValorOrdemEl,
+      this.dados.valorEmProducaoPorOrdem.map(o => ({ label: `#${o.codigo} ${o.nomeProduto}`, valor: o.valor }))
+    );
+    this.chartValorStatus = this.criarPie(
+      this.chartValorStatus, this.chartValorStatusEl,
+      this.dados.valorPorStatus.map(s => ({ label: STATUS_LABELS[s.status], valor: s.valor }))
+    );
+  }
+
+  /** Cria (ou recria) um gráfico de pizza. Além de 8 fatias, agrupa a cauda em "Outras" (ver skill dataviz). */
+  private criarPie(
+    chartAtual: Chart | null,
+    el: ElementRef<HTMLCanvasElement> | undefined,
+    itens: FatiaPizza[]
+  ): Chart | null {
+    chartAtual?.destroy();
+    if (!el || !itens.length) return null;
+
+    const ordenado = [...itens].sort((a, b) => b.valor - a.valor);
+    const limite = PALETA_CATEGORICA.length;
+    let fatias = ordenado;
+    if (ordenado.length > limite) {
+      const principais = ordenado.slice(0, limite - 1);
+      const outrasValor = ordenado.slice(limite - 1).reduce((s, i) => s + i.valor, 0);
+      fatias = [...principais, { label: 'Outras', valor: outrasValor }];
+    }
+
+    const total = fatias.reduce((s, i) => s + i.valor, 0);
+    const cores = fatias.map((_, i) => PALETA_CATEGORICA[i]);
+
+    return new Chart(el.nativeElement, {
+      type: 'pie',
+      data: {
+        labels: fatias.map(i => i.label),
+        datasets: [{
+          data: fatias.map(i => i.valor),
+          backgroundColor: cores,
+          borderColor: '#ffffff',
+          borderWidth: 2,
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            position: 'bottom',
+            labels: { boxWidth: 12, padding: 10, font: { size: 11 } }
+          },
+          tooltip: {
+            callbacks: {
+              label: ctx => {
+                const valor = Number(ctx.raw);
+                const pct = total > 0 ? (valor / total) * 100 : 0;
+                return ` ${ctx.label}: R$ ${valor.toLocaleString('pt-BR', { minimumFractionDigits: 2 })} (${pct.toLocaleString('pt-BR', { minimumFractionDigits: 1 })}%)`;
+              }
+            }
+          }
         }
       }
     });

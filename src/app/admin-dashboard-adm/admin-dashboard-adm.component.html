@@ -126,6 +126,71 @@
       </div>
 
     </div>
+
+    <!-- Pizzas de Valor em Produção -->
+    <div class="graficos-section">
+      <h2 class="graficos-titulo">Valor em Produção — Distribuição</h2>
+
+      <div class="graficos-grid pizzas">
+
+        <div class="grafico-card">
+          <div class="grafico-header">
+            <span class="grafico-titulo">Por Máquina</span>
+            <span class="grafico-badge amarelo">Pizza</span>
+          </div>
+          @if (dados.valorEmProducaoPorMaquina.length) {
+            <div class="grafico-wrap pizza">
+              <canvas #chartValorMaquinaEl></canvas>
+            </div>
+          } @else {
+            <p class="empty">Nenhuma ordem em produção no momento.</p>
+          }
+        </div>
+
+        <div class="grafico-card">
+          <div class="grafico-header">
+            <span class="grafico-titulo">Por Setor</span>
+            <span class="grafico-badge amarelo">Pizza</span>
+          </div>
+          @if (dados.valorEmProducaoPorSetor.length) {
+            <div class="grafico-wrap pizza">
+              <canvas #chartValorSetorEl></canvas>
+            </div>
+          } @else {
+            <p class="empty">Nenhuma ordem em produção no momento.</p>
+          }
+        </div>
+
+        <div class="grafico-card">
+          <div class="grafico-header">
+            <span class="grafico-titulo">Por Ordem</span>
+            <span class="grafico-badge amarelo">Pizza</span>
+          </div>
+          @if (dados.valorEmProducaoPorOrdem.length) {
+            <div class="grafico-wrap pizza">
+              <canvas #chartValorOrdemEl></canvas>
+            </div>
+          } @else {
+            <p class="empty">Nenhuma ordem em produção no momento.</p>
+          }
+        </div>
+
+        <div class="grafico-card">
+          <div class="grafico-header">
+            <span class="grafico-titulo">Por Status (todas as ordens)</span>
+            <span class="grafico-badge amarelo">Pizza</span>
+          </div>
+          @if (dados.valorPorStatus.length) {
+            <div class="grafico-wrap pizza">
+              <canvas #chartValorStatusEl></canvas>
+            </div>
+          } @else {
+            <p class="empty">Nenhuma ordem cadastrada.</p>
+          }
+        </div>
+
+      </div>
+    </div>
   }
 
   <!-- Gráficos históricos (últimos 6 meses) -->

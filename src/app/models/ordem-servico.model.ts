@@ -169,6 +169,24 @@ export interface MaquinaStats {
   valor: number;
 }
 
+export interface SetorStats {
+  setor: string;
+  quantidade: number;
+  valor: number;
+}
+
+export interface OrdemValorStats {
+  ordemServicoId: number;
+  codigo: number;
+  nomeProduto: string;
+  valor: number;
+}
+
+export interface StatusValorStats {
+  status: OrdemServicoStatus;
+  valor: number;
+}
+
 export type StatusMaquinaOS = 'EmUso' | 'Concluida' | 'Parada';
 
 export const STATUS_MAQUINA_LABELS: Record<StatusMaquinaOS, string> = {
@@ -206,6 +224,10 @@ export interface DashboardAdm {
   valorPorMaquina: MaquinaStats[];
   pecasPeriodoAnterior: number;
   valorPeriodoAnterior: number;
+  valorEmProducaoPorMaquina: MaquinaStats[];
+  valorEmProducaoPorSetor: SetorStats[];
+  valorEmProducaoPorOrdem: OrdemValorStats[];
+  valorPorStatus: StatusValorStats[];
 }
 
 export interface HistoricoMensalItem {
