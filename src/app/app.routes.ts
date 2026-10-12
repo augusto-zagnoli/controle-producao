@@ -15,6 +15,7 @@ import { AdminOperacoesComponent } from './admin-operacoes/admin-operacoes.compo
 import { AdminUnidadesComponent } from './admin-unidades/admin-unidades.component';
 import { AdminPastilhasComponent } from './admin-pastilhas/admin-pastilhas.component';
 import { AdminDashboardAdmComponent } from './admin-dashboard-adm/admin-dashboard-adm.component';
+import { AdminRelatoriosProducaoComponent } from './admin-relatorios-producao/admin-relatorios-producao.component';
 import { AdminLayoutComponent } from './shared/admin-layout/admin-layout.component';
 import { ProducaoComponent } from './Public/producao/producao.component';
 import { ProducaoDetailComponent } from './Public/producao-detail/producao-detail.component';
@@ -41,7 +42,8 @@ export const routes: Routes = [
       { path: 'operacoes', component: AdminOperacoesComponent },
       { path: 'unidades', component: AdminUnidadesComponent },
       { path: 'pastilhas', component: AdminPastilhasComponent },
-      { path: 'dashboard-adm', component: AdminDashboardAdmComponent }
+      { path: 'dashboard-adm', component: AdminDashboardAdmComponent },
+      { path: 'relatorios-producao', component: AdminRelatoriosProducaoComponent }
     ]
   },
   { path: 'producao', component: ProducaoComponent },

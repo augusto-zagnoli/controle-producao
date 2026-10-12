@@ -37,7 +37,8 @@ export class AdminSidebarComponent {
       items: [
         { icon: '📝', label: 'Listar', route: '/admin' },
         { icon: '➕', label: 'Nova OP', route: '/admin/nova' },
-        { icon: '📊', label: 'Dashboard Adm', route: '/admin/dashboard-adm' }
+        { icon: '📊', label: 'Dashboard Adm', route: '/admin/dashboard-adm' },
+        { icon: '📈', label: 'Relatórios de Produção', route: '/admin/relatorios-producao' }
       ]
     },
     {

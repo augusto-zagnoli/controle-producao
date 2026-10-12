@@ -1,0 +1,352 @@
+<div class="dash-page">
+
+  <div class="dash-header">
+    <h1>Relatórios de Produção</h1>
+    <button class="btn-exportar" (click)="exportar()" [disabled]="exportando || carregando || !dados">
+      {{ exportando ? 'Gerando planilha…' : '⬇ Exportar Excel' }}
+    </button>
+  </div>
+
+  <!-- Filtros -->
+  <form class="filtro-card" [formGroup]="form" (ngSubmit)="aplicarFiltros()">
+    <div class="filtro-linha">
+      <div class="presets">
+        <button type="button" class="preset-btn" (click)="selecionarHoje()">Hoje</button>
+        <button type="button" class="preset-btn" (click)="selecionarSemana()">Esta semana</button>
+        <button type="button" class="preset-btn" (click)="selecionarMes()">Mês atual</button>
+      </div>
+
+      <mat-form-field appearance="outline" class="picker-field">
+        <mat-label>Período</mat-label>
+        <mat-date-range-input [rangePicker]="picker">
+          <input matStartDate formControlName="inicio" placeholder="Início" />
+          <input matEndDate formControlName="fim" placeholder="Fim" />
+        </mat-date-range-input>
+        <mat-datepicker-toggle matIconSuffix [for]="picker" />
+        <mat-date-range-picker #picker />
+      </mat-form-field>
+    </div>
+
+    <div class="filtro-campos">
+      <label class="campo">
+        Máquina
+        <select formControlName="maquina">
+          <option value="">Todas</option>
+          @for (m of opcoes.maquinas; track m) { <option [value]="m">{{ m }}</option> }
+          <option value="Sem máquina informada">Sem máquina informada</option>
+        </select>
+      </label>
+      <label class="campo">
+        Operador
+        <select formControlName="funcionarioId">
+          <option [value]="0">Todos</option>
+          @for (o of opcoes.operadores; track o.id) { <option [value]="o.id">{{ o.nome }}</option> }
+        </select>
+      </label>
+      <label class="campo">
+        Produto
+        <select formControlName="produto">
+          <option value="">Todos</option>
+          @for (p of opcoes.produtos; track p) { <option [value]="p">{{ p }}</option> }
+        </select>
+      </label>
+      <label class="campo campo-curto">
+        OS (código)
+        <input type="number" min="1" formControlName="ordemCodigo" placeholder="Todas" />
+      </label>
+      <label class="campo" title="Afeta apenas os indicadores de pastilha">
+        Pastilha <span class="dica">(só indicadores de pastilha)</span>
+        <select formControlName="pastilhaId">
+          <option [value]="0">Todas</option>
+          @for (p of opcoes.pastilhas; track p.id) { <option [value]="p.id">{{ p.nome }}</option> }
+        </select>
+      </label>
+      <label class="campo campo-indisponivel" title="Não há vínculo entre OS e programador no modelo de dados">
+        Programador
+        <select disabled><option>Indisponível</option></select>
+      </label>
+      <div class="filtro-acoes">
+        <button type="submit" class="btn-primario" [disabled]="carregando">Aplicar</button>
+        <button type="button" class="btn-secundario" (click)="limparFiltros()">Limpar</button>
+      </div>
+    </div>
+  </form>
+
+  @if (carregando) {
+    <p class="info">Carregando indicadores…</p>
+  } @else if (erro) {
+    <div class="estado erro">
+      <p>{{ erro }}</p>
+      <button class="btn-secundario" (click)="aplicarFiltros()">Tentar novamente</button>
+    </div>
+  } @else if (dados) {
+
+    @if (semDados) {
+      <div class="estado vazio">
+        <p>Nenhum apontamento de produção ou uso de pastilha encontrado para os filtros aplicados.</p>
+      </div>
+    } @else {
+
+    <!-- KPIs -->
+    <div class="kpi-grid">
+      <div class="kpi-card">
+        <span class="kpi-label">Produção total</span>
+        <span class="kpi-valor">{{ dados.resumo.pecasProduzidas | number:'1.0-3':'pt-BR' }}</span>
+        <span class="kpi-sub">peças boas + refugadas · {{ dados.resumo.apontamentos }} apontamentos</span>
+      </div>
+      <div class="kpi-card">
+        <span class="kpi-label"><i class="marca" [style.background]="'#2a78d6'"></i>Peças boas</span>
+        <span class="kpi-valor">{{ dados.resumo.pecasBoas | number:'1.0-3':'pt-BR' }}</span>
+        <span class="kpi-sub">em {{ dados.resumo.ordensComApontamento }} OS</span>
+      </div>
+      <div class="kpi-card">
+        <span class="kpi-label"><i class="marca" [style.background]="'#e87ba4'"></i>Peças refugadas</span>
+        <span class="kpi-valor">{{ dados.resumo.pecasRefugadas | number:'1.0-3':'pt-BR' }}</span>
+        <span class="kpi-sub">apontadas como perdidas</span>
+      </div>
+      <div class="kpi-card">
+        <span class="kpi-label">Taxa de refugo</span>
+        <span class="kpi-valor">{{ formatar(dados.resumo.taxaRefugo, 'percentual') }}</span>
+        <span class="kpi-sub">refugadas ÷ produzidas</span>
+      </div>
+      <div class="kpi-card">
+        <span class="kpi-label">Pastilhas utilizadas</span>
+        <span class="kpi-valor">{{ dados.pastilhas.pastilhasUtilizadas | number:'1.0-0':'pt-BR' }}</span>
+        <span class="kpi-sub">{{ dados.pastilhas.pastilhasAtingiramVidaUtil }} atingiram a vida útil no período</span>
+      </div>
+      <div class="kpi-card">
+        <span class="kpi-label">Rendimento médio</span>
+        <span class="kpi-valor">{{ formatar(dados.pastilhas.rendimentoMedio, 'decimal') }}</span>
+        <span class="kpi-sub">peças por pastilha
+          @if (dados.pastilhas.coberturaApontamento !== null) {
+            · {{ formatar(dados.pastilhas.coberturaApontamento, 'percentual') }} da produção com pastilha apontada
+          }
+        </span>
+      </div>
+    </div>
+
+    @if (temAjustes || dados.pastilhas.usosSemMaquinaIdentificada > 0) {
+      <div class="aviso">
+        @if (temAjustes) {
+          <p>
+            ⚠ Houve correções (redução do contador) no período:
+            {{ dados.resumo.ajusteBoas | number:'1.0-3':'pt-BR' }} boas e
+            {{ dados.resumo.ajusteRefugadas | number:'1.0-3':'pt-BR' }} refugadas.
+            Elas não são atribuídas a operador nem máquina. Saldo líquido de peças boas:
+            <strong>{{ dados.resumo.saldoLiquidoBoas | number:'1.0-3':'pt-BR' }}</strong>.
+          </p>
+        }
+        @if (dados.pastilhas.usosSemMaquinaIdentificada > 0) {
+          <p>⚠ {{ dados.pastilhas.usosSemMaquinaIdentificada }} uso(s) de pastilha sem máquina identificada no apontamento de origem.</p>
+        }
+      </div>
+    }
+
+    <!-- Gráficos -->
+    <div class="graficos-grid">
+      <div class="grafico-card largo">
+        <div class="grafico-titulo">Produção por dia <span class="unidade">peças</span></div>
+        <div class="grafico-wrap"><canvas #chartProducaoEl></canvas></div>
+        <div class="grafico-titulo sub">Pastilhas utilizadas por dia <span class="unidade">pastilhas distintas</span></div>
+        <div class="grafico-wrap baixo"><canvas #chartPastilhasDiaEl></canvas></div>
+      </div>
+
+      <div class="grafico-card">
+        <div class="grafico-titulo">Rendimento de pastilhas por máquina <span class="unidade">peças/pastilha</span></div>
+        @if (dados.pastilhas.pastilhasUtilizadas > 0) {
+          <div class="grafico-wrap"><canvas #chartRendimentoEl></canvas></div>
+        } @else {
+          <p class="empty">Nenhum uso de pastilha apontado no período.</p>
+        }
+      </div>
+
+      <div class="grafico-card">
+        <div class="grafico-titulo">Produtividade por operador <span class="unidade">peças</span></div>
+        @if (dados.porOperador.length) {
+          <div class="grafico-wrap"><canvas #chartOperadoresEl></canvas></div>
+        } @else {
+          <p class="empty">Sem produção apontada.</p>
+        }
+      </div>
+
+      <div class="grafico-card">
+        <div class="grafico-titulo">Produtividade por programador</div>
+        <div class="indisponivel">
+          <strong>Indicador indisponível</strong>
+          <p>{{ indisponivelProgramador?.motivo }}</p>
+        </div>
+      </div>
+
+      <div class="grafico-card">
+        <div class="grafico-titulo">Perdas por operador <span class="unidade">peças refugadas</span></div>
+        @if (dados.resumo.pecasRefugadas > 0) {
+          <div class="grafico-wrap"><canvas #chartPerdasOperadorEl></canvas></div>
+          <p class="nota">Operador que registrou a perda no apontamento — não indica a causa.</p>
+        } @else {
+          <p class="empty">Nenhuma peça refugada no período.</p>
+        }
+      </div>
+
+      <div class="grafico-card">
+        <div class="grafico-titulo">Perdas por máquina <span class="unidade">peças refugadas</span></div>
+        @if (dados.resumo.pecasRefugadas > 0) {
+          <div class="grafico-wrap"><canvas #chartPerdasMaquinaEl></canvas></div>
+        } @else {
+          <p class="empty">Nenhuma peça refugada no período.</p>
+        }
+      </div>
+    </div>
+
+    <!-- Tabelas analíticas -->
+    <div class="tabelas-grid">
+      <div class="table-card">
+        <h2>Produção e rendimento por máquina</h2>
+        <app-tabela-analitica [colunas]="colunasMaquina" [dados]="dados.porMaquina" ordenarPor="pecasProduzidas" />
+      </div>
+      <div class="table-card">
+        <h2>Produtividade por operador</h2>
+        <app-tabela-analitica [colunas]="colunasOperador" [dados]="dados.porOperador" ordenarPor="pecasProduzidas" />
+      </div>
+      <div class="table-card">
+        <h2>Consumo e rendimento por pastilha</h2>
+        <app-tabela-analitica [colunas]="colunasPastilha" [dados]="dados.porPastilha" ordenarPor="pecasNoPeriodo"
+          mensagemVazia="Nenhum uso de pastilha apontado no período." />
+      </div>
+      <div class="table-card">
+        <h2>Produção e refugo por OS</h2>
+        <app-tabela-analitica [colunas]="colunasOrdem" [dados]="dados.porOrdem" ordenarPor="pecasProduzidas" />
+      </div>
+    </div>
+
+    <!-- Detalhes para auditoria -->
+    <div class="table-card detalhe-card">
+      <div class="detalhe-header">
+        <h2>Registros detalhados</h2>
+        <div class="abas">
+          <button class="aba" [class.ativa]="detalheAtivo === 'apontamentos'" (click)="selecionarDetalhe('apontamentos')">Apontamentos</button>
+          <button class="aba" [class.ativa]="detalheAtivo === 'pastilhas'" (click)="selecionarDetalhe('pastilhas')">Usos de pastilha</button>
+        </div>
+      </div>
+
+      @if (erroDetalhe) {
+        <p class="erro pad">{{ erroDetalhe }}</p>
+      } @else if (detalheAtivo === 'apontamentos' && detalheApontamentos) {
+        <div class="tabela-scroll" [class.carregando]="carregandoDetalhe">
+          <table mat-table [dataSource]="detalheApontamentos.itens" matSort
+                 [matSortActive]="ordenacaoDetalhe.active" [matSortDirection]="ordenacaoDetalhe.direction"
+                 (matSortChange)="ordenarDetalhe($event)">
+            <ng-container matColumnDef="dataHora">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header>Data/hora</th>
+              <td mat-cell *matCellDef="let a">{{ formatar(a.dataHora, 'data') }}</td>
+            </ng-container>
+            <ng-container matColumnDef="ordemCodigo">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header>OS</th>
+              <td mat-cell *matCellDef="let a">#{{ a.ordemCodigo }}</td>
+            </ng-container>
+            <ng-container matColumnDef="produto">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header>Produto</th>
+              <td mat-cell *matCellDef="let a">{{ a.produto }}</td>
+            </ng-container>
+            <ng-container matColumnDef="maquina">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header>Máquina</th>
+              <td mat-cell *matCellDef="let a">{{ a.maquina }}</td>
+            </ng-container>
+            <ng-container matColumnDef="operador">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header>Operador</th>
+              <td mat-cell *matCellDef="let a">{{ a.operador }}</td>
+            </ng-container>
+            <ng-container matColumnDef="recebidaAcumulada">
+              <th mat-header-cell *matHeaderCellDef class="num">Recebidas (acum.)</th>
+              <td mat-cell *matCellDef="let a" class="num">{{ formatar(a.recebidaAcumulada, 'numero') }}</td>
+            </ng-container>
+            <ng-container matColumnDef="perdidaAcumulada">
+              <th mat-header-cell *matHeaderCellDef class="num">Perdidas (acum.)</th>
+              <td mat-cell *matCellDef="let a" class="num">{{ formatar(a.perdidaAcumulada, 'numero') }}</td>
+            </ng-container>
+            <ng-container matColumnDef="deltaBoas">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header class="num">Δ Boas</th>
+              <td mat-cell *matCellDef="let a" class="num" [class.negativo]="a.deltaBoas < 0">{{ formatar(a.deltaBoas, 'numero') }}</td>
+            </ng-container>
+            <ng-container matColumnDef="deltaRefugadas">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header class="num">Δ Refugadas</th>
+              <td mat-cell *matCellDef="let a" class="num" [class.negativo]="a.deltaRefugadas < 0">{{ formatar(a.deltaRefugadas, 'numero') }}</td>
+            </ng-container>
+            <ng-container matColumnDef="tipo">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header>Tipo</th>
+              <td mat-cell *matCellDef="let a">{{ a.tipo }}</td>
+            </ng-container>
+            <tr mat-header-row *matHeaderRowDef="colunasDetalheApontamentos"></tr>
+            <tr mat-row *matRowDef="let a; columns: colunasDetalheApontamentos"></tr>
+          </table>
+          @if (!detalheApontamentos.total) { <p class="empty">Nenhum apontamento no período.</p> }
+        </div>
+        <mat-paginator [length]="detalheApontamentos.total" [pageIndex]="paginaDetalhe" [pageSize]="tamanhoPaginaDetalhe"
+                       [pageSizeOptions]="[25, 50, 100, 200]" (page)="paginarDetalhe($event)" showFirstLastButtons />
+      } @else if (detalheAtivo === 'pastilhas' && detalhePastilhas) {
+        <div class="tabela-scroll" [class.carregando]="carregandoDetalhe">
+          <table mat-table [dataSource]="detalhePastilhas.itens" matSort
+                 [matSortActive]="ordenacaoDetalhe.active" [matSortDirection]="ordenacaoDetalhe.direction"
+                 (matSortChange)="ordenarDetalhe($event)">
+            <ng-container matColumnDef="dataHora">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header>Data/hora</th>
+              <td mat-cell *matCellDef="let u">{{ formatar(u.dataHora, 'data') }}</td>
+            </ng-container>
+            <ng-container matColumnDef="pastilhaCodigo">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header>Pastilha</th>
+              <td mat-cell *matCellDef="let u">{{ u.pastilhaCodigo }}</td>
+            </ng-container>
+            <ng-container matColumnDef="ordemCodigo">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header>OS</th>
+              <td mat-cell *matCellDef="let u">#{{ u.ordemCodigo }}</td>
+            </ng-container>
+            <ng-container matColumnDef="produto">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header>Produto</th>
+              <td mat-cell *matCellDef="let u">{{ u.produto }}</td>
+            </ng-container>
+            <ng-container matColumnDef="maquina">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header>Máquina (inferida)</th>
+              <td mat-cell *matCellDef="let u" [title]="u.maquinaOrigemHistoricoId ? 'Apontamento de origem #' + u.maquinaOrigemHistoricoId : 'Sem apontamento de origem'">{{ u.maquina }}</td>
+            </ng-container>
+            <ng-container matColumnDef="operador">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header>Funcionário</th>
+              <td mat-cell *matCellDef="let u">{{ u.operador }}</td>
+            </ng-container>
+            <ng-container matColumnDef="quantidade">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header class="num">Peças</th>
+              <td mat-cell *matCellDef="let u" class="num">{{ formatar(u.quantidade, 'numero') }}</td>
+            </ng-container>
+            <ng-container matColumnDef="usoAcumuladoAposRegistro">
+              <th mat-header-cell *matHeaderCellDef class="num">Uso acumulado</th>
+              <td mat-cell *matCellDef="let u" class="num">{{ formatar(u.usoAcumuladoAposRegistro, 'numero') }}</td>
+            </ng-container>
+            <tr mat-header-row *matHeaderRowDef="colunasDetalhePastilhas"></tr>
+            <tr mat-row *matRowDef="let u; columns: colunasDetalhePastilhas"></tr>
+          </table>
+          @if (!detalhePastilhas.total) { <p class="empty">Nenhum uso de pastilha no período.</p> }
+        </div>
+        <mat-paginator [length]="detalhePastilhas.total" [pageIndex]="paginaDetalhe" [pageSize]="tamanhoPaginaDetalhe"
+                       [pageSizeOptions]="[25, 50, 100, 200]" (page)="paginarDetalhe($event)" showFirstLastButtons />
+      } @else if (carregandoDetalhe) {
+        <p class="info pad">Carregando registros…</p>
+      }
+    </div>
+    }
+
+    <!-- Indicadores indisponíveis -->
+    @if (outrosIndisponiveis.length) {
+      <div class="table-card indisponiveis-card">
+        <h2>Indicadores indisponíveis com os dados atuais</h2>
+        <ul>
+          @for (i of outrosIndisponiveis; track i.indicador) {
+            <li><strong>{{ i.indicador }}:</strong> {{ i.motivo }}</li>
+          }
+        </ul>
+      </div>
+    }
+
+    <p class="rodape">
+      Período {{ dados.filtros.dataInicio | date:'dd/MM/yyyy' }} a {{ dados.filtros.dataFim | date:'dd/MM/yyyy' }}
+      (fuso {{ dados.filtros.fusoHorario }}). Fonte: apontamentos do tablet (histórico das OS) e registros de uso de pastilha.
+    </p>
+  }
+</div>
