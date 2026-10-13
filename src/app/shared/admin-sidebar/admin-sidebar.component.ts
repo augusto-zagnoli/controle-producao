@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, inject } from '@angular/core';
 import { RouterLink, RouterLinkActive } from '@angular/router';
-import { AuthService } from '../../auth/auth.service';
+import { AuthService } from '../../core/authentication/auth.service';
 
 interface MenuItemGroup {
   icon: string;

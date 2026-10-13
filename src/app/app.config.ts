@@ -6,7 +6,8 @@ import { registerLocaleData } from '@angular/common';
 import localePt from '@angular/common/locales/pt';
 
 import { routes } from './app.routes';
-import { authInterceptor } from './interceptors/auth.interceptor';
+import { authInterceptor } from './core/http/auth.interceptor';
+import { unauthorizedInterceptor } from './core/http/unauthorized.interceptor';
 
 registerLocaleData(localePt, 'pt-BR');
 
@@ -15,7 +16,7 @@ export const appConfig: ApplicationConfig = {
     provideZoneChangeDetection({ eventCoalescing: true }),
     provideRouter(routes),
     provideAnimations(),
-    provideHttpClient(withFetch(), withInterceptors([authInterceptor])),
+    provideHttpClient(withFetch(), withInterceptors([authInterceptor, unauthorizedInterceptor])),
     { provide: LOCALE_ID, useValue: 'pt-BR' }
   ]
 };

@@ -5,7 +5,7 @@ import { HistoricoItem, OrdemServico, OrdemServicoMaquina, STATUS_LABELS, STATUS
 import { UsoPastilha } from '../models/pastilha.model';
 import { OrdensService } from '../services/ordens.service';
 import { PastilhasService } from '../services/pastilhas.service';
-import { AuthService } from '../auth/auth.service';
+import { AuthService } from '../core/authentication/auth.service';
 import { forkJoin } from 'rxjs';
 import { environment } from '../../environments/environment';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';

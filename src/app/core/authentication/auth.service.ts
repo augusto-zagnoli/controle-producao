@@ -3,8 +3,8 @@ import { Injectable, PLATFORM_ID, inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { BehaviorSubject, Observable, tap } from 'rxjs';
 import { isPlatformBrowser } from '@angular/common';
-import { environment } from '../../environments/environment';
-import { UsuarioLogado } from '../models/ordem-servico.model';
+import { environment } from '../../../environments/environment';
+import { UsuarioLogado } from '../../models/ordem-servico.model';
 
 interface LoginResponse {
   token: string;
