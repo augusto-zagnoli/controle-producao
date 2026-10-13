@@ -51,6 +51,15 @@ export class AdminSidebarComponent {
       ]
     },
     {
+      icon: '🏢',
+      label: 'Organização',
+      expanded: false,
+      items: [
+        { icon: '🏭', label: 'Empresas e filiais', route: '/admin/organizacao/empresas' },
+        { icon: '📱', label: 'Dispositivos', route: '/admin/organizacao/dispositivos' }
+      ]
+    },
+    {
       icon: '🔧',
       label: 'Sistema',
       expanded: false,

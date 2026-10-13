@@ -1,6 +1,8 @@
 import { Routes } from '@angular/router';
 import { adminGuard } from './core/guards/admin.guard';
-import { authGuard } from './core/guards/auth.guard';
+import { chaoDeFabricaGuard } from './core/guards/auth.guard';
+import { SelecionarTenantComponent } from './core/authentication/selecionar-tenant.component';
+import { AtivarDispositivoComponent } from './core/authentication/ativar-dispositivo.component';
 import { LoginComponent } from './login/login.component';
 import { AdminComponent } from './admin/admin.component';
 import { AdminDetailComponent } from './admin-detail/admin-detail.component';
@@ -24,6 +26,8 @@ import { DashboardComponent } from './Public/dashboard/dashboard.component';
 export const routes: Routes = [
   { path: '', pathMatch: 'full', redirectTo: 'login' },
   { path: 'login', component: LoginComponent },
+  { path: 'selecionar-tenant', component: SelecionarTenantComponent },
+  { path: 'dispositivo/ativar', component: AtivarDispositivoComponent },
   {
     path: 'admin',
     component: AdminLayoutComponent,
@@ -43,11 +47,14 @@ export const routes: Routes = [
       { path: 'unidades', component: AdminUnidadesComponent },
       { path: 'pastilhas', component: AdminPastilhasComponent },
       { path: 'dashboard-adm', component: AdminDashboardAdmComponent },
-      { path: 'relatorios-producao', component: AdminRelatoriosProducaoComponent }
+      { path: 'relatorios-producao', component: AdminRelatoriosProducaoComponent },
+      // Módulos novos: carregados sob demanda
+      { path: 'organizacao', loadChildren: () => import('./modules/tenancy/tenancy.routes') }
     ]
   },
-  { path: 'producao', component: ProducaoComponent },
-  { path: 'producao/ordem/:id', component: ProducaoDetailComponent },
-  { path: 'dashboard', component: DashboardComponent },
+  // Chão de fábrica: usuário do tenant ou tablet ativado; a TV aceita também painel
+  { path: 'producao', component: ProducaoComponent, canActivate: [chaoDeFabricaGuard(true)] },
+  { path: 'producao/ordem/:id', component: ProducaoDetailComponent, canActivate: [chaoDeFabricaGuard(true)] },
+  { path: 'dashboard', component: DashboardComponent, canActivate: [chaoDeFabricaGuard(false)] },
   { path: '**', redirectTo: 'login' }
 ];

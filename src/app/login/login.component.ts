@@ -4,6 +4,7 @@ import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { AuthService } from '../core/authentication/auth.service';
 import { SettingsService } from '../services/settings.service';
+import { mensagemDeErro } from '../core/http/mensagem-erro';
 
 @Component({
   selector: 'app-login',
@@ -42,9 +43,8 @@ export class LoginComponent implements OnInit {
           this.nomeEmpresa = settings.nomeEmpresa;
         }
       },
-      error: (err) => {
-        console.error('Erro ao carregar settings:', err);
-      }
+      // Antes do login não há empresa definida: o logo da empresa só aparece após entrar.
+      error: () => { /* sem logo */ }
     });
   }
 
@@ -57,15 +57,12 @@ export class LoginComponent implements OnInit {
     this.auth.login(login, senha).subscribe({
       next: (res) => {
         this.carregando = false;
-        if (res.usuario.perfil === 'Administrador') {
-          void this.router.navigate(['/admin']);
-        } else {
-          void this.router.navigate(['/producao']);
-        }
+        // Usuário com acesso a mais de uma empresa escolhe o tenant antes de entrar
+        void this.router.navigateByUrl(res.requerSelecaoTenant ? '/selecionar-tenant' : this.auth.rotaInicial());
       },
-      error: () => {
+      error: (err) => {
         this.carregando = false;
-        this.erro = 'Login ou senha incorretos.';
+        this.erro = err?.status === 401 ? 'Login ou senha incorretos.' : mensagemDeErro(err, 'Não foi possível entrar.');
       }
     });
   }

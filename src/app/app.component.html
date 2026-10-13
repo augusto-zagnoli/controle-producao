@@ -1,5 +1,5 @@
 <header class="topbar" *ngIf="auth.logado">
-  <h1>Controle de Produção - Tornearia</h1>
+  <h1>ZagnoliERP @if (auth.tenant) { <small class="tenant">· {{ auth.tenant.nome }}</small> }</h1>
   <nav>
     @if (auth.isAdmin) {
       <a routerLink="/admin" routerLinkActive="active">Administrativo</a>
@@ -7,6 +7,7 @@
     <a routerLink="/producao" routerLinkActive="active">Produção</a>
     <a routerLink="/dashboard" routerLinkActive="active">Dashboard</a>
     <span class="usuario">{{ auth.usuario?.nome }}</span>
+    <a routerLink="/selecionar-tenant" class="trocar" title="Trocar de empresa">Trocar empresa</a>
     <button class="btn-logout" (click)="logout()">Sair</button>
   </nav>
 </header>
