@@ -31,6 +31,7 @@
   @if (carregando) { <mat-progress-bar mode="indeterminate" /> }
 
   <div class="table-card">
+    <div class="table-scroll">
     <table mat-table [dataSource]="itens" class="mat-elevation-z0">
 
       <ng-container matColumnDef="codigo">
@@ -97,11 +98,12 @@
         </td>
       </ng-container>
 
-      <tr mat-header-row *matHeaderRowDef="colunas"></tr>
+      <tr mat-header-row *matHeaderRowDef="colunas; sticky: true"></tr>
       <tr mat-row *matRowDef="let row; columns: colunas;" [class.row-inativo]="!row.ativa"></tr>
       <tr class="mat-row" *matNoDataRow>
         <td class="mat-cell empty-row" [attr.colspan]="colunas.length">Nenhuma pastilha cadastrada.</td>
       </tr>
     </table>
+    </div>
   </div>
 </div>
